@@ -118,6 +118,9 @@ td.mono,.mono{font-family:var(--mono);font-size:12px;overflow-wrap:anywhere}
 .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle}
 .card{border:1px solid var(--line);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:8px}
 .card h4{margin:0;font:600 15px var(--body)}
+a{color:var(--accent);text-underline-offset:2px;overflow-wrap:anywhere}
+button.ghost{font:600 13px var(--body);padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;white-space:nowrap}
+button.ghost:hover{border-color:var(--accent)}
 .pill{display:inline-block;font:600 11.5px var(--body);padding:2px 8px;border-radius:999px}
 .pill.ok{background:var(--okbg);color:var(--ok)} .pill.A{background:var(--devAbg);color:var(--devA)} .pill.B{background:var(--devBbg);color:var(--devB)}
 .members{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
@@ -156,6 +159,26 @@ details summary{cursor:pointer;font-weight:600;font-size:13.5px}
 const D = ${JSON.stringify(DATA)};
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+// The public Minima explorer shows each transaction and block (inputs, outputs, scripts, kept values) while Minima keeps it.
+const EXPLORER = 'https://explorer.minima.global';
+const txLink = (id, text) => '<a href="' + EXPLORER + '/transactions/' + esc(id) + '" target="_blank" rel="noopener">' + esc(text || id) + '</a>';
+const blockLink = (n) => '<a href="' + EXPLORER + '/blocks/' + n + '" target="_blank" rel="noopener">' + n + '</a>';
+const shortId = (h) => h.length > 26 ? h.slice(0, 18) + '…' + h.slice(-6) : h;
+// Which transaction made each coin, and which spent it: links one step of a card's life to the next.
+const madeBy = new Map(), spentBy = new Map();
+D.txs.forEach((t, i) => { t.outputs.forEach(c => c.coinid && madeBy.set(c.coinid.toUpperCase(), i)); t.inputs.forEach(c => c.coinid && spentBy.set(c.coinid.toUpperCase(), i)); });
+const openBtn = (i) => '<button class="ghost" data-open="' + i + '">Open here</button>';
+function relatedView(t){
+  const me = D.txs.indexOf(t), seen = new Set(), rows = [];
+  const add = (i, why) => { if(i == null || i === me || seen.has(i)) return; seen.add(i); rows.push([i, why]); };
+  t.inputs.forEach(c => add(madeBy.get(String(c.coinid).toUpperCase()), 'made a coin this one spends (' + (c.role || 'Savings') + ')'));
+  t.outputs.forEach(c => add(spentBy.get(String(c.coinid).toUpperCase()), 'spent a coin this one made (' + (c.role || 'Savings') + ')'));
+  if(t.package) t.package.anchors.forEach(a => add(madeBy.get(a.anchorCoin.toUpperCase()), 'the deposit (Add) behind ' + a.amount + ' of this money'));
+  if(!rows.length) return '';
+  return '<div class="sec"><h3>Linked transactions on chain</h3><div class="scroll"><table><thead><tr><th>Block</th><th>Transaction</th><th>Link</th><th></th></tr></thead><tbody>'
+    + rows.sort((a, b) => D.txs[a[0]].block - D.txs[b[0]].block).map(([i, why]) => { const x = D.txs[i]; return '<tr><td>' + blockLink(x.block) + '</td><td>' + esc(x.summary) + '<br><span class="note">' + esc(why) + '</span></td><td class="mono">' + txLink(x.txpowid, shortId(x.txpowid)) + '</td><td>' + openBtn(i) + '</td></tr>'; }).join('')
+    + '</tbody></table></div></div>';
+}
 const KIND = {'add':'Add','exit request':'Remove request','council seal':'Council seal','payout':'Payout','council rejection':'Rejection','R2T1 migration':'First vault returned','lab rescue':'Lab rescue'};
 const PORTS = {0:'Tag: what this coin is',1:'Card key fingerprint (Add)',2:'Amount (Add)',3:'Currency (Add)',10:'Package fingerprint (SHA-256)',11:'Coin leaving the card',12:'Amount',13:'Currency',14:'Savings address to pay',15:'Change back to the vault',16:'Vault coins spent',17:'Refund atom',20:'Approvals root (Merkle)',21:'Seal period',22:'Council set'};
 const pkgCount = D.txs.filter(t => t.package).length;
@@ -171,6 +194,7 @@ function drawList(){
   $('#list').innerHTML = items.map(([t,i]) => '<button class="row" data-i="' + i + '" aria-current="' + (i===current) + '"><span class="blk">' + t.block + '</span><span class="t">' + esc(t.summary) + '</span><span class="k">' + esc(t.time.slice(0,16).replace('T',' ')) + ' UTC · ' + esc(KIND[t.kind]||t.kind) + (t.package ? ' · ' + t.package.hops.length + ' signed hand-over' + (t.package.hops.length===1?'':'s') : '') + '</span></button>').join('');
 }
 $('#list').addEventListener('click', e => { const b = e.target.closest('.row'); if(!b) return; current = +b.dataset.i; drawList(); drawDetail(); });
+document.addEventListener('click', e => { const b = e.target.closest('[data-open]'); if(!b) return; current = +b.dataset.open; filter = 'all'; drawFilters(); drawList(); drawDetail(); const d = document.getElementById('detail'); if(d) d.scrollIntoView({behavior:'smooth', block:'start'}); });
 
 function findings(t){ return '<ul class="findings">' + t.findings.map(f => { const m = /^(PASS|INFO|FAIL): ([\\s\\S]*)$/.exec(f) || [0,'INFO',f]; return '<li><span class="tag ' + m[1] + '">' + m[1] + '</span><span>' + esc(m[2]) + '</span></li>'; }).join('') + '</ul>'; }
 function coinsTable(t){
@@ -243,8 +267,9 @@ function sealView(t){
 }
 function drawDetail(){
   const t = D.txs[current]; if(!t){ $('#detail').innerHTML = '<p class="note">Pick a transaction on the left.</p>'; return; }
-  let h = '<div><h2>' + esc(t.summary) + '</h2><div class="meta">Block ' + t.block + ' · ' + esc(t.time.slice(0,19).replace('T',' ')) + ' UTC<br>TxPoW ' + esc(t.txpowid) + '</div></div>';
+  let h = '<div><h2>' + esc(t.summary) + '</h2><div class="meta">Block ' + blockLink(t.block) + ' · ' + esc(t.time.slice(0,19).replace('T',' ')) + ' UTC<br>TxPoW <span class="mono">' + txLink(t.txpowid) + '</span><br>Opens on the Minima explorer while Minima keeps the transaction; the preserved copy is in the repository.</div></div>';
   h += '<div class="sec"><h3>Checks against the design</h3>' + findings(t) + '</div>';
+  h += relatedView(t);
   if(t.package) h += packageView(t.package);
   if(t.kind === 'council seal' || t.kind === 'council rejection') h += sealView(t);
   h += '<div class="sec"><h3>What went in and out</h3>' + coinsTable(t) + '</div>';
