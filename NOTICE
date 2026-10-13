@@ -1,0 +1,23 @@
+Stables card evidence
+Copyright 2026 Stables Council
+
+This repository is free software: you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option) any
+later version. It is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See LICENSE for the full text.
+
+Not covered by this project's licence:
+
+- minima.jar, which the verifier compiles and runs against, is Minima's own
+  release (Apache-2.0, https://github.com/minima-global/Minima). It is not
+  included here; build.sh asks for its path.
+- The Google hardware attestation root certificates pinned in
+  verifier/java/.../R2Roots.java are public certificates published by
+  Google for Android key attestation. They are included as data, to check
+  against, and keep whatever terms Google gives them.
+- The GrapheneOS verified-boot key fingerprints pinned in R2Attestation.java are
+  public values published by the GrapheneOS project.
+- evidence/: the raw transactions and blocks are records of the public Minima
+  mainnet, as a node returned them.
