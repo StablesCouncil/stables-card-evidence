@@ -116,7 +116,7 @@ Both pages open in a browser at https://stablescouncil.org/stables-card-evidence
 
 Each transaction can also be opened on the public explorer, `https://explorer.minima.global/transactions/<txpowid>`, which shows its inputs, outputs, scripts and state variables. The explorer only has a transaction while Minima keeps it; the copies preserved here are the long-term record.
 
-[`evidence/2026-10-12/viewer.html`](evidence/2026-10-12/viewer.html) shows every card transaction in a browser: each coin's journey drawn from its exit package, every TEE signature with the key that made it and that key's certificate chain, which Council keys signed each seal, and the checking code quoted line by line with what it does. It is generated from the evidence by `verifier/scripts/viewer.mjs`.
+[`evidence/2026-10-12/viewer.html`](evidence/2026-10-12/viewer.html) shows this set of card transactions (blocks 2361500 to 2362925, 11 to 12 October 2026) in a browser: each coin's journey drawn from its exit package, every TEE signature with the key that made it and that key's certificate chain, which Council keys signed each seal, and the checking code quoted line by line with what it does. It is generated from the evidence by `verifier/scripts/viewer.mjs`.
 
 ## The structure
 
@@ -140,7 +140,7 @@ The byte formats are fixed in the design ([trace-design section 13](docs/trace-d
 
 ## The evidence (11 to 12 October 2026)
 
-[`evidence/2026-10-12/EVIDENCE.md`](evidence/2026-10-12/EVIDENCE.md) lists **every** Minima mainnet transaction that touched a card contract between blocks 2361500 and 2362925 (about 20 hours), 28 transactions, each checked against the design. Nothing is selected by hand: the collector walks every block and keeps every transaction that touches a card address or the council's seal token.
+[`evidence/2026-10-12/EVIDENCE.md`](evidence/2026-10-12/EVIDENCE.md) lists **every** Minima mainnet transaction that touched a card contract between blocks 2361500 and 2362925 (about 20 hours), 28 transactions, each checked against the design. It is one dated set: card transactions after block 2362925 are not in it, and later sets will be added as their own dated folders under `evidence/`. Nothing is selected by hand: the collector walks every block and keeps every transaction that touches a card address or the council's seal token.
 
 | Kind | Count | Result |
 |---|---|---|

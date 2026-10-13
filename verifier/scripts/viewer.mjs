@@ -137,7 +137,7 @@ details summary{cursor:pointer;font-weight:600;font-size:13.5px}
 <div class="wrap">
   <header>
   ${BACK}
-    <h1>Stables card evidence</h1>
+    <h1>Stables card evidence: one set of transactions</h1>
     <p id="lead"></p>
   </header>
   <div class="tabs" role="tablist">
@@ -182,7 +182,7 @@ function relatedView(t){
 const KIND = {'add':'Add','exit request':'Remove request','council seal':'Council seal','payout':'Payout','council rejection':'Rejection','R2T1 migration':'First vault returned','lab rescue':'Lab rescue'};
 const PORTS = {0:'Tag: what this coin is',1:'Card key fingerprint (Add)',2:'Amount (Add)',3:'Currency (Add)',10:'Package fingerprint (SHA-256)',11:'Coin leaving the card',12:'Amount',13:'Currency',14:'Savings address to pay',15:'Change back to the vault',16:'Vault coins spent',17:'Refund atom',20:'Approvals root (Merkle)',21:'Seal period',22:'Council set'};
 const pkgCount = D.txs.filter(t => t.package).length;
-$('#lead').textContent = 'Every Minima mainnet transaction that touched a Stables card contract between blocks ' + D.range.from + ' and ' + D.range.to + ', ' + D.txs.length + ' in all, checked against the design. ' + pkgCount + ' of them carry a coin\\'s whole history with its TEE signatures; pick one to see it.';
+$('#lead').textContent = 'This set holds every Minima mainnet transaction that touched a Stables card contract between blocks ' + D.range.from + ' and ' + D.range.to + ' (' + D.txs[0].time.slice(0,10) + ' to ' + D.txs[D.txs.length-1].time.slice(0,10) + '), ' + D.txs.length + ' in all, checked against the design. Card transactions after block ' + D.range.to + ' are not in it. ' + pkgCount + ' of them carry a coin\\'s whole history with its TEE signatures; pick one to see it.';
 
 // Filters
 const kinds = ['all'].concat([...new Set(D.txs.map(t => t.kind))]);
