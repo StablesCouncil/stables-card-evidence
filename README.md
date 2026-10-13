@@ -1,5 +1,7 @@
 # Stables card: how it works, and the on-chain evidence that it works as designed
 
+**[← Start page: open the evidence pages in a browser](https://stablescouncil.org/stables-card-evidence/)**
+
 The Stables card is the part of the Stables payment infrastructure that works like cash on a phone. Money is added to the card from Savings (an on-chain Minima balance), paid from phone to phone by touch without a network, and taken back to Savings. This repository explains the structure, shows who signs each step, and publishes the evidence from Minima mainnet: every card transaction of a test period, read from a node, checked against the design, with the raw transactions and the tools to check them again yourself.
 
 Status: test generation **R2T3**, on Minima mainnet, with **valueless test tokens** (Winiwa). The council that approves withdrawals is a **test council**: its seven keys are held by one operator, the Stables lab. Nothing here is production. See [What this does not prove yet](#what-this-does-not-prove-yet).
@@ -15,7 +17,7 @@ Status: test generation **R2T3**, on Minima mainnet, with **valueless test token
 7. [The evidence (11 to 12 October 2026)](#the-evidence-11-to-12-october-2026)
 8. [Check it yourself](#check-it-yourself)
 9. [What this does not prove yet](#what-this-does-not-prove-yet)
-10. [Risk assessment](#risk-assessment)
+10. [Risk assessment](#risk-assessment) (and [if the Council disappears](#if-the-council-disappears))
 11. [Contracts and addresses](#contracts-and-addresses)
 12. [Licence](#licence)
 
@@ -57,7 +59,7 @@ Questions and findings are welcome as issues on this repository.
 | **Remove**: request | On chain | The person's own Minima wallet key | Posts the exit line and the coin's whole history (the package) to the request address |
 | **Approval** (seal) | On chain | 5 of the 7 council keys (MULTISIG) | The council checked the package and puts its approval in a sealed list (a Merkle root) |
 | **Payout** | On chain | No signature: the contracts check it | Spends the request, vault coins and a seal copy; pays the amount to the address the TEE-signed exit line named |
-| **Fallback** | On chain | No signature | If the council stays silent, the request pays itself after 20 blocks. The contract does not look at the package on this path, so the council must reject a bad request before the wait ends. The council can delay, never confiscate, but it must stay on watch (see [the fallback exposure](#the-council)) |
+| **Fallback** | On chain | No signature | If the council stays silent, the request pays itself after 20 blocks. The contract does not look at the package on this path, so the council must reject a bad request before the wait ends. The council can delay, never confiscate, but it must stay on watch (see [if the Council disappears](#if-the-council-disappears)) |
 | **Rejection** | On chain | 5 of the 7 council keys | A refused request is spent with no payout; the request atom goes back |
 
 The TEE signatures of the payments themselves are made between phones, off chain. They reach the chain at exit: the exit request carries the coin's full history, so every hop signature and every key attestation the money went through is on chain from then on.
@@ -160,9 +162,29 @@ The Remove of 0.0298 Winiwa at block 2362849 (12 October, 16:42 UTC) is the clea
 
 The money travelled from one phone to the other and back by touch, then left the card, and every signature on the way is now on chain and checkable. Its council seal (period 4) is signed by 5 of the 7 council keys, and the payout at block 2362855 pays 0.0298 to the address the TEE-signed exit line named.
 
-### The fallback
+### If the Council disappears
 
-The Remove of 0.01 at block 2361505 was paid at block 2361527 **without** a council seal: the council was silent, and after the waiting period the request paid itself. This is the guarantee that a council cannot hold money back. The other side of it: a request the council does not reject in time is paid even if its package is false, because this path checks nothing in the package. See the fallback exposure in the [risk assessment](#the-council).
+The Council is needed to make a withdrawal *fast*, never to make it *happen*. If it is gone (switched off, its server lost, its members unreachable, or refusing to sign), this is exactly what happens.
+
+**A withdrawal from the card (Remove) still completes:**
+
+1. The phone signs the exit line and posts the request from Savings, as always. Nobody else's signature is needed for this.
+2. Nobody seals it. The request coin waits at the request address.
+3. Once the request is **20 blocks old** (about 15 to 20 minutes in this test; about 7 days planned for production), its contract accepts a payout with no Council at all: `IF @COINAGE GTE 20 THEN RETURN TRUE`.
+4. Anyone can post that payout, and it carries no signature. While the Stables app is open, it posts the payout for its own Removes, at most once a block. Anyone else can build the same transaction from the two published scripts.
+5. The vault's contract still makes the payout exact: the amount in port 12 goes to the Savings address in port 14, which are the values the phone signed in the exit line. Leftover money goes back to the vault. Nobody can redirect it or take a cut.
+
+This happened on mainnet: the Remove of 0.01 at block 2361505 was paid at block 2361527 with no seal, and a lab contract test of 0.005 the same way at block 2361619. This is the guarantee that a Council cannot hold money back: at worst it delays a withdrawal by the waiting period.
+
+**Everything else keeps working without the Council:** Adds go straight into the vault, and payments between phones are checked by the receiving phone alone. Neither has ever involved the Council.
+
+**What is lost while the Council is gone:**
+
+- **Speed.** Every Remove waits the full period instead of minutes.
+- **Its check on false requests.** On the fallback path the contract does not look at the package. Normally the Council rejects a false request before the wait ends (a rejection is proven on mainnet, block 2361608). With nobody there, a request with a false package is paid like a true one, so someone who notices the Council is gone could empty the vault. In this test that exposure is accepted because the tokens have no value (DECISIONS 2a.3). For real funds, the production plan adds a wait of about 7 days, a weekly limit per payout address written into the contract, and several independent members on separate machines, so that the Council is never down as a whole. None of that is in the R2T3 contracts yet. See the [risk assessment](#the-council).
+- **A practical limit of the app today.** The app's own fallback payout spends one vault coin large enough for the amount. If no single vault coin is large enough, the app cannot post it, although the contract would accept a payout that combines up to 8 vault coins, and anyone could build that by hand.
+
+If the Council comes back, it carries on from where it stopped: requests already paid by the fallback are spent and cannot be paid twice.
 
 ## Check it yourself
 
