@@ -20,7 +20,7 @@ import org.minima.utils.json.parser.JSONParser;
  * (R2Receiver.checkExit, R2Attestation, R2Anchors); this class only reads the node and compares the request ports.
  *
  *   java -cp minima.jar;classes org.stablescouncil.stables.route2.R2Checker --rpc 9105 --request 0x.. --reqaddr 0x..
- *        --anchor 0x.. --vault 0x.. --r2t1 0x.. --status attestation-status.json [--exited a,b] [--limit 100] [--paid 0]
+ *        --anchor 0x.. --vault 0x.. --r2t1 0x.. --status attestation-status.json [--exited a,b]
  * Prints one JSON verdict: approve or reject, with a code.
  */
 public final class R2Checker {
@@ -120,8 +120,8 @@ public final class R2Checker {
             if(R2Codec.atoms(s.get(12).trim())!=r.line.amount)throw R2Codec.fail("request","port 12 is not the signed amount");
             if(!R2Anchors.eq(s.get(13),R2Codec.hex(r.line.token)))throw R2Codec.fail("request","port 13 is not the signed token");
             if(!R2Anchors.eq(s.get(14),R2Codec.hex(r.line.payout)))throw R2Codec.fail("request","port 14 is not the signed payout address");
-            long limit=R2Codec.atoms(a.getOrDefault("limit","100")),paid=a.containsKey("paid")&&!a.get("paid").equals("0")?R2Codec.atoms(a.get("paid")):0;
-            if(paid+r.line.amount>limit)throw R2Codec.fail("limit","over the weekly exit limit of this payout address");
+            // No limit per payout address (founder 2026-10-13): a new address costs nothing, so it stopped no one, and a
+            // rejection loses an honest withdrawal for good. The drain cap belongs on the fallback path, in the contract.
             out.put("verdict","approve");out.put("code","accepted");out.put("depth",r.depth);
         }catch(R2Codec.R2Exception e){out.put("verdict","reject");out.put("code",e.code);out.put("detail",e.getMessage());}
         System.out.println(out.toJSONString());
