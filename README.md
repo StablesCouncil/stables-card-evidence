@@ -174,7 +174,7 @@ The Council is needed to make a withdrawal *fast*, never to make it *happen*. If
 4. Anyone can post that payout, and it carries no signature. While the Stables app is open, it posts the payout for its own Removes, at most once a block. Anyone else can build the same transaction from the two published scripts.
 5. The vault's contract still makes the payout exact: the amount in port 12 goes to the Savings address in port 14, which are the values the phone signed in the exit line. Leftover money goes back to the vault. Nobody can redirect it or take a cut.
 
-This happened on mainnet: the Remove of 0.01 at block 2361505 was paid at block 2361527 with no seal, and a lab contract test of 0.005 the same way at block 2361619. This is the guarantee that a Council cannot hold money back: at worst it delays a withdrawal by the waiting period.
+This happened on mainnet. A phone's Remove of 0.01 at block 2361505 was paid at block 2361527 with no seal; it used the previous test generation, R2T2, whose request contract has the same 20-block rule. In the current generation, R2T3, a lab contract test of 0.005 was paid the same way at block 2361619. A phone's Remove has not yet gone through the R2T3 fallback, because the Council has answered every one. This is the guarantee that a Council cannot hold money back: at worst it delays a withdrawal by the waiting period.
 
 **Everything else keeps working without the Council:** Adds go straight into the vault, and payments between phones are checked by the receiving phone alone. Neither has ever involved the Council.
 
