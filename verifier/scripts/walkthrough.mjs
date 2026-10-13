@@ -18,6 +18,8 @@ const LEDGER = JSON.parse(fs.readFileSync(path.join(DIR, 'card-ledger.json'), 'u
 const TX = arg('tx');
 const OUT = arg('out', path.join(DIR, 'signature-walkthrough.html'));
 const STANDALONE = process.argv.includes('--standalone');
+// On the published site the page sits two folders under the start page; a private preview has nowhere to go back to.
+const BACK = STANDALONE ? '<a class="back" href="../../" style="display:inline-block;margin-bottom:10px;font-size:14px;font-weight:600;color:var(--accent);text-decoration:none">&larr; All evidence pages</a>' : '';
 
 const r = EV.results.find((x) => x.txpowid.toUpperCase() === String(TX).toUpperCase());
 if (!r || !r.package) { console.error('not an exit request with a package: ' + TX); process.exit(2); }
@@ -177,6 +179,7 @@ label.tamper{display:inline-flex;gap:8px;align-items:center;font-size:14px;curso
 </style>
 <div class="wrap">
   <header>
+  ${BACK}
     <h1>One phone signature, from the chain to the check</h1>
     <p class="lead" id="lead"></p>
   </header>

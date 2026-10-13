@@ -21,6 +21,8 @@ const JAVA = arg('java', 'verifier/java') + '/org/stablescouncil/stables/route2/
 const CONTRACTS = arg('contracts', 'contracts');
 const OUT = arg('out', path.join(DIR, 'viewer.html'));
 const STANDALONE = process.argv.includes('--standalone');
+// On the published site the page sits two folders under the start page; a private preview has nowhere to go back to.
+const BACK = STANDALONE ? '<a class="back" href="../../" style="display:inline-block;margin-bottom:10px;font-size:14px;font-weight:600;color:var(--accent);text-decoration:none">&larr; All evidence pages</a>' : '';
 
 // The code, quoted as it is: [file, first line, last line] found by their opening text, so a change in the source moves the quote with it.
 function quote(file, startText, lines) {
@@ -131,6 +133,7 @@ details summary{cursor:pointer;font-weight:600;font-size:13.5px}
 </style>
 <div class="wrap">
   <header>
+  ${BACK}
     <h1>Stables card evidence</h1>
     <p id="lead"></p>
   </header>
