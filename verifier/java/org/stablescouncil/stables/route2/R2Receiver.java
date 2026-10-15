@@ -55,15 +55,25 @@ public final class R2Receiver {
         public final List<Seen> seen;public final DoubleSpend proof;
         /** The accepted bundle with every chain carried, as the receiver stores it; its chains for the receiver's cache. */
         public byte[] resolved;public List<List<byte[]>> chains;
+        /** The paying phones: attestation chain ids (hex) of the keys that signed the hop paying this receiver. */
+        public List<String> payerChains=new ArrayList<>();
+        /** A receiving-limit refusal (code "limit"): which limit (R2Limits.PAYMENT, DAY, STALE) and its amount in atoms. */
+        public String limitKind;public long limitAtoms;
         private Result(boolean ok,String code,String detail,byte[] coinId,byte[] token,byte[] keyHash,long amount,int depth,List<Seen> seen,DoubleSpend proof){
             accepted=ok;this.code=code;this.detail=detail;this.coinId=coinId;this.token=token;this.keyHash=keyHash;this.amount=amount;this.depth=depth;this.seen=seen;this.proof=proof;
         }
         static Result refuse(String code,String detail){return new Result(false,code,detail,null,null,null,0,0,null,null);}
+        /** Within the rules, but above a limit this receiver set: nothing is stored. */
+        static Result limit(R2Limits.Refusal r,long amount,byte[] token){
+            Result x=new Result(false,"limit",r.toString(),null,token,null,amount,0,null,null);x.limitKind=r.kind;x.limitAtoms=r.limit;return x;
+        }
         static Result doubleSpend(DoubleSpend p){return new Result(false,"double-spend","parent "+R2Codec.hex(p.parent)+" spent by two different hops",null,null,null,0,0,null,p);}
         public boolean reanchorDue(){return depth>R2Codec.RE_ANCHOR_DEPTH;}
     }
 
-    private static final class Coin { final byte[] owner,token;final long amount;final int depth;Coin(byte[] o,byte[] t,long a,int d){owner=o;token=t;amount=a;depth=d;} }
+    private static final class Coin { final byte[] owner,token;final long amount;final int depth;final List<String> payers;
+        Coin(byte[] o,byte[] t,long a,int d){this(o,t,a,d,new ArrayList<String>());}
+        Coin(byte[] o,byte[] t,long a,int d,List<String> p){owner=o;token=t;amount=a;depth=d;payers=p;} }
 
     private final Attester attester;private final Chain chain;private final String vaultAddress;private final int minDepth;
     /** Stage 2 generations this receiver accepts: anchor tag (port 0) to its anchor address. */
@@ -102,7 +112,7 @@ public final class R2Receiver {
         Map<String,byte[]> wires=new HashMap<>();
         for(R2Hop h:b.hops()){
             byte[] bodyHash=h.bodyHash(),wire=h.wire();wires.put(R2Codec.hex(bodyHash),wire);
-            long sum=0;int depth=0;
+            long sum=0;int depth=0;List<String> payers=new ArrayList<>();
             for(int i=0;i<h.parents.size();i++){
                 byte[] pid=h.parents.get(i);String p=R2Codec.hex(pid);
                 Coin parent=t.coins.get(p);
@@ -117,11 +127,13 @@ public final class R2Receiver {
                 if(!t.attested.containsKey(R2Codec.hex(R2Codec.keyHash(parent.owner))))throw R2Codec.fail("attestation","parent key has no accepted attestation");
                 if(Arrays.equals(parent.owner,h.recvPub)||(h.changePub!=null&&Arrays.equals(parent.owner,h.changePub)))throw R2Codec.fail("trace","new owner reuses a spent key");
                 sum=Math.addExact(sum,parent.amount);depth=Math.max(depth,parent.depth);
+                String chainOf=R2Codec.hex(t.attested.get(R2Codec.hex(R2Codec.keyHash(parent.owner))).chainId);
+                if(!payers.contains(chainOf))payers.add(chainOf);
                 t.spentBy.put(p,bodyHash);t.seen.add(new Seen(pid,bodyHash,wire));
             }
             if(sum!=h.total())throw R2Codec.fail("conservation","parents "+sum+" atoms, outputs "+h.total());
-            t.coins.put(R2Codec.hex(h.recvId()),new Coin(h.recvPub,h.token,h.recvAmount,depth+1));
-            if(h.changePub!=null)t.coins.put(R2Codec.hex(h.changeId()),new Coin(h.changePub,h.token,h.changeAmount,depth+1));
+            t.coins.put(R2Codec.hex(h.recvId()),new Coin(h.recvPub,h.token,h.recvAmount,depth+1,payers));
+            if(h.changePub!=null)t.coins.put(R2Codec.hex(h.changeId()),new Coin(h.changePub,h.token,h.changeAmount,depth+1,payers));
         }
         return t;
     }
@@ -149,7 +161,7 @@ public final class R2Receiver {
         if(!request.openAmount()&&request.amount!=c.amount)throw R2Codec.fail("request","amount "+c.amount+" differs from the requested "+request.amount);
         if(c.depth==0)throw R2Codec.fail("request","an anchor's root coin is not a payment");
         Result ok=new Result(true,"accepted",null,R2Codec.unhex(mine),c.token,kh,c.amount,c.depth,seen,null);
-        ok.resolved=b.encode();ok.chains=b.chains();
+        ok.resolved=b.encode();ok.chains=b.chains();ok.payerChains=new ArrayList<>(c.payers);
         return ok;
     }
 

@@ -25,7 +25,14 @@ public final class R2Wallet {
             public Created(String alias,byte[] point,byte[] leaf,List<byte[]> chain){this.alias=alias;this.point=point;this.leaf=leaf;this.chain=chain;}
         }
         Created create()throws R2Exception;
-        /** Signs once. Throws code "key-gone" when the key no longer exists (used or deleted). */
+        /** A key that also needs the holder's fingerprint before it signs (item 6). Where there is none, a plain key. */
+        default Created createStrong()throws R2Exception{return create();}
+        /** True when this phone can make fingerprint keys. */
+        default boolean strongAvailable(){return false;}
+        /** True when this key needs the fingerprint to sign. */
+        default boolean isStrong(String alias){return false;}
+        /** Signs once. Throws code "key-gone" when the key no longer exists (used or deleted), "auth" when a fingerprint
+         *  (or an unlocked phone) is needed first: then nothing was signed and the key is still there. */
         byte[] sign(String alias,byte[] message)throws R2Exception;
         boolean exists(String alias);
         void delete(String alias);
@@ -39,8 +46,11 @@ public final class R2Wallet {
     /** Left the card: its exit line is signed and its key destroyed; the money is on its way to Savings. */
     public static final int EXITED=5;
     /** Exit record status: line signed, request posted, paid into Savings. */
-    public static final int EXIT_SIGNED=0,EXIT_POSTED=1,EXIT_PAID=2;
-    public static final int OUTSTANDING=0,PAID=1;
+    /** EXIT_REJECTED: the Council spent the request with only its 1-atom refund; the amount never comes back. */
+    public static final int EXIT_SIGNED=0,EXIT_POSTED=1,EXIT_PAID=2,EXIT_REJECTED=3;
+    /** REFUSED: a payment to this request was above a receiving limit. The request is retired so that the payer's later
+     *  payments (whose bundles carry that coin) are not refused as offering two coins; a new request takes its place. */
+    public static final int OUTSTANDING=0,PAID=1,REFUSED=2;
 
     public static final class Coin {
         public final byte[] id,token,point,leaf,bundle;public final long amount;public final String alias;public final List<byte[]> chain;
@@ -95,13 +105,34 @@ public final class R2Wallet {
     private Held spare;
     /** Makes the spare change key when there is none. Never call inside a tap. Returns true when one was made. */
     public boolean prepareSpare()throws Exception{
-        synchronized(this){if(spare!=null&&keys.exists(spare.alias))return false;}
-        CoinKeys.Created k=keys.create();                               // outside the lock: about 0.3 s on the Graphene
-        synchronized(this){
-            if(spare!=null&&keys.exists(spare.alias)){keys.delete(k.alias);return false;}
-            spare=Held.of(k);remember(k.chain);commit();
-            return true;
+        boolean made=false;
+        boolean need;
+        synchronized(this){need=spare==null||!keys.exists(spare.alias);}
+        if(need){
+            CoinKeys.Created k=keys.create();                           // outside the lock: about 0.3 s on the Graphene
+            synchronized(this){
+                if(spare!=null&&keys.exists(spare.alias))keys.delete(k.alias);
+                else{spare=Held.of(k);remember(k.chain);commit();made=true;}
+            }
         }
+        // The fingerprint spare, for change at or above the fingerprint amount (item 6).
+        synchronized(this){need=strongAt>0&&keys.strongAvailable()&&(spareStrong==null||!keys.exists(spareStrong.alias))
+                &&clock.getAsLong()-strongFailedAt>STRONG_RETRY_MS;}
+        if(need){
+            CoinKeys.Created k=keys.createStrong();
+            synchronized(this){
+                // A phone that made a plain key instead (no fingerprint after all) tries again in ten minutes, not every call.
+                if(!keys.isStrong(k.alias)){keys.delete(k.alias);strongFailedAt=clock.getAsLong();}
+                else if(spareStrong!=null&&keys.exists(spareStrong.alias))keys.delete(k.alias);
+                else{spareStrong=Held.of(k);remember(k.chain);commit();made=true;}
+            }
+        }
+        return made;
+    }
+    /** The change key for this much change: a fingerprint key at or above the fingerprint amount, when one is ready. */
+    private Held changeKey(long change)throws R2Exception{
+        if(wantsStrong(change)&&spareStrong!=null&&keys.exists(spareStrong.alias)){Held h=spareStrong;spareStrong=null;return h;}
+        Held h=spare!=null&&keys.exists(spare.alias)?spare:Held.of(keys.create());spare=null;return h;
     }
     private final LinkedHashMap<String,List<byte[]>> chains=new LinkedHashMap<>();
     private void remember(List<byte[]> chain){
@@ -116,6 +147,21 @@ public final class R2Wallet {
     }
     private Intent intent;
     private final List<String> recoveryNotes=new ArrayList<>();
+
+    /* CARD HARDENING (CARD_HARDENING_PLAN.md items 4 and 6). What this wallet received, by paying phone, for the receiving
+       limits (the last 48 hours are kept); the amount from which a coin is held by a fingerprint key; a spare fingerprint
+       key for change, made outside any tap like the plain spare. */
+    static final class Received { final long ts;final byte[] chain,token;final long amount;Received(long ts,byte[] c,byte[] t,long a){this.ts=ts;chain=c;token=t;amount=a;} }
+    private final List<Received> received=new ArrayList<>();
+    private Held spareStrong;
+    private long strongFailedAt=Long.MIN_VALUE/2;static final long STRONG_RETRY_MS=10*60*1000L;
+    private long strongAt;
+    private java.util.function.LongSupplier clock=System::currentTimeMillis;
+    /** Tests move time. */
+    void clock(java.util.function.LongSupplier c){clock=c;}
+    /** Coins of at least this many atoms are held by fingerprint keys from now on (0: never). */
+    public synchronized void strongAt(long atoms){strongAt=Math.max(0,atoms);}
+    private boolean wantsStrong(long amount){return strongAt>0&&amount>=strongAt&&keys.strongAvailable();}
 
     public R2Wallet(CoinKeys keys,Storage storage,R2Receiver receiver)throws Exception{
         this.keys=keys;this.storage=storage;this.receiver=receiver;
@@ -242,16 +288,34 @@ public final class R2Wallet {
 
     // ---- Receive ------------------------------------------------------------------------------------------------------
     public synchronized byte[] newRequest(byte[] token,long amount)throws Exception{
-        CoinKeys.Created k=keys.create();byte[] nonce=new byte[16];new SecureRandom().nextBytes(nonce);
+        // A request for a set amount at or above the fingerprint amount is held by a fingerprint key from the start; an
+        // open request cannot know, and a large coin it receives moves to a fingerprint key later (protectLarge).
+        CoinKeys.Created k=amount>0&&wantsStrong(amount)?keys.createStrong():keys.create();byte[] nonce=new byte[16];new SecureRandom().nextBytes(nonce);
         R2Request r=new R2Request(token,amount,k.point,nonce);
         requests.put(R2Codec.hex(r.keyHash()),new Req(r,Held.of(k),OUTSTANDING));remember(k.chain);commit();
         return r.encode();
     }
     /** Checks a payment bundle; on acceptance commits the coin, the request and the seen set atomically. */
-    public synchronized R2Receiver.Result receive(byte[] bundle)throws Exception{
+    public synchronized R2Receiver.Result receive(byte[] bundle)throws Exception{return receive(bundle,R2Limits.none(),false);}
+    /**
+     * Same, within the receiving limits this person set (item 4) and, while the revocation list is older than 30 days,
+     * no more than the one-touch limit (item 3). A payment above a limit is refused with nothing stored (code "limit").
+     */
+    public synchronized R2Receiver.Result receive(byte[] bundle,R2Limits limits,boolean listStale)throws Exception{
         R2Receiver.Result r=receiver.check(bundle,ledger());
         if(r.proof!=null){proofs.add(r.proof);commit();return r;}
         if(!r.accepted)return r;
+        R2Limits.Refusal over=limits.check(r.amount,r.payerChains,usedToday(r.token),listStale);
+        if(over!=null){
+            // Nothing credited. The request is retired (REFUSED), or every later bundle from this payer, which carries this
+            // coin, would offer two coins to this receiver and be refused too. The page shows a fresh request.
+            Req refused=requests.get(R2Codec.hex(r.keyHash));
+            if(refused!=null&&refused.status==OUTSTANDING){refused.status=REFUSED;commit();}
+            return R2Receiver.Result.limit(over,r.amount,r.token);
+        }
+        long now=clock.getAsLong();
+        for(String c:r.payerChains)received.add(new Received(now,R2Codec.unhex(c),r.token,r.amount));
+        pruneReceived(now);
         Req q=requests.get(R2Codec.hex(r.keyHash));
         coins.put(R2Codec.hex(r.coinId),new Coin(r.coinId,r.token,r.amount,q.key.alias,q.key.point,q.key.leaf,q.key.chain,r.resolved,HELD,r.depth));
         for(List<byte[]> c:r.chains)remember(c);
@@ -260,6 +324,15 @@ public final class R2Wallet {
         commit();
         return r;
     }
+    /** What each paying phone paid this wallet in this token over the last 24 hours (chain id hex to atoms). */
+    public synchronized Map<String,Long> usedToday(byte[] token){
+        long since=clock.getAsLong()-R2Limits.DAY_MS;Map<String,Long> m=new LinkedHashMap<>();
+        for(Received x:received)if(x.ts>since&&Arrays.equals(x.token,token))m.merge(R2Codec.hex(x.chain),x.amount,Long::sum);
+        return m;
+    }
+    private void pruneReceived(long now){received.removeIf(x->x.ts<now-2*R2Limits.DAY_MS||x.ts>now+R2Limits.DAY_MS);}
+    /** The "Coin limit" this receiver shows payers for this token (R2Limits.Offer). */
+    public synchronized byte[] limitOffer(byte[] token,R2Limits limits,boolean listStale){return limits.offer(usedToday(token),listStale);}
     private R2Receiver.Ledger ledger(){
         return new R2Receiver.Ledger(){
             // Only unpaid requests: a later bundle may pass through a coin this receiver was paid earlier.
@@ -284,18 +357,30 @@ public final class R2Wallet {
      * Same, for an amount (0: the request's own amount; required for an open request, refused when it differs from
      * a fixed one), leaving out the certificate chains the receiver said it holds (chain ids, lowercase hex).
      */
-    public synchronized byte[] pay(byte[] requestBytes,long payAmount,java.util.Set<String> receiverChains)throws Exception{
+    public synchronized byte[] pay(byte[] requestBytes,long payAmount,java.util.Set<String> receiverChains)throws Exception{return pay(requestBytes,payAmount,receiverChains,null);}
+    /**
+     * Same, within what the receiver said it takes (its "Coin limit" offer, or null): above it nothing is signed and the
+     * refusal (code "receiver-limit") carries the most this payer may pay there, in atoms.
+     */
+    public synchronized byte[] pay(byte[] requestBytes,long payAmount,java.util.Set<String> receiverChains,R2Limits.Offer offer)throws Exception{
         R2Request q=R2Request.parse(requestBytes);
         long amount=q.openAmount()?payAmount:(payAmount==0?q.amount:payAmount);
         if(amount<=0)throw R2Codec.fail("pay","an amount is required");
         if(!q.openAmount()&&amount!=q.amount)throw R2Codec.fail("pay","amount differs from the request");
         Outgoing done=outgoing.get(R2Codec.hex(q.keyHash()));if(done!=null)return R2Bundle.parse(done.bundle).encode(receiverChains);
+        // The same payment, stopped for a fingerprint after a first signature: finished now (its body is fixed).
+        if(intent!=null&&intent.self==null&&Arrays.equals(intent.request,requestBytes))return R2Bundle.parse(continueIntent()).encode(receiverChains);
         if(intent!=null||exitIntent!=null)throw R2Codec.fail("pay","a payment is in progress");
         if(requests.containsKey(R2Codec.hex(q.keyHash())))throw R2Codec.fail("pay","this is our own request");
-        List<Coin> parents=select(q.token,amount);
+        List<Coin> parents=strongFirst(select(q.token,amount));
+        if(offer!=null){
+            List<byte[]> mine=new ArrayList<>();for(Coin c:parents)mine.add(R2Attestation.chainId(c.chain));
+            long room=offer.room(mine);
+            if(amount>room)throw R2Codec.fail("receiver-limit",String.valueOf(room));
+        }
         long sum=0;for(Coin c:parents)sum+=c.amount;
         Held change=null;
-        if(sum>amount){change=spare!=null&&keys.exists(spare.alias)?spare:Held.of(keys.create());spare=null;}
+        if(sum>amount)change=changeKey(sum-amount);
         List<byte[]> ids=new ArrayList<>();for(Coin c:parents)ids.add(c.id);
         R2Hop hop=new R2Hop(q.token,ids,q.recvPub,amount,change==null?null:change.point,sum-amount);
         List<String> pids=new ArrayList<>();for(Coin c:parents){pids.add(R2Codec.hex(c.id));c.status=SPENDING;}
@@ -304,6 +389,48 @@ public final class R2Wallet {
         return R2Bundle.parse(continueIntent()).encode(receiverChains);
     }
     private List<Coin> select(byte[] token,long amount)throws R2Exception{return select(token,amount,c->true);}
+    /** Fingerprint coins sign first: when the fingerprint has run out, nothing at all has been signed and the payment is
+     *  undone (continueIntent). */
+    private List<Coin> strongFirst(List<Coin> l){
+        List<Coin> out=new ArrayList<>();
+        for(Coin c:l)if(keys.isStrong(c.alias))out.add(c);
+        for(Coin c:l)if(!keys.isStrong(c.alias))out.add(c);
+        return out;
+    }
+    /** True when paying (or, exit true, removing) this amount of this token signs with a fingerprint key: the page asks
+     *  for the fingerprint first. Not enough on the card: false (the payment is refused for that). */
+    public synchronized boolean needsFingerprint(byte[] token,long amount,boolean exit){
+        if(amount<=0)return false;
+        if(exit)for(Coin c:coins.values())if(c.status==HELD&&Arrays.equals(c.token,token)&&c.amount==amount)return keys.isStrong(c.alias);
+        try{for(Coin c:select(token,amount))if(keys.isStrong(c.alias))return true;}catch(R2Exception e){return false;}
+        return false;
+    }
+    /**
+     * Item 6: a held coin at or above the fingerprint amount whose key needs no fingerprint (an open request paid with a
+     * large amount, a load, change made without a fingerprint spare) moves to a fingerprint key by a self-hop. Never in a
+     * tap: the new key is made outside the lock (about 0.3 s). Returns the coin moved, or null.
+     */
+    public byte[] protectLarge()throws Exception{
+        Coin pick=null;
+        synchronized(this){
+            if(intent!=null||exitIntent!=null||strongAt<=0||!keys.strongAvailable()||clock.getAsLong()-strongFailedAt<=STRONG_RETRY_MS)return null;
+            for(Coin c:coins.values())if(c.status==HELD&&c.amount>=strongAt&&!keys.isStrong(c.alias)&&c.depth<R2Codec.RE_ANCHOR_DEPTH){pick=c;break;}
+        }
+        if(pick==null)return null;
+        CoinKeys.Created k=keys.createStrong();
+        synchronized(this){
+            Coin c=coins.get(R2Codec.hex(pick.id));
+            if(!keys.isStrong(k.alias))strongFailedAt=clock.getAsLong();
+            if(!keys.isStrong(k.alias)||intent!=null||exitIntent!=null||c==null||c.status!=HELD){keys.delete(k.alias);return null;}
+            Held own=Held.of(k);
+            R2Hop hop=new R2Hop(c.token,java.util.Collections.singletonList(c.id),own.point,c.amount,null,0);
+            c.status=SPENDING;
+            intent=new Intent(hop.body,new ArrayList<>(java.util.Collections.singletonList(R2Codec.hex(c.id))),new byte[1][],null,new byte[0]);intent.self=own;
+            commit();                                                   // commit point A, as for a payment
+            continueIntent();
+            return hop.recvId();
+        }
+    }
     private List<Coin> select(byte[] token,long amount,java.util.function.Predicate<Coin> eligible)throws R2Exception{
         List<Coin> held=new ArrayList<>();
         for(Coin c:coins.values())if(c.status==HELD&&Arrays.equals(c.token,token)&&eligible.test(c))held.add(c);
@@ -322,7 +449,12 @@ public final class R2Wallet {
         for(int i=0;i<t.parents.size();i++){
             if(t.sigs[i]!=null)continue;
             Coin c=coins.get(t.parents.get(i));
-            byte[] sig=keys.sign(c.alias,t.body);                    // the hardware destroys the key here
+            byte[] sig;
+            try{sig=keys.sign(c.alias,t.body);}                       // the hardware destroys the key here
+            catch(R2Exception e){
+                if(e.code.equals("auth"))undoUnsigned(t);
+                throw e;
+            }
             t.sigs[i]=sig;commit();                                     // commit point B: one per signature
         }
         for(int i=0;i<t.sigs.length;i++)hop.setSignature(i,t.sigs[i]);
@@ -345,6 +477,19 @@ public final class R2Wallet {
         intent=null;commit();                                           // commit point C: hop final
         return bundle;
     }
+    /** A fingerprint (or an unlock) was needed before any signature of this intent: nothing was signed, so the payment is
+     *  undone: its coins are held again and its new keys kept for later. With a signature made it stays, to finish. */
+    private void undoUnsigned(Intent t)throws Exception{
+        for(byte[] s:t.sigs)if(s!=null)return;
+        for(String p:t.parents){Coin c=coins.get(p);if(c.status==SPENDING)c.status=HELD;}
+        if(t.change!=null){
+            if(keys.isStrong(t.change.alias)&&(spareStrong==null||!keys.exists(spareStrong.alias)))spareStrong=t.change;
+            else if(!keys.isStrong(t.change.alias)&&(spare==null||!keys.exists(spare.alias)))spare=t.change;
+            else keys.delete(t.change.alias);
+        }
+        if(t.self!=null)keys.delete(t.self.alias);
+        intent=null;commit();
+    }
     public synchronized void acknowledge(byte[] ack)throws Exception{
         byte[] id=R2Request.parseAck(ack);
         for(Outgoing o:outgoing.values())if(Arrays.equals(o.receivedCoinId,id)&&!o.acknowledged){o.acknowledged=true;commit();return;}
@@ -356,7 +501,12 @@ public final class R2Wallet {
         if(intent==null)return;
         boolean lost=false;
         for(int i=0;i<intent.parents.size();i++)if(intent.sigs[i]==null&&!keys.exists(coins.get(intent.parents.get(i)).alias))lost=true;
-        if(!lost){recoveryNotes.add("resumed payment");continueIntent();return;}
+        if(!lost){
+            // A fingerprint key cannot sign at start: with nothing signed the payment is undone, else it waits for the fingerprint.
+            try{continueIntent();recoveryNotes.add("resumed payment");}
+            catch(R2Exception e){if(!e.code.equals("auth"))throw e;recoveryNotes.add("payment waits for a fingerprint: "+(intent==null?"undone":"kept"));}
+            return;
+        }
         // A key was used but its signature never reached storage: the hop can never be completed. Its coins are lost,
         // never duplicated; parents whose keys survive are lost too because their signature can no longer be used.
         for(String p:intent.parents){Coin c=coins.get(p);c.status=LOST;if(keys.exists(c.alias))keys.delete(c.alias);events.add(new Event("lost",c.id,c.token,c.amount,System.currentTimeMillis()));}
@@ -382,8 +532,9 @@ public final class R2Wallet {
         if(can<amount)throw R2Codec.fail("exit-generation","only "+can+" atoms can leave by an exit");
         List<Coin> parents=select(token,amount,eligible);
         long sum=0;for(Coin c:parents)sum+=c.amount;
+        parents=strongFirst(parents);
         Held own=Held.of(keys.create()),change=null;
-        if(sum>amount){change=spare!=null&&keys.exists(spare.alias)?spare:Held.of(keys.create());spare=null;}
+        if(sum>amount)change=changeKey(sum-amount);
         List<byte[]> ids=new ArrayList<>();for(Coin c:parents)ids.add(c.id);
         R2Hop hop=new R2Hop(token,ids,own.point,amount,change==null?null:change.point,sum-amount);
         List<String> pids=new ArrayList<>();for(Coin c:parents){pids.add(R2Codec.hex(c.id));c.status=SPENDING;}
@@ -410,7 +561,15 @@ public final class R2Wallet {
     }
     private byte[] finishExit()throws Exception{
         R2Exit line=R2Exit.parseBody(exitIntent.body);Coin c=coins.get(R2Codec.hex(line.coinId));
-        if(exitIntent.sig==null){exitIntent.sig=keys.sign(c.alias,line.body);commit();}   // the hardware destroys the key; commit point B
+        if(exitIntent.sig==null){
+            try{exitIntent.sig=keys.sign(c.alias,line.body);}            // the hardware destroys the key
+            catch(R2Exception e){
+                // A fingerprint was needed: nothing was signed and the coin stays on the card.
+                if(e.code.equals("auth")){c.status=HELD;exitIntent=null;commit();}
+                throw e;
+            }
+            commit();                                                   // commit point B
+        }
         line.sign(exitIntent.sig);
         R2Bundle b=R2Bundle.parse(c.bundle);b.addKey(c.leaf,c.chain);
         byte[] pkg=R2Exit.pack(line,b.encode());
@@ -423,7 +582,11 @@ public final class R2Wallet {
     private void recoverExit()throws Exception{
         if(exitIntent==null)return;
         R2Exit line=R2Exit.parseBody(exitIntent.body);Coin c=coins.get(R2Codec.hex(line.coinId));
-        if(exitIntent.sig!=null||keys.exists(c.alias)){recoveryNotes.add("resumed exit");finishExit();return;}
+        if(exitIntent.sig!=null||keys.exists(c.alias)){
+            try{finishExit();recoveryNotes.add("resumed exit");}
+            catch(R2Exception e){if(!e.code.equals("auth"))throw e;recoveryNotes.add("exit undone: a fingerprint is needed");}
+            return;
+        }
         // The key signed but the signature never reached storage: the exit cannot be completed; the coin is lost, never duplicated.
         c.status=LOST;events.add(new Event("lost",c.id,c.token,c.amount,System.currentTimeMillis()));
         recoveryNotes.add("exit interrupted between the signature and its commit: 1 coin lost");
@@ -455,7 +618,7 @@ public final class R2Wallet {
         int n=in.u8();List<byte[]> c=new ArrayList<>();for(int i=0;i<n;i++)c.add(in.var16(R2Codec.MAX_CERT));return new Held(a,p,l,c);
     }
     byte[] encode(){
-        Out o=new Out().ascii("STR2W").u8(4);
+        Out o=new Out().ascii("STR2W").u8(5);
         o.u32(coins.size());for(Coin c:coins.values()){o.raw(c.id).raw(c.token).u64(c.amount);held(o,new Held(c.alias,c.point,c.leaf,c.chain));o.var32(c.bundle).u8(c.status).u8(c.depth);}
         o.u32(requests.size());for(Req q:requests.values()){o.var16(q.request.encode());held(o,q.key);o.u8(q.status);}
         o.u32(loads.size());for(Load l:loads.values()){o.raw(l.token).u64(l.amount);held(o,l.key);}
@@ -474,11 +637,14 @@ public final class R2Wallet {
         o.bool(intent!=null&&intent.self!=null);if(intent!=null&&intent.self!=null)held(o,intent.self);
         o.u32(exits.size());for(Exit e:exits.values()){o.raw(e.coinId).raw(e.token).u64(e.amount).raw(e.payout).var16(e.line).var32(e.pkg).u8(e.status).opt(e.request==null?null:e.request.getBytes(java.nio.charset.StandardCharsets.US_ASCII));}
         o.bool(exitIntent!=null);if(exitIntent!=null)o.var16(exitIntent.body).opt(exitIntent.sig);
+        // Version 5: the fingerprint spare and what each paying phone paid (receiving limits).
+        o.bool(spareStrong!=null);if(spareStrong!=null)held(o,spareStrong);
+        o.u32(received.size());for(Received x:received)o.u64(x.ts).raw(x.chain).raw(x.token).u64(x.amount);
         return o.bytes();
     }
     private void decode(byte[] b)throws R2Exception{
         In in=new In(b);int version=0;
-        if(!Arrays.equals(in.raw(5),"STR2W".getBytes(java.nio.charset.StandardCharsets.US_ASCII))||(version=in.u8())<1||version>4)throw R2Codec.fail("store","unknown wallet state");
+        if(!Arrays.equals(in.raw(5),"STR2W".getBytes(java.nio.charset.StandardCharsets.US_ASCII))||(version=in.u8())<1||version>5)throw R2Codec.fail("store","unknown wallet state");
         for(int i=in.u32();i>0;i--){byte[] id=in.raw(32),t=in.raw(32);long a=in.u64();Held h=held(in);byte[] bundle=in.var32(R2Codec.MAX_BUNDLE);int s=in.u8(),d=in.u8();
             coins.put(R2Codec.hex(id),new Coin(id,t,a,h.alias,h.point,h.leaf,h.chain,bundle,s,d));}
         for(int i=in.u32();i>0;i--){R2Request r=R2Request.parse(in.var16(256));Held h=held(in);requests.put(R2Codec.hex(r.keyHash()),new Req(r,h,in.u8()));}
@@ -499,6 +665,10 @@ public final class R2Wallet {
             for(int i=in.u32();i>0;i--){byte[] id=in.raw(32),t=in.raw(32);long a=in.u64();byte[] pay=in.raw(32),line=in.var16(512),pkg=in.var32(R2Exit.MAX_PACKAGE);int st=in.u8();byte[] rq=in.opt(256);
                 exits.put(R2Codec.hex(id),new Exit(id,t,a,pay,line,pkg,st,rq==null?null:new String(rq,java.nio.charset.StandardCharsets.US_ASCII)));}
             if(in.bool()){byte[] body=in.var16(R2Exit.BODY_SIZE);exitIntent=new ExitIntent(body,in.opt(72));}
+        }
+        if(version>=5){
+            if(in.bool())spareStrong=held(in);
+            for(int i=in.u32();i>0;i--)received.add(new Received(in.u64(),in.raw(32),in.raw(32),in.u64()));
         }
         in.end();
     }

@@ -21,13 +21,34 @@ import org.stablescouncil.stables.route2.R2Codec.R2Exception;
  * GENERATED, and a locked device with verified boot (or a self-signed boot key on the explicit allowlist).
  * Validity dates are deliberately not enforced: TEE attestation intermediates live about two weeks
  * (ROUTE2-KEYSTORE-03) and a coin must stay checkable for its whole life.
+ *
+ * Card hardening (CARD_HARDENING_PLAN.md, 2026-10-15). The app identity (attestationApplicationId, tag 709) is checked on
+ * every key that carries it: package org.stablescouncil.stables, signed with a certificate on STABLES_SIGNING_CERTS.
+ * Keys made with the constant v2 challenge (CHALLENGE_V2) must also carry it, and must be bound to an unlocked device
+ * (tag 509). Any other challenge is a v1 key and keeps the rules above, so coins already on cards stay valid.
  */
 public final class R2Attestation {
     static final String KEY_DESCRIPTION_OID="1.3.6.1.4.1.11129.2.1.17";
     static final int TAG_PURPOSE=1,TAG_ALGORITHM=2,TAG_EC_CURVE=10,TAG_USAGE_COUNT=405,TAG_ORIGIN=702,TAG_ROOT_OF_TRUST=704,TAG_APP_ID=709;
+    static final int TAG_UNLOCKED_DEVICE_REQUIRED=509;
     static final int PURPOSE_SIGN=2,ALGORITHM_EC=3,CURVE_P256=1,ORIGIN_GENERATED=0;
     static final int BOOT_VERIFIED=0,BOOT_SELF_SIGNED=1;
     public static final int LEVEL_SOFTWARE=0,LEVEL_TEE=1,LEVEL_STRONGBOX=2;
+    public static final int KEY_V1=1,KEY_V2=2;
+
+    /** The attestation challenge of every v2 coin key: SHA-256("STR2-coin-key-v2"). */
+    public static final byte[] CHALLENGE_V2=R2Codec.sha256("STR2-coin-key-v2".getBytes(java.nio.charset.StandardCharsets.US_ASCII));
+    /** The one app whose keys may hold coins. */
+    public static final String STABLES_PACKAGE="org.stablescouncil.stables";
+    /** SHA-256 of the Stables release signing certificate(s), lowercase hex. A list, so a key rotation adds the new one
+     *  before the old one leaves. dabb1b2a...: CN=Stables Council, the release keystore of 2026-06-14
+     *  (apksigner verify --print-certs dist/Stables_v0.0.13.016.apk). */
+    public static final List<String> STABLES_SIGNING_CERTS=Collections.unmodifiableList(java.util.Arrays.asList(
+            "dabb1b2a79b134b6008e6401735d649c140b51f2c4a83eb001b2ffdad5ce5dd4"));
+    /** Where a v2 key's unlocked-device binding (tag 509) may be listed. Since Android 15 the keystore service, not the TEE,
+     *  enforces it, and the attestation lists it under softwareEnforced; boot must be locked and verified anyway, so the
+     *  service is the verified system's. true would accept only hardwareEnforced. */
+    static final boolean UNLOCKED_IN_HARDWARE_ONLY=false;
 
     /** GrapheneOS verified-boot key hashes (SHA-256 of the boot public key), published at grapheneos.org/install. */
     public static final Map<String,String> GRAPHENEOS_BOOT_KEYS;
@@ -43,8 +64,14 @@ public final class R2Attestation {
         public final byte[] point,keyHash,chainId;
         public final int securityLevel,bootState;
         public final String bootKey;
-        Key(byte[] point,byte[] chainId,int level,int bootState,String bootKey){
+        /** KEY_V1 or KEY_V2 (by the attestation challenge). */
+        public final int version;
+        /** The app that made the key (null when the attestation names none). */
+        public final String appPackage;
+        Key(byte[] point,byte[] chainId,int level,int bootState,String bootKey){this(point,chainId,level,bootState,bootKey,KEY_V1,null);}
+        Key(byte[] point,byte[] chainId,int level,int bootState,String bootKey,int version,String appPackage){
             this.point=point;this.keyHash=R2Codec.keyHash(point);this.chainId=chainId;this.securityLevel=level;this.bootState=bootState;this.bootKey=bootKey;
+            this.version=version;this.appPackage=appPackage;
         }
     }
 
@@ -52,6 +79,8 @@ public final class R2Attestation {
     private final List<PublicKey> pinnedKeys;
     private final Map<String,String> selfSignedBootKeys;
     private final Set<String> revoked;
+    private final String appPackage;
+    private final Set<String> appCerts;
 
     /** Production verifier: Google roots, GrapheneOS allowlist, optional revoked-serial snapshot (hex or decimal). */
     public static R2Attestation production(Set<String> revokedSerials)throws R2Exception{
@@ -61,11 +90,23 @@ public final class R2Attestation {
     }
     /** Explicit roots: tests sign synthetic chains with their own root to exercise each policy rule in isolation. */
     public R2Attestation(List<X509Certificate> roots,Map<String,String> selfSignedBootKeys,Set<String> revokedSerials){
+        this(roots,selfSignedBootKeys,revokedSerials,STABLES_PACKAGE,STABLES_SIGNING_CERTS);
+    }
+    /** Explicit app identity too: tests accept their own probe app's keys this way. */
+    public R2Attestation(List<X509Certificate> roots,Map<String,String> selfSignedBootKeys,Set<String> revokedSerials,String appPackage,java.util.Collection<String> appCerts){
         Set<String> spki=new HashSet<>();List<PublicKey> keys=new ArrayList<>();
         for(X509Certificate r:roots){spki.add(R2Codec.hex(R2Codec.sha256(r.getPublicKey().getEncoded())));keys.add(r.getPublicKey());}
         pinnedSpki=spki;pinnedKeys=keys;
         this.selfSignedBootKeys=selfSignedBootKeys==null?Collections.<String,String>emptyMap():selfSignedBootKeys;
         this.revoked=revokedSerials==null?Collections.<String>emptySet():revokedSerials;
+        this.appPackage=appPackage;
+        Set<String> c=new HashSet<>();for(String d:appCerts)c.add(d.toLowerCase(java.util.Locale.ROOT));this.appCerts=Collections.unmodifiableSet(c);
+    }
+    /** Same pins and lists, another app identity. */
+    public static R2Attestation productionFor(Set<String> revokedSerials,String appPackage,java.util.Collection<String> appCerts)throws R2Exception{
+        List<X509Certificate> roots=new ArrayList<>();
+        for(String b:R2Roots.DER_BASE64)roots.add(cert(Base64.getDecoder().decode(b)));
+        return new R2Attestation(roots,GRAPHENEOS_BOOT_KEYS,revokedSerials,appPackage,appCerts);
     }
 
     static X509Certificate cert(byte[] der)throws R2Exception{
@@ -115,7 +156,9 @@ public final class R2Attestation {
         int attLevel=(int)f.get(1).integer(),kmLevel=(int)f.get(3).integer();
         if(attLevel==LEVEL_SOFTWARE||kmLevel!=attLevel)throw R2Codec.fail("attestation","not attested by secure hardware (level "+attLevel+"/"+kmLevel+")");
         Map<Integer,Der> hw=authorizations(f.get(7));
-        authorizations(f.get(6));
+        Map<Integer,Der> sw=authorizations(f.get(6));
+        if(f.get(4).tag!=0x04)throw R2Codec.fail("attestation","attestation challenge");
+        int version=java.util.Arrays.equals(f.get(4).value(),CHALLENGE_V2)?KEY_V2:KEY_V1;
         if(!hw.containsKey(TAG_USAGE_COUNT))throw R2Codec.fail("attestation","one-use limit not enforced in hardware");
         if(explicitInt(hw.get(TAG_USAGE_COUNT))!=1)throw R2Codec.fail("attestation","usage count limit is not 1");
         if(!hw.containsKey(TAG_ORIGIN)||explicitInt(hw.get(TAG_ORIGIN))!=ORIGIN_GENERATED)throw R2Codec.fail("attestation","key not generated inside the hardware");
@@ -134,7 +177,51 @@ public final class R2Attestation {
         if(boot==BOOT_SELF_SIGNED){
             if(!selfSignedBootKeys.containsKey(bootKey))throw R2Codec.fail("attestation","self-signed boot key not on the allowlist");
         }else if(boot!=BOOT_VERIFIED)throw R2Codec.fail("attestation","verified boot state "+boot);
-        return new Key(point,chainId,attLevel,boot,bootKey);
+        // The app that made the key: checked wherever the attestation names one (Android names it for every app key),
+        // required for v2 keys.
+        Der app=sw.containsKey(TAG_APP_ID)?sw.get(TAG_APP_ID):hw.get(TAG_APP_ID);
+        if(sw.containsKey(TAG_APP_ID)&&hw.containsKey(TAG_APP_ID))throw R2Codec.fail("attestation","app identity listed twice");
+        String pkg=null;
+        if(app!=null)pkg=checkApp(app.only());
+        else if(version==KEY_V2)throw R2Codec.fail("attestation","v2 key names no app");
+        if(version==KEY_V2){
+            boolean unlocked=hw.containsKey(TAG_UNLOCKED_DEVICE_REQUIRED)||(!UNLOCKED_IN_HARDWARE_ONLY&&sw.containsKey(TAG_UNLOCKED_DEVICE_REQUIRED));
+            if(!unlocked)throw R2Codec.fail("attestation","v2 key can sign while the phone is locked");
+            Der u=hw.containsKey(TAG_UNLOCKED_DEVICE_REQUIRED)?hw.get(TAG_UNLOCKED_DEVICE_REQUIRED):sw.get(TAG_UNLOCKED_DEVICE_REQUIRED);
+            if(u.only().tag!=0x05)throw R2Codec.fail("attestation","unlocked-device tag shape");
+        }
+        return new Key(point,chainId,attLevel,boot,bootKey,version,pkg);
+    }
+
+    /**
+     * AttestationApplicationId: OCTET STRING holding SEQUENCE { SET OF AttestationPackageInfo { OCTET STRING name,
+     * INTEGER version }, SET OF OCTET STRING signature digests }. Every package must be this verifier's app, and one
+     * signing certificate digest must be on its list. Returns the package name.
+     */
+    private String checkApp(Der octets)throws R2Exception{
+        if(octets.tag!=0x04)throw R2Codec.fail("attestation","app identity wrapper");
+        Der seq=Der.at(octets.d,octets.start);
+        if(seq.tag!=0x30||seq.end!=octets.end)throw R2Codec.fail("attestation","app identity");
+        List<Der> parts=seq.children();
+        if(parts.size()!=2||parts.get(0).tag!=0x31||parts.get(1).tag!=0x31)throw R2Codec.fail("attestation","app identity fields");
+        List<Der> packages=parts.get(0).children();
+        if(packages.isEmpty())throw R2Codec.fail("attestation","app identity names no package");
+        String name=null;
+        for(Der p:packages){
+            List<Der> info=p.children();
+            if(p.tag!=0x30||info.size()!=2||info.get(0).tag!=0x04)throw R2Codec.fail("attestation","app package shape");
+            info.get(1).integer();
+            String n=new String(info.get(0).value(),java.nio.charset.StandardCharsets.UTF_8);
+            if(!n.equals(appPackage))throw R2Codec.fail("attestation","key not made by the Stables app ("+n+")");
+            name=n;
+        }
+        boolean signed=false;
+        for(Der s:parts.get(1).children()){
+            if(s.tag!=0x04)throw R2Codec.fail("attestation","app signature shape");
+            if(appCerts.contains(R2Codec.hex(s.value())))signed=true;
+        }
+        if(!signed)throw R2Codec.fail("attestation","key made by an app not signed by Stables");
+        return name;
     }
 
     /** AuthorizationList: context-tagged explicit fields; a duplicated tag is refused. */
