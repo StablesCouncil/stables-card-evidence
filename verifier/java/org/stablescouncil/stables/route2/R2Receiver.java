@@ -44,6 +44,8 @@ public final class R2Receiver {
         default List<byte[]> knownChain(byte[] chainId){return null;}
         /** Council only: a coin already exited (its seen set of exits). */
         default boolean exited(byte[] coinId){return false;}
+        /** A request this receiver refused over the network (signed refusal): never credited afterwards. */
+        default boolean refused(byte[] keyHash){return false;}
     }
 
     public static final class Seen { public final byte[] parent,bodyHash,wire;Seen(byte[] p,byte[] b,byte[] w){parent=p;bodyHash=b;wire=w;} }
@@ -144,17 +146,29 @@ public final class R2Receiver {
         Trace t=trace(b,ledger);
         if(t.proof!=null)return Result.doubleSpend(t.proof);
         Map<String,Coin> coins=t.coins;Map<String,byte[]> spentBy=t.spentBy;List<Seen> seen=t.seen;
-        // 5. Exactly one unspent coin is owned by one of this receiver's outstanding request keys.
-        String mine=null;R2Request request=null;
+        // 5. The payment is the DEEPEST unspent coin owned by one of this receiver's outstanding request keys. A shallower one
+        //    is an earlier payment to this receiver that never arrived, carried in this bundle only as the history of the
+        //    payer's change: it is not credited by this payment and does not stop it (founder 2026-10-15: "a failed
+        //    transaction doesn't fire while the user wasn't expecting it ... they should not block the next transaction").
+        //    Two at the same depth stay refused: which one is meant cannot be told.
+        String mine=null;R2Request request=null;boolean tie=false;
         for(Map.Entry<String,Coin> e:coins.entrySet()){
             if(spentBy.containsKey(e.getKey()))continue;
             byte[] kh=R2Codec.keyHash(e.getValue().owner);
             R2Request r=ledger.outstanding(kh);
             if(r==null)continue;
-            if(mine!=null)throw R2Codec.fail("request","more than one coin offered to this receiver");
-            mine=e.getKey();request=r;
+            if(mine==null||e.getValue().depth>coins.get(mine).depth){mine=e.getKey();request=r;tie=false;}
+            else if(e.getValue().depth==coins.get(mine).depth)tie=true;
         }
-        if(mine==null)throw R2Codec.fail("request","no coin paid to an outstanding request of this receiver");
+        if(tie)throw R2Codec.fail("request","more than one coin offered to this receiver at the same depth");
+        if(mine==null){
+            // A request refused over the network (its refusal signed) is never credited, even when its bytes arrive later
+            // (founder 2026-10-16): the payer is refunded by the Council instead.
+            for(Map.Entry<String,Coin> e:coins.entrySet())
+                if(!spentBy.containsKey(e.getKey())&&e.getValue().depth>0&&ledger.refused(R2Codec.keyHash(e.getValue().owner)))
+                    throw R2Codec.fail("refused","this request was refused; the payer is refunded");
+            throw R2Codec.fail("request","no coin paid to an outstanding request of this receiver");
+        }
         Coin c=coins.get(mine);byte[] kh=R2Codec.keyHash(c.owner);
         if(ledger.credited(kh))throw R2Codec.fail("request","this request was already paid");
         if(!Arrays.equals(request.token,c.token))throw R2Codec.fail("request","wrong token");
@@ -196,6 +210,47 @@ public final class R2Receiver {
             return new ExitResult(true,"accepted",null,line,hash,c.depth);
         }catch(R2Exception e){return new ExitResult(false,e.code,e.getMessage(),line,hash,0);}
         catch(RuntimeException e){return new ExitResult(false,"parse","malformed: "+e.getClass().getSimpleName(),line,hash,0);}
+    }
+
+    /** The Council's verdict on a refund package (R2Refusal): the coin refunded, its amount and token, and the payout. */
+    public static final class RefundResult {
+        public final boolean accepted;public final String code,detail;public final R2Refusal refusal;public final byte[] coinId,token,packageHash;
+        public final long amount;public final int depth;
+        RefundResult(boolean ok,String code,String detail,R2Refusal r,byte[] coinId,byte[] token,long amount,byte[] hash,int depth){
+            accepted=ok;this.code=code;this.detail=detail;refusal=r;this.coinId=coinId;this.token=token;this.amount=amount;packageHash=hash;this.depth=depth;
+        }
+        static RefundResult refuse(String code,String detail,R2Refusal r,byte[] hash){return new RefundResult(false,code,detail,r,null,null,0,hash,0);}
+    }
+    /**
+     * Checks a refund package (FAILED_PAYMENTS_SESSION_PROMPT.md layer 3): the payer's bundle by 13.8 steps 1 to 4 and 6;
+     * the refusal signed by an attested key whose hash is the refused request; exactly one coin in the bundle paid to that
+     * request, not spent inside the bundle, not seen paid away, not already exited or refunded (the ledger's exited set
+     * holds both). The payout is the refusal's own; the caller compares the request ports with the result.
+     */
+    public RefundResult checkRefund(byte[] pkg,Ledger ledger){
+        R2Refusal refusal=null;byte[] hash=null;
+        try{
+            R2Refusal.Package p=R2Refusal.unpack(pkg);refusal=p.refusal;hash=p.hash;
+            R2Attestation.Key k=attester.verifyKey(refusal.leaf(),refusal.chain());
+            if(!Arrays.equals(R2Codec.keyHash(k.point),refusal.keyHash))throw R2Codec.fail("refusal","the refusing key is not the refused request's key");
+            if(!refusal.signedBy(k.point))throw R2Codec.fail("signature","refusal not signed by the request key");
+            R2Bundle b=R2Bundle.parse(p.bundle,ledger::knownChain);
+            Trace t=trace(b,ledger);
+            if(t.proof!=null)return RefundResult.refuse("double-spend","the coin's history holds a double spend",refusal,hash);
+            String id=null;Coin c=null;
+            for(Map.Entry<String,Coin> e:t.coins.entrySet()){
+                if(e.getValue().depth==0||!Arrays.equals(R2Codec.keyHash(e.getValue().owner),refusal.keyHash))continue;
+                if(id!=null)throw R2Codec.fail("refund","more than one coin paid to the refused request");
+                id=e.getKey();c=e.getValue();
+            }
+            if(c==null)throw R2Codec.fail("refund","no coin in the bundle is paid to the refused request");
+            byte[] coinId=R2Codec.unhex(id);
+            if(t.spentBy.containsKey(id))throw R2Codec.fail("refund","the refunded coin is spent inside its own bundle");
+            if(ledger.seenSpender(coinId)!=null)throw R2Codec.fail("refund","the refunded coin was paid away");
+            if(ledger.exited(coinId))throw R2Codec.fail("refund","the coin has already exited or been refunded");
+            return new RefundResult(true,"accepted",null,refusal,coinId,c.token,c.amount,hash,c.depth);
+        }catch(R2Exception e){return RefundResult.refuse(e.code,e.getMessage(),refusal,hash);}
+        catch(RuntimeException e){return RefundResult.refuse("parse","malformed: "+e.getClass().getSimpleName(),refusal,hash);}
     }
 
     public void checkAnchor(R2Bundle.Anchor a)throws R2Exception{

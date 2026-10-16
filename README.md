@@ -61,6 +61,8 @@ Questions and findings are welcome as issues on this repository.
 | **Payout** | On chain | No signature: the contracts check it | Spends the request, vault coins and a seal copy; pays the amount to the address the TEE-signed exit line named |
 | **Fallback** | On chain | No signature | If the council stays silent, the request pays itself after 20 blocks. The contract does not look at the package on this path, so the council must reject a bad request before the wait ends. The council can delay, never confiscate, but it must stay on watch (see [if the Council disappears](#if-the-council-disappears)) |
 | **Rejection** | On chain | 5 of the 7 council keys | A refused request is spent with no payout; the request atom goes back |
+| **Refusal** (a payment the receiver never got) | The receiver's phone; on chain inside a refund request | The TEE key of the receiver's own request | The receiver never credited that request and never will: it marked the request refused before signing, and the key is destroyed by the signature. The refusal names the Savings address the payer gave at first contact |
+| **Refund** | On chain | The payer's own Minima wallet key posts it; 5 of the 7 council keys approve it | The refusal and the payer's signed bundle go through the same request contract as a Remove; the amount goes back to the payer's Savings |
 
 The TEE signatures of the payments themselves are made between phones, off chain. They reach the chain at exit: the exit request carries the coin's full history, so every hop signature and every key attestation the money went through is on chain from then on.
 
@@ -101,6 +103,19 @@ Seen on chain on 2026-10-12: the 0.0298 Winiwa the Pixel 7 took back to Savings 
 
 Open: today a receiver catches a double payment only when it sees both hand-overs, and the Council checks each exit on its own. The Council keeping every hand-over it has seen, so a broken chip's double payment is caught when the second copy tries to exit, is designed, not built.
 
+### When a touch breaks off
+
+A payment is signed and handed over in one touch. The paying phone checks that the other phone is still there before each coin key signs, so a touch that ends early leaves nothing signed and nothing owed. If the touch breaks after the signatures but before the receiver confirms, the payer holds a signed payment that the receiver may or may not have. It is settled without guessing:
+
+1. After 2 minutes the payer's phone asks the receiver over the Minima network, with a plain transaction that carries the question in its kept state (no server, no messaging service). It asks again after 2, 4, 8, 16, 32 and 64 minutes.
+2. A receiver that has the payment answers so, and the payer's row becomes Sent.
+3. A receiver that never got it first marks that request refused for good, so the payment is refused if its bytes ever arrive later. Then it signs a refusal (`"STR2N" | version | request key hash | payout | nonce`) with the request's own one-use key, which the chip destroys in the signature. The payout is the Savings address the payer gave at first contact, so the refusal refunds only that payer, whoever reads it.
+4. The payer posts a refund request: `"STR2F" | version | refusal | the payer's bundle`, through the same request contract as a Remove. The Council checks it as below and pays the amount back to the payer's Savings.
+
+**The refund rule** (`R2Receiver.checkRefund`, run by the Council's `R2Checker`): the refusing key passes the key attestation rules, is the refused request's key and signed the refusal; the bundle is valid and holds no double spend; exactly one coin in it is paid to that request's key; that coin is not spent inside the bundle, was never seen paid away, and has not exited or been refunded before; and the request's ports 11 to 14 are that coin, its amount, its token and the payout the refusal names. A coin therefore leaves the card once, by a Remove from its owner or by a refund to its payer, never both: the receiver's key that could have spent it no longer exists.
+
+Seen on mainnet on 16 October 2026: a 0.33 Winiwa payment whose touch broke before the receiver had it was asked about and refused over the network 2 minutes later, and refunded to the payer's Savings by the Council about 4 minutes after the touch (refund request in block 2,369,988, seal in block 2,369,990, payout in block 2,369,992, transaction `0x0000006547DA33B4445A15EA70770CDD0949787449FAAF164DFF142E1995EE59`).
+
 ### Why it scales
 
 - The chain carries only Adds, Removes and refreshes. Payments in between use no block space, so how many payments happen is set by phones, not by blocks.
@@ -139,6 +154,10 @@ These rules read the Android key attestation record that the phone's secure hard
 **Exit line.** `"STR2E" | version | coin id | token | amount | payout address | nonce`, 126 bytes, signed by the exiting coin's key.
 
 **Exit request.** 1 atom at the **request address**. Kept state: port 0 `0x52325445`, port 10 the SHA-256 of the package, port 11 the exited coin id, ports 12 to 14 amount, token and payout address (equal to the exit line), port 17 the refund atom, ports 30 to 39 the **package**: the exit line plus the coin's full bundle.
+
+**Package carriers.** An exit package of more than 25,500 bytes kept inline would make a payout too large for a Minima block. Such a package is posted in up to 4 carrier coins at the **package address**, whose script is `RETURN FALSE`, so carriers are never spent. Carrier ports: 0 the tag `0x5232504B`, 1 the package hash, 2 the part index, 3 to 8 the data (at most 24,000 bytes a carrier). The request then keeps the package hash in port 10, the hashes of the parts in port 18, and nothing in ports 30 on, so its payout stays small. The Council assembles the package from the carriers and checks every part against port 18 and the whole against port 10. A request whose inline package is over the limit is never approved (it could not be paid) and the phone posts it again in carriers.
+
+**Refund request.** The same request contract and ports as an exit; its package starts with `STR2F` (see [when a touch breaks off](#when-a-touch-breaks-off)).
 
 **Council.** Checks the package exactly as a receiving phone checks a payment, then signs a seal: the seal head (MULTISIG 5 of 7) moves with its copies and records a Merkle root of approved requests. A payout proves its request is in that root (`PROOF`) by spending a seal copy.
 
@@ -255,7 +274,8 @@ The risks that decide whether the card can hold real money: a Council quorum tha
 | Lost, broken or wiped phone | Its card money is gone | Medium / low per person | Said plainly in the app ("like cash, keep small amounts"); Savings on chain are untouched | By design, as with cash |
 | The app is killed mid-payment | A coin is lost or duplicated | Low / low | Write-ahead journal; tested killed at four points; worst case one coin lost, never duplicated | One signature's window (about 17 ms) |
 | Relay attack (a device relays the touch to another receiver) | A payment goes to the wrong request | Low / low to medium | Above the one-touch level the payer sees and confirms the amount; each request is bound to the receiver's fresh key | Small payments under the one-touch level could be redirected by a relay in range |
-| Histories outgrow the limits | Old coins cannot be paid or taken back | High over time / medium | Limits enforced; repeat histories named, not sent | Coin refresh is designed, not built |
+| Histories outgrow the limits | Old coins cannot be paid or taken back | High over time / medium | Limits enforced; repeat histories named, not sent; coin refresh (built 16 October 2026): a coin whose history passes 3,000 bytes goes back through the vault and returns as a fresh coin, automatically or only when charging, as the person chooses; histories over 25,500 bytes leave in package carriers | Each refresh is a Remove and an Add on chain |
+| A touch breaks off mid-payment | The payer cannot tell whether the receiver has the money | High / low | Nothing is signed once the touch has ended; a signed payment is settled over the network after 2 minutes: Sent, or refused by the receiver and refunded to the payer's Savings | Settling needs both phones online at some point; until then the payment stays Not confirmed |
 | Privacy | A coin can be followed back to the Savings address that funded it; a phone may be linkable by its certificate chain | Certain / medium | Fresh one-use keys; no names or numbers in payments | Pseudonymous, not anonymous; untraceability is an open design question |
 
 ### Deposits, the chain and the contracts
@@ -292,7 +312,7 @@ The risks that decide whether the card can hold real money: a Council quorum tha
 
 ## Contracts and addresses
 
-Minima mainnet, generation R2T3. The exact scripts as executed are in [`contracts/deployed/`](contracts/deployed/), named by role and address. They are taken from the raw transactions' witnesses, and `R2Addresses` checks that each address is the hash of its script. [`contracts/`](contracts/) has the same contracts as readable templates with placeholders. `contracts/deployed/` also keeps the R2T1 and R2T2 contracts of the earlier test generations, which appear in this period's transactions:
+Minima mainnet, generation R2T3. The exact scripts as executed are in [`contracts/deployed/`](contracts/deployed/), named by role and address. They are taken from the raw transactions' witnesses, and `R2Addresses` checks that each address is the hash of its script. The package carriers' script, `RETURN FALSE`, is never executed (carriers are never spent), so no witness holds it: it is added by hand, and its address is Minima's hash of those 12 characters. [`contracts/`](contracts/) has the same contracts as readable templates with placeholders. `contracts/deployed/` also keeps the R2T1 and R2T2 contracts of the earlier test generations, which appear in this period's transactions:
 
 | Contract | Address |
 |---|---|
@@ -302,6 +322,7 @@ Minima mainnet, generation R2T3. The exact scripts as executed are in [`contract
 | Seal head (MULTISIG 5 of 7) | `0x0468A9A9A9ABA1C8F42E8C0F084618CD3886E6164A342E232FC1C99FD3C4F2F3` |
 | Seal copy | `0xAA222EFD8CC8E87A1616E3F8BAD1936A1363501C88337B53809664EF5E9EDF50` |
 | Seal token | `0x0E277A26E58F352BE2967C095E4587A671A28AED7A3EBED31D43093FDA3F2E82` |
+| Package carriers (`RETURN FALSE`) | `0xABA005476D2B3CD7F251B9783E64C124C9670BB358695F04D91B2057BB64CB49` |
 | Winiwa (test token) | `0xD4F5DD3546F25D327CBF2B6867E193CE5DB6491AC9C65BBDCECACA1A6688063F` |
 
 The seven council public keys are in [`evidence/council.json`](evidence/council.json).

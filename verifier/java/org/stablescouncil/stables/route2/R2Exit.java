@@ -60,6 +60,61 @@ public final class R2Exit {
     private static int remaining(byte[] p,R2Exit line)throws R2Exception{
         int head=5+1+2+line.wire().length;if(head>p.length)throw R2Codec.fail("parse","truncated");return p.length-head;
     }
+    /* PACKAGE CARRIERS (founder 2026-10-16: "we have to go for the permanent solution, the one we will implement in
+       production"). A payout spends the request coin, and that coin carried the whole package in its state, stored at
+       about twice its size: a 31,124-byte refund package made a 70,262-byte payout no block takes, and its 20 Winiwa could
+       not be paid by the Council or by the fallback. The package now travels in carrier transactions of its own: one atom
+       each to PACKAGE_ADDRESS (script RETURN FALSE: nothing ever spends them), state port 0 the tag, 1 the package hash,
+       2 the part's index, 3 to 8 its bytes (4,000 each). The request keeps its ports and names each part's SHA-256 in port
+       18, so a checker rebuilds the package from the carriers whose bytes match, whatever else anyone posts there. The
+       request contract never reads ports 30 on, so nothing on chain changes; a request with the package inline still
+       checks, and one too large to be paid is rejected (INLINE_MAX). */
+    public static final String PACKAGE_ADDRESS="0xABA005476D2B3CD7F251B9783E64C124C9670BB358695F04D91B2057BB64CB49";
+    public static final String PACKAGE_SCRIPT="RETURN FALSE";
+    public static final String PACKAGE_TAG="0x5232504B";                     // "R2PK"
+    public static final int CARRIER_PORTS=6,CARRIER_BYTES=PORT_CHUNK*CARRIER_PORTS,MAX_CARRIERS=4;
+    /** The largest package a request may carry inline and still be paid out: 25,500 bytes made a 57,653-byte payout that
+     *  was mined, 31,124 bytes a 70,262-byte one that never was (2026-10-16). */
+    public static final int INLINE_MAX=25500;
+    /** The package cut into carrier parts of at most CARRIER_BYTES. */
+    public static java.util.List<byte[]> carrierParts(byte[] p)throws R2Exception{
+        if(p.length>MAX_PACKAGE)throw R2Codec.fail("limit","package size");
+        java.util.List<byte[]> l=new java.util.ArrayList<>();
+        for(int i=0;i<p.length;i+=CARRIER_BYTES)l.add(Arrays.copyOfRange(p,i,Math.min(p.length,i+CARRIER_BYTES)));
+        if(l.size()>MAX_CARRIERS)throw R2Codec.fail("limit","package needs more than "+MAX_CARRIERS+" carriers");
+        return l;
+    }
+    /** Port 18 of a request: the SHA-256 of each part, in order (32 bytes each). */
+    public static byte[] partHashes(java.util.List<byte[]> parts){
+        byte[] h=new byte[32*parts.size()];
+        for(int i=0;i<parts.size();i++)System.arraycopy(R2Codec.sha256(parts.get(i)),0,h,32*i,32);
+        return h;
+    }
+    /** One part as carrier state ports 3 to 8 (hex, no prefix). */
+    public static String[] partPorts(byte[] part){
+        int n=(part.length+PORT_CHUNK-1)/PORT_CHUNK;String[] c=new String[n];
+        for(int i=0;i<n;i++)c[i]=R2Codec.hex(Arrays.copyOfRange(part,i*PORT_CHUNK,Math.min(part.length,(i+1)*PORT_CHUNK)));
+        return c;
+    }
+    /**
+     * The package rebuilt from the parts posted for it: for each hash in port 18, a candidate whose SHA-256 matches. Any
+     * number of other candidates (a copy, junk posted by anyone) is ignored. Throws code "package-missing" when a part is not
+     * seen (yet), and checks the whole against the request's package hash (port 10).
+     */
+    public static byte[] assemble(byte[] partHashes,java.util.Collection<byte[]> candidates,byte[] packageHash)throws R2Exception{
+        if(partHashes==null||partHashes.length==0||partHashes.length%32!=0||partHashes.length/32>MAX_CARRIERS)throw R2Codec.fail("request","port 18 does not name the package parts");
+        java.io.ByteArrayOutputStream out=new java.io.ByteArrayOutputStream();
+        for(int i=0;i<partHashes.length/32;i++){
+            byte[] want=Arrays.copyOfRange(partHashes,32*i,32*i+32),found=null;
+            for(byte[] c:candidates)if(c!=null&&c.length<=CARRIER_BYTES&&Arrays.equals(R2Codec.sha256(c),want)){found=c;break;}
+            if(found==null)throw R2Codec.fail("package-missing","part "+(i+1)+" of "+partHashes.length/32+" not seen");
+            out.write(found,0,found.length);
+        }
+        byte[] p=out.toByteArray();
+        if(packageHash==null||!Arrays.equals(R2Codec.sha256(p),packageHash))throw R2Codec.fail("request","the parts do not make the package named in port 10");
+        return p;
+    }
+
     /** The package as request state chunks (hex, no prefix), port 30 first. */
     public static String[] chunks(byte[] p)throws R2Exception{
         if(p.length>MAX_PACKAGE)throw R2Codec.fail("limit","exit package size");

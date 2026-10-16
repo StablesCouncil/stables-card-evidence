@@ -77,9 +77,26 @@ public final class R2Checker {
             if(rc==null||Boolean.TRUE.equals(rc.get("spent"))||!R2Anchors.eq((String)rc.get("address"),reqAddr))throw R2Codec.fail("request","not an unspent coin at the exit request address");
             Map<Integer,String> s=state(rc);
             if(!R2Anchors.eq(s.get(0),"0x52325445"))throw R2Codec.fail("request","port 0 is not the request tag");
-            ByteArrayOutputStream pkg=new ByteArrayOutputStream();
-            for(int p=30;p<30+R2Exit.PORTS&&s.containsKey(p);p++)pkg.write(R2Codec.unhex(s.get(p).trim()));
-            byte[] bytes=pkg.toByteArray();
+            byte[] bytes;
+            if(s.containsKey(30)){
+                // The package inline in ports 30 on (requests before 0.0.13.037). Above INLINE_MAX its payout would be too large
+                // for any block (2026-10-16): refused with "too-large", so the coin can leave again with its package in carriers.
+                ByteArrayOutputStream pkg=new ByteArrayOutputStream();
+                for(int p=30;p<30+R2Exit.PORTS&&s.containsKey(p);p++)pkg.write(R2Codec.unhex(s.get(p).trim()));
+                bytes=pkg.toByteArray();
+                if(bytes.length>R2Exit.INLINE_MAX)throw R2Codec.fail("too-large","package "+bytes.length+" bytes inline: its payout would not fit a block; post it again in carriers");
+            }else{
+                // Package carriers (R2Exit): parts posted to the package address, matched by the hashes in port 18.
+                if(s.get(18)==null||s.get(10)==null)throw R2Codec.fail("request","no package: neither ports 30 on nor port 18");
+                List<byte[]> parts=new ArrayList<>();
+                JSONArray cs=(JSONArray)rpc("coins address:"+R2Exit.PACKAGE_ADDRESS).get("response");
+                for(Object o:cs){JSONObject c=(JSONObject)o;Map<Integer,String> cp=state(c);
+                    if(!R2Anchors.eq(cp.get(0),R2Exit.PACKAGE_TAG)||!R2Anchors.eq(cp.get(1),s.get(10)))continue;
+                    StringBuilder h=new StringBuilder();for(int p=3;p<3+R2Exit.CARRIER_PORTS&&cp.containsKey(p);p++)h.append(cp.get(p).trim().replaceFirst("^0[xX]",""));
+                    try{parts.add(R2Codec.unhex(h.toString()));}catch(IllegalArgumentException ignored){}}
+                bytes=R2Exit.assemble(R2Codec.unhex(s.get(18).trim()),parts,R2Codec.unhex(s.get(10).trim()));
+                out.put("carriers",parts.size());
+            }
             if(!R2Anchors.eq(s.get(10),R2Codec.hex(R2Codec.sha256(bytes))))throw R2Codec.fail("request","port 10 is not the package hash");
             long now=tip();
             Set<String> older=new HashSet<>();                       // anchors that are not R2T2 deposits
@@ -107,6 +124,24 @@ public final class R2Checker {
                 public byte[] seenWire(byte[] h){return null;}
                 public boolean exited(byte[] id){return exited.contains(R2Codec.hex(id));}
             };
+            // A refund (failed payments, 2026-10-16): the receiver's signed refusal and the payer's bundle. Same request
+            // contract and ports: 11 the refunded coin, 12 its amount, 13 its token, 14 the payout the refusal names.
+            if(R2Refusal.isPackage(bytes)){
+                R2Receiver.RefundResult f=council.checkRefund(bytes,ledger);
+                out.put("packageBytes",bytes.length);out.put("kind","refund");
+                if(f.coinId!=null){out.put("coinId","0x"+R2Codec.hex(f.coinId));out.put("amount",R2Codec.decimal(f.amount));
+                    out.put("token","0x"+R2Codec.hex(f.token));}
+                if(f.refusal!=null){out.put("payout","0x"+R2Codec.hex(f.refusal.payout));out.put("refusedRequest","0x"+R2Codec.hex(f.refusal.keyHash));}
+                if(!f.accepted)throw R2Codec.fail(f.code,f.detail);
+                if(!older.isEmpty())throw R2Codec.fail("anchor-generation","the coin rests on a deposit outside this vault's generation: "+older.iterator().next());
+                if(!R2Anchors.eq(s.get(11),R2Codec.hex(f.coinId)))throw R2Codec.fail("request","port 11 is not the refunded coin");
+                if(R2Codec.atoms(s.get(12).trim())!=f.amount)throw R2Codec.fail("request","port 12 is not the refunded amount");
+                if(!R2Anchors.eq(s.get(13),R2Codec.hex(f.token)))throw R2Codec.fail("request","port 13 is not the refunded token");
+                if(!R2Anchors.eq(s.get(14),R2Codec.hex(f.refusal.payout)))throw R2Codec.fail("request","port 14 is not the payout the refusal names");
+                out.put("verdict","approve");out.put("code","accepted");out.put("depth",f.depth);
+                System.out.println(out.toJSONString());
+                return;
+            }
             R2Receiver.ExitResult r=council.checkExit(bytes,ledger);
             out.put("packageBytes",bytes.length);
             if(r.line!=null){out.put("coinId","0x"+R2Codec.hex(r.line.coinId));out.put("amount",R2Codec.decimal(r.line.amount));
