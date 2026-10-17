@@ -52,6 +52,23 @@ public final class R2Bundle {
         if(!anchors.containsKey(id)){if(anchors.size()>=R2Codec.MAX_ANCHORS)throw R2Codec.fail("limit","anchors");anchors.put(id,a);}
         return this;
     }
+    /**
+     * R2T4 (DEPOSIT_PROOF_DESIGN.md): each deposit record's proof is the payer's freshest export of the marker, kept by its
+     * own node (it tracks the marker). Swapped in when a bundle leaves this phone; the proof is never signed, so nothing
+     * else changes. A deposit with no fresh proof keeps the one it has.
+     */
+    public R2Bundle freshProofs(java.util.function.Function<String,byte[]> source)throws R2Exception{
+        if(source==null)return this;
+        for(Map.Entry<String,Anchor> e:anchors.entrySet()){
+            byte[] p=source.apply(e.getKey());
+            if(p==null||p.length==0)continue;
+            Anchor a=e.getValue();
+            e.setValue(new Anchor(a.coinId,a.token,a.amount,a.k0,p));
+        }
+        return this;
+    }
+    /** The bytes of all deposit proofs (replaced at every payment, so not part of a coin's growing history). */
+    public int proofBytes(){int n=0;for(Anchor a:anchors.values())n+=a.proof.length;return n;}
     /** Hops keep insertion order; callers add parents before children. */
     public R2Bundle addHop(R2Hop h)throws R2Exception{
         if(!h.signed())throw R2Codec.fail("hop","unsigned hop");

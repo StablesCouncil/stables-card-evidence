@@ -43,7 +43,7 @@ Everything here runs on Minima as it is today, with standard KISS script and nod
 2. **`PROOF` over a root built with `mmrcreate`.** The leaf is the request coin id, with value 0. The Council adds one filler leaf so a tree always has at least two. Is this the intended use? Can a proof for an internal node be passed off as a proof for a leaf?
 3. **`MULTISIG` with wallet key trees.** The Council's seven keys are wallet root keys, and each seal spends one-use keys under them. How many seals can one key tree sign before it runs out, and what is the safe way to rotate a Council key?
 4. **The `@COINAGE` fallback.** A request pays itself after `@COINAGE GTE` the waiting period (20 blocks in this test), so a silent Council cannot hold money back. Is there any re-organisation or timing case that would let it pay early, or block it?
-5. **Proving old deposits.** A receiving phone proves a deposit with its own node, but only while the deposit coin is inside the node's unpruned window. Is there a supported way, with today's commands, to prove an old unspent coin to a node that has pruned it? For example, a coin proof kept with the coin. How long does such a proof stay valid?
+5. **Proving old deposits.** Since 17 October 2026 (R2T4, [deposits that prove themselves](#deposits-that-prove-themselves-at-any-age-r2t4)) the answer rests on two readings of Minima's source: a coin's id is `hash(first input coin id, output index)` (`TxBlock`), and a coin imported with `coinimport ... track:true` or tracked with `cointrack` is kept up to date by the node like its own coins, so `coinexport` keeps giving a proof another node accepts. Are both guaranteed to hold in future node versions, and is there any case (a re-organisation, a resync from a MegaMMR snapshot) where a tracked coin's proof is lost?
 6. **Size and cost limits.** An exit carries its whole package in ports 30 to 39, up to 10 × 4,000 bytes. The vault script loops over up to 8 vault inputs. Are we within the limits Minima intends to keep, for state size, transaction size and script instructions?
 7. **Address stability.** An address is the hash of the cleaned script. Is that canonical form stable across node versions?
 
@@ -53,7 +53,7 @@ Questions and findings are welcome as issues on this repository.
 
 | Step | Where | Signed by | What the signature proves |
 |---|---|---|---|
-| **Add** (Savings to card) | On chain | The person's own Minima wallet key | An ordinary Savings send: 1 atom to the anchor address naming the card's first coin key, and the amount to the vault |
+| **Add** (Savings to card) | On chain | The person's own Minima wallet key | Since R2T4: a transaction whose first input is a lane coin of the deposit gate; the gate's script requires the marker (1 atom at the anchor address naming the card's first coin key) and the amount into the vault, in that same transaction |
 | **Pay by touch** (card to card) | Phone to phone, off chain | The TEE key of each coin spent | The owner of the coin, inside genuine hardware, gave it to the receiver's fresh key. The key is destroyed by the signature |
 | **Remove** (card to Savings): exit line | Inside the request, on chain | The TEE key of the coin leaving | The coin's owner asked for this exact amount to go to this exact Savings address. The key is destroyed |
 | **Remove**: request | On chain | The person's own Minima wallet key | Posts the exit line and the coin's whole history (the package) to the request address |
@@ -99,9 +99,10 @@ Seen on chain on 2026-10-12: the 0.0298 Winiwa the Pixel 7 took back to Savings 
 | Replay a payment | A payment is accepted only for the receiver's own open request, once | The receiver |
 | Exit a coin already paid away | Its key is gone, so no exit line can be signed | The chip |
 | Exit the same coin twice | The Council refuses a second exit of a coin; the request is spent once | The Council and the contract |
+| Exit two copies of a coin paid to two people | The Council keeps every hand-over it has approved; a second, different hand-over of the same coin is refused as a double spend | The Council |
 | Pay one coin to two people (only possible with a broken chip) | Two hand-overs signed by one key are a proof that names the device; its family is revoked; the Council refuses the second exit of any coin | Any receiver that sees both; the Council |
 
-Open: today a receiver catches a double payment only when it sees both hand-overs, and the Council checks each exit on its own. The Council keeping every hand-over it has seen, so a broken chip's double payment is caught when the second copy tries to exit, is designed, not built.
+Since 17 October 2026 the Council keeps every hand-over in every package it approves (`R2Checker --seen`). A broken chip's double payment is therefore caught at the latest when the second copy tries to exit: that package holds another hand-over of a coin the Council has already seen spent, and it is refused as a double spend, with both signed hand-overs as the proof that names the device. Before an exit, a receiver still catches it only when it sees both hand-overs itself.
 
 ### When a touch breaks off
 
@@ -115,6 +116,20 @@ A payment is signed and handed over in one touch. The paying phone checks that t
 **The refund rule** (`R2Receiver.checkRefund`, run by the Council's `R2Checker`): the refusing key passes the key attestation rules, is the refused request's key and signed the refusal; the bundle is valid and holds no double spend; exactly one coin in it is paid to that request's key; that coin is not spent inside the bundle, was never seen paid away, and has not exited or been refunded before; and the request's ports 11 to 14 are that coin, its amount, its token and the payout the refusal names. A coin therefore leaves the card once, by a Remove from its owner or by a refund to its payer, never both: the receiver's key that could have spent it no longer exists.
 
 Seen on mainnet on 16 October 2026: a 0.33 Winiwa payment whose touch broke before the receiver had it was asked about and refused over the network 2 minutes later, and refunded to the payer's Savings by the Council about 4 minutes after the touch (refund request in block 2,369,988, seal in block 2,369,990, payout in block 2,369,992, transaction `0x0000006547DA33B4445A15EA70770CDD0949787449FAAF164DFF142E1995EE59`).
+
+### Deposits that prove themselves at any age (R2T4)
+
+A card coin's history starts at a deposit, and a receiving phone accepts the coin only if that deposit really put the money in the vault. Until 17 October 2026 (R2T2, R2T3) the deposit left a 1-atom marker at the anchor address, and the phone proved the money by reading the deposit transaction from its own node. Nodes forget transactions after their unpruned window (about a day), so older card money could not be proven by a phone that had not seen the deposit. The marker alone proved nothing: anyone can send 1 atom with any state to an address.
+
+R2T4 makes the marker impossible to fake, so its existence is the proof:
+
+1. **The deposit gate.** Every Add spends one lane coin of the gate (`0x084B1E93...`, script in [`contracts/deployed/`](contracts/deployed/)) as its **first input**. The gate's script requires, in that same transaction: output 0 the next lane coin, output 1 the marker at the anchor address, output 2 the amount into the vault, and the deposit number (port 5) one above the lane coin's own. A broken shape (the vault paid one atom short, the gate not first, a skipped number, no marker) fails the script; checked on mainnet with `txncheck`.
+2. **Ids that can be computed.** Minima derives a new coin's id from the first input's coin id and the output index. A lane coin is spent once, so each lane is one chain of ids from its published genesis coin: `L(lane, n) = hash(L(lane, n-1), 0)`, and the marker of deposit n is `hash(L(lane, n-1), 1)`. A receiver checks that the marker's id is exactly that for the lane and number in its ports 6 and 5 (`R2Deposits`). A coin anyone sends to the anchor address has another id and is refused. No old transaction is read, no server, no register.
+3. **Proofs the phones keep.** Each phone's node tracks the markers behind the coins it holds, so their proofs stay current; a payment carries a fresh export of each (about 900 bytes), and a receiving phone whose node no longer sees the marker imports that proof with tracking and checks the marker as in 2.
+
+Seen on mainnet on 17 October 2026: the gate's 8 lanes (blocks 2,371,091 and 2,371,093), and its first deposit (block 2,371,103), whose three outputs had exactly the ids computed in advance from lane 1's genesis coin (marker `0x1506D2E561AE970D7B4A8B3C12E5AF7E5F4FF7496C73E608AAC084325691585F`).
+
+Card money resting on an R2T3 deposit moves onto gate deposits by coin refresh (a Remove and an Add of the same coin), one coin at a time.
 
 ### Why it scales
 
@@ -139,7 +154,7 @@ The byte formats are fixed in the design ([trace-design section 13](docs/trace-d
 
 **Coin.** `(amount, public key, history)`. Keys are P-256, generated in the TEE, never imported, usage count limit 1 enforced by the hardware.
 
-**Anchor (Add).** One Minima transaction from Savings with exactly one output at the **anchor address** (1 atom of the token; kept state: port 0 the generation tag `0x52325433`, port 1 the hash of the card's first coin key, port 2 the amount, port 3 the token) and one output at the **vault address** holding the amount. The anchor coin stays on chain; the card coin it creates has id `SHA-256("STR2A" | 0x01 | anchor coin id)`.
+**Anchor (Add).** One Minima transaction from Savings with exactly one output at the **anchor address** (1 atom of the token; kept state: port 0 the generation tag `0x52325433`, port 1 the hash of the card's first coin key, port 2 the amount, port 3 the token) and one output at the **vault address** holding the amount. The anchor coin stays on chain; the card coin it creates has id `SHA-256("STR2A" | 0x01 | anchor coin id)`. **R2T4:** the same anchor and vault, the transaction's first input a lane coin of the deposit gate, port 0 `0x52325434`, port 5 the deposit number on that lane, port 6 the lane; the marker is genuine when its coin id is `hash(L(lane, n-1), 1)` ([above](#deposits-that-prove-themselves-at-any-age-r2t4)).
 
 **Hop (payment).** `"STR2H" | version | token | parents | receiver key | amount | change key | change amount`, signed once by the key of every parent coin. Amounts are conserved exactly. Coin ids of the outputs are hashes of the hop body.
 
@@ -249,7 +264,7 @@ The package checks need no node and trust nothing we say: the signatures and cer
 - **The council is a test council.** Its seven keys are held by one operator, the Stables lab, on one server. The evidence shows the mechanism (5 of 7 signatures enforced by the contract, a sealed list, payouts proven against it, a fallback when it is silent), not independent governance.
 - **Test tokens.** Winiwa has no value. The amounts are small on purpose.
 - **Payments are seen when they exit.** A payment between phones is off chain; its signatures reach the chain when the coin leaves the card. Coins still on cards are not on chain.
-- **Pruning.** A receiver proves a deposit through its own node while the deposit is inside the node's unpruned window. Older anchors need the register planned for a later stage.
+- **Pruning.** An R2T3 deposit can be proven only inside a node's unpruned window. R2T4 deposits are proven at any age by their marker's id and the proof the payer's node keeps; that a tracked coin's proof stays exportable past the window is read from Minima's source and is being measured on a lab node.
 - **Trust roots.** Key attestation trusts Google's attestation roots and, for GrapheneOS, the published GrapheneOS boot keys; a revoked-certificate list snapshot is used when present. A broken TEE would break the one-use guarantee; double spends remain detectable (two different hops signed by one key are a proof), but not preventable.
 - **The fallback trusts the Council to be on watch.** The fallback that stops a Council holding money back also pays a false request that nobody rejects within the waiting period (20 blocks in this test). In this test that is acceptable because the tokens have no value. For real funds it needs the longer wait and the contract-enforced limits in the production plan. See the [risk assessment](#the-council).
 - **Not audited.** The code and contracts have not had an external security audit.
@@ -283,7 +298,7 @@ The risks that decide whether the card can hold real money: a Council quorum tha
 | Risk | What could happen | Likelihood / impact | What we do about it | Left after that |
 | --- | --- | --- | --- | --- |
 | A fake deposit (an anchor with no money in the vault) | Coins backed by nothing | Medium / high | Every receiver and the Council check the deposit transaction itself: one anchor, the amount into the vault, no vault input. A fake anchor was refused on mainnet | None known |
-| A deposit older than a node's unpruned window | New phones cannot prove it, so its coins are refused | High over time / high | Coin refresh and the Council's register | Not built: the main technical gap for long-lived coins |
+| A deposit older than a node's unpruned window | New phones cannot prove it, so its coins are refused | High over time / high | R2T4 (built 17 October 2026): a marker that cannot be faked, its proof kept fresh by each holder's node and carried with every payment; R2T3 money moved over by coin refresh | Rests on node tracking (being measured past the window); a phone that loses its node's data keeps only the proofs it last stored |
 | A deep chain reorganisation after a deposit is credited | Coins exist whose deposit vanished | Very low / high | Three confirmations before crediting | A larger wait for large Adds is worth setting |
 | A contract bug | Money leaves the vault wrongly | Low to medium / very high | 13 forbidden spends refused on mainnet for R2T2 (R2T2-EXIT-01) and 14 for R2T3 (R2T3-EXIT-02), among them a seal by 4 of 7, a reused approval and a skimmed vault remainder; contracts kept small | No external audit yet |
 | The test lab rescue branch | The lab key can take money from the test vault and anchors | Certain in the test / very high | Test only, valueless tokens | Removed in the production generation |
@@ -323,6 +338,13 @@ Minima mainnet, generation R2T3. The exact scripts as executed are in [`contract
 | Seal copy | `0xAA222EFD8CC8E87A1616E3F8BAD1936A1363501C88337B53809664EF5E9EDF50` |
 | Seal token | `0x0E277A26E58F352BE2967C095E4587A671A28AED7A3EBED31D43093FDA3F2E82` |
 | Package carriers (`RETURN FALSE`) | `0xABA005476D2B3CD7F251B9783E64C124C9670BB358695F04D91B2057BB64CB49` |
+| Deposit gate (R2T4) | `0x084B1E939F497E46EA5107D3B29CB82E8E547FED26EDE45984FC3890352B7CC3` |
+
+The gate's 8 lanes start at these genesis coins (port 5 = 0, port 6 = the lane), lanes 1 to 8 in order:
+`0xEDD47A48D22EE92992D9D3BF6FD0761E6272417C0DEEE4FE640DF3A875890167`, `0xB30C91D504B80D39E5E34C286C6F6DB64176C96D994796FF80D93C487C574CE4`,
+`0x6DA136F11EBA61F1D04669AD4087B60B7E1193A310A5998F674EC51248371679`, `0x494D8AFF5F7DB3A82A8589C7FBA97082FC9F212BD8388081A720B99DBB54CDCF`,
+`0xD09FD59919CB708A674A5DA2724F985D93F209A199C8309D46245048FD7A76D7`, `0x81730FA814DB79B1C749659969C2E532EFF90513FEB95C88DF1F9E5226BF55CF`,
+`0x40AFA8EBD249FD810A59E322CB193BF6376D141D3AC9A6D454E495936E5AC934`, `0xE3D39D739A1844C0D54FA0CF0550B7A0EE21980D366F80BAA133FD07C2E45C38`.
 | Winiwa (test token) | `0xD4F5DD3546F25D327CBF2B6867E193CE5DB6491AC9C65BBDCECACA1A6688063F` |
 
 The seven council public keys are in [`evidence/council.json`](evidence/council.json).

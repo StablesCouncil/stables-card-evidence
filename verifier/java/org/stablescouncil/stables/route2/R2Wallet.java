@@ -222,6 +222,9 @@ public final class R2Wallet {
     }
     private boolean wantsStrong(long amount){return strongAt>0&&amount>=strongAt&&keys.strongAvailable();}
 
+    /** R2T4: the freshest proof this phone's node gives for a deposit marker (coin id hex), or null. Never reads the node. */
+    private volatile java.util.function.Function<String,byte[]> freshProof;
+    public void freshProofs(java.util.function.Function<String,byte[]> source){this.freshProof=source;}
     public R2Wallet(CoinKeys keys,Storage storage,R2Receiver receiver)throws Exception{
         this.keys=keys;this.storage=storage;this.receiver=receiver;
         byte[] s=storage.load();if(s!=null)decode(s);
@@ -521,7 +524,9 @@ public final class R2Wallet {
     public synchronized byte[] refundPackage(byte[] recvKeyHash)throws Exception{
         Outgoing o=outgoing.get(R2Codec.hex(recvKeyHash));
         if(o==null||o.refusal==null)throw R2Codec.fail("refund","no refusal held for this payment");
-        return R2Refusal.pack(R2Refusal.fromWire(o.refusal),o.bundle);
+        byte[] bundle=o.bundle;
+        try{bundle=R2Bundle.parse(o.bundle).freshProofs(freshProof).encode();}catch(R2Exception e){/* the signed bundle as it was */}
+        return R2Refusal.pack(R2Refusal.fromWire(o.refusal),bundle);
     }
     public synchronized void refundProgress(byte[] recvKeyHash,int settle,String request)throws Exception{
         Outgoing o=outgoing.get(R2Codec.hex(recvKeyHash));if(o==null)throw R2Codec.fail("refund","unknown payment");
@@ -783,6 +788,7 @@ public final class R2Wallet {
         R2Bundle b=new R2Bundle();
         for(String p:t.parents){Coin c=coins.get(p);b.merge(R2Bundle.parse(c.bundle));}
         for(String p:t.parents){Coin c=coins.get(p);b.addKey(c.leaf,c.chain);}
+        b.freshProofs(freshProof);                                      // R2T4: the deposits' proofs as this node keeps them now
         b.addHop(hop);byte[] bundle=b.encode();
         int depth=0;for(String p:t.parents)depth=Math.max(depth,coins.get(p).depth);
         for(String p:t.parents){coins.get(p).status=SPENT;seen.put(p,hop.bodyHash());}
@@ -894,7 +900,7 @@ public final class R2Wallet {
             commit();                                                   // commit point B
         }
         line.sign(exitIntent.sig);
-        R2Bundle b=R2Bundle.parse(c.bundle);b.addKey(c.leaf,c.chain);
+        R2Bundle b=R2Bundle.parse(c.bundle);b.addKey(c.leaf,c.chain);b.freshProofs(freshProof);
         byte[] pkg=R2Exit.pack(line,b.encode());
         c.status=EXITED;
         exits.put(R2Codec.hex(c.id),new Exit(c.id,c.token,c.amount,line.payout,line.wire(),pkg,EXIT_SIGNED,null));
@@ -957,7 +963,7 @@ public final class R2Wallet {
     public static int historyBytes(Coin c)throws R2Exception{
         R2Bundle b=R2Bundle.parse(c.bundle);java.util.Set<String> all=new java.util.HashSet<>();
         for(List<byte[]> ch:b.chains())all.add(R2Codec.hex(R2Attestation.chainId(ch)));
-        return b.encode(all).length;
+        return b.encode(all).length-b.proofBytes();
     }
     /** Held plain-key coins whose history passed the limit, largest history first. */
     public synchronized List<Coin> refreshDue(int maxBytes,java.util.function.Predicate<Coin> eligible){

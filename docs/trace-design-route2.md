@@ -156,3 +156,24 @@ R2T1 anchors stay valid as before: coin unspent at the R2T1 vault, amount equal 
 **Exit package**: `"STR2P" | ver=0x01 | exitWire (var16) | bundle (the coin's full bundle, every chain carried)`. Its SHA-256 is request port 10; the bytes ride in request ports 30 to 39.
 
 **What the council checks** (council design 3.1 step 2): the bundle by 13.8 steps 1 to 4 and 6; the exited coin is a coin of the bundle that no hop in it spends; the exit line is signed by that coin's key, which has an accepted attestation; token and amount equal the coin's; the request's ports 11 to 14 equal the exit line (coin id, amount, token, payout address); port 10 is the package hash; no earlier exit of this coin (the council's seen set); the weekly limit of the payout address.
+
+### 13.12 R2T4: deposits through the gate (17 October 2026)
+
+Replaces the register planned for old deposits (13.3, 13.11). Design and reasoning: `DEPOSIT_PROOF_DESIGN.md`.
+
+**Deposit (Add) in R2T4.** One transaction whose **first input** is a lane coin of the deposit gate
+(`0x084B1E939F497E46EA5107D3B29CB82E8E547FED26EDE45984FC3890352B7CC3`). The gate's script requires: output 0 the next
+lane coin (same amount and token, kept state), output 1 the marker at the R2T3 anchor address (1 atom of the token in
+port 3, kept state), output 2 the amount of port 2 in that token at the R2T3 vault (no kept state), port 0 `0x52325434`,
+port 2 above 0, port 5 one above the spent lane coin's port 5, port 6 equal to it. Port 1 is keyHash(K0) as before.
+
+**Lanes.** Eight genesis coins, port 5 = 0 and port 6 = the lane (README, Contracts and addresses). Minima's coin id of
+output i is `hash(first input coin id, i)`, so `L(lane, 0)` is the genesis id, `L(lane, n) = hash(L(lane, n-1), 0)`, and
+the marker of deposit n is `hash(L(lane, n-1), 1)`.
+
+**What a receiver checks for an R2T4 anchor**: 13.3 with the R2T4 tag at the R2T3 anchor address, then that port 6 names a
+published lane, port 5 is between 1 and 10,000,000, and the marker's coin id equals `hash(L(lane, n-1), 1)`. No deposit
+transaction is read. If its node does not see the marker, it imports the bundle's anchor proof with `track:true`.
+
+**Proofs.** The holder's node tracks every R2T4 marker behind its coins (`cointrack`, or the import above) and exports a
+fresh proof every 100 blocks; payments, exits and refunds carry the freshest export in the anchor record's proof field.

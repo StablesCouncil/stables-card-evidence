@@ -20,14 +20,31 @@ a.card:hover,a.card:focus-visible{border-color:var(--accent);outline:none}
 a.card b{display:block;font:700 19px/1.3 var(--display);color:var(--accent);margin-bottom:4px}
 a.card span{color:var(--muted);font-size:15px}
 .note{color:var(--muted);font-size:14px;margin:6px 0 0}
+.updated{color:var(--muted);font-size:14px;margin:-8px 0 0}
+.updated time{color:var(--ink);font-weight:600}
+.changes{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px}
+.changes h2{font:700 17px/1.3 var(--display);margin:0 0 8px}
+.changes ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:8px}
+.changes li{color:var(--muted);font-size:15px}
+.changes li time{color:var(--ink);font-weight:600}
+.changes a{color:var(--accent)}
 </style></head><body>
 <div class="wrap">
   <h1>Stables card: the evidence on Minima mainnet</h1>
+  <p class="updated">Latest update: <time datetime="2026-10-17">17 October 2026</time></p>
   <p class="lead">The Stables card works like cash on a phone. Each coin is held by a one-use key inside the phone's secure chip. These pages show where those chip signatures sit in real Minima transactions, how the Council approves a withdrawal, and how anyone can check all of it again.</p>
+  <section class="changes" aria-labelledby="changes-title">
+    <h2 id="changes-title">What changed</h2>
+    <ul>
+      <li><time datetime="2026-10-17">17 October 2026</time>. Deposits that prove themselves at any age: every Add now goes through a deposit gate whose script requires the money to enter the vault, so the deposit marker's own coin id proves the deposit and no old transaction is ever read. The Council also keeps every hand-over it approves, so a broken chip's double payment is refused when the second copy tries to exit. <a href="https://github.com/StablesCouncil/stables-card-evidence#deposits-that-prove-themselves-at-any-age-r2t4">Read how it works</a>.</li>
+      <li><time datetime="2026-10-16">16 October 2026</time>. Failed payments: a payment whose touch broke off is settled over the network, and a payment the receiver never got is refused by it with a signed statement and refunded to the payer's Savings by the Council. Large histories leave in package carriers. <a href="https://github.com/StablesCouncil/stables-card-evidence#when-a-touch-breaks-off">Read how it works</a>.</li>
+      <li><time datetime="2026-10-15">15 October 2026</time>. The Council's checker as deployed, published with the evidence.</li>
+    </ul>
+  </section>
   <a class="card" href="evidence/2026-10-12/signature-walkthrough.html"><b>Follow one withdrawal, step by step</b><span>A real Remove from the card, from the phone's signature in the transaction to the Council seal (5 of 7 keys) and the payout. The signatures are checked in your browser.</span></a>
   <a class="card" href="evidence/2026-10-12/viewer.html"><b>A set of card transactions: 11 to 12 October 2026</b><span>The 28 card transactions recorded between blocks 2361500 and 2362925: each coin's journey, every chip signature and certificate chain, and each Council seal. Later card transactions are not in this set; new sets will be added with their own dates.</span></a>
   <a class="card" href="https://github.com/StablesCouncil/stables-card-evidence"><b>The repository</b><span>How it works, the exact contracts as executed, the evidence report, the risk assessment, questions for reviewers, and the code to check it yourself.</span></a>
   <p class="note">How a phone proves that a key lives in its secure chip: Android key attestation, documented by Android in <a href="https://developer.android.com/privacy-and-security/security-key-attestation">Verify hardware-backed key pairs with key attestation</a>, with Google's own verifier library at <a href="https://github.com/android/keyattestation">android/keyattestation</a>. The Stables card checks the same attestation record with its own code, published in the repository.</p>
-  <p class="note">Test generation R2T3, with valueless test tokens and a test Council whose seven keys are held by one operator. Nothing here is production.</p>
+  <p class="note">Test generation R2T3, with deposits through the R2T4 gate since 17 October 2026, valueless test tokens and a test Council whose seven keys are held by one operator. Nothing here is production.</p>
 </div>
 </body></html>

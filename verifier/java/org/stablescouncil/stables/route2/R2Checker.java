@@ -64,13 +64,41 @@ public final class R2Checker {
         return deposits;
     }
 
+    /* Every hand-over the Council has seen in a package it approved (founder 2026-10-17, item 4: "catch a double payment
+       from a broken chip at exit"). A hop is valid only with the one-use signature of each coin it spends, so a different
+       hop spending a coin already seen here is a double spend by that coin's chip: the package is refused, with both hops
+       as the proof. One line per spent coin: parent coin id, the spending hop's body hash, its signed wire (hex). */
+    static final Map<String,String> seenBody=new HashMap<>(),seenWire=new HashMap<>();
+    static void loadSeen(String file)throws Exception{
+        if(file==null||!Files.exists(Paths.get(file)))return;
+        for(String line:Files.readAllLines(Paths.get(file),StandardCharsets.UTF_8)){
+            String[] f=line.trim().split(" ");if(f.length!=3)continue;
+            seenBody.putIfAbsent(f[0],f[1]);seenWire.putIfAbsent(f[1],f[2]);
+        }
+    }
+    static void recordSeen(String file,byte[] bundle){
+        if(file==null||bundle==null)return;
+        try{
+            StringBuilder add=new StringBuilder();
+            for(R2Hop h:R2Bundle.parse(bundle).hops()){
+                String body=R2Codec.hex(h.bodyHash()),wire=R2Codec.hex(h.wire());
+                for(byte[] par:h.parents){String pid=R2Codec.hex(par);if(seenBody.putIfAbsent(pid,body)==null){seenWire.putIfAbsent(body,wire);add.append(pid).append(' ').append(body).append(' ').append(wire).append('\n');}}
+            }
+            if(add.length()>0)Files.write(Paths.get(file),add.toString().getBytes(StandardCharsets.UTF_8),java.nio.file.StandardOpenOption.CREATE,java.nio.file.StandardOpenOption.APPEND);
+        }catch(Exception e){System.err.println("seen hops not recorded: "+e);}
+    }
+
     public static void main(String[] argv)throws Exception{
         Map<String,String> a=new HashMap<>();for(int i=0;i+1<argv.length;i+=2)a.put(argv[i].replaceFirst("^--",""),argv[i+1]);
         port=Integer.parseInt(a.get("rpc"));
         String reqId=a.get("request"),reqAddr=a.get("reqaddr"),anchorAddr=a.get("anchor"),vault=a.get("vault"),r2t1=a.get("r2t1");
         // The generation this council pays for (its anchor tag): R2T2 by default, R2T3 with --gen 0x52325433.
         final String gen=a.getOrDefault("gen",R2Receiver.GENERATION_R2T2);
+        // R2T4 (DEPOSIT_PROOF_DESIGN.md) deposits through the gate go into the R2T3 vault: that council pays both.
+        final Set<String> gens=new HashSet<>();gens.add(gen.toLowerCase(java.util.Locale.ROOT));
+        if(R2Anchors.eq(gen,R2Receiver.GENERATION_R2T3))gens.add(R2Receiver.GENERATION_R2T4.toLowerCase(java.util.Locale.ROOT));
         Set<String> exited=new HashSet<>();if(a.get("exited")!=null)for(String x:a.get("exited").split(","))if(!x.isEmpty())exited.add(R2Anchors.norm(x));
+        final String seenFile=a.get("seen");loadSeen(seenFile);
         JSONObject out=new JSONObject();out.put("request",reqId);
         try{
             JSONObject rc=coin(reqId);
@@ -103,9 +131,15 @@ public final class R2Checker {
             R2Receiver.Chain chain=(id,proof)->{
                 try{
                     String cid="0x"+R2Codec.hex(id);JSONObject c=coin(cid);
+                    // R2T4: a marker older than this node's window comes with the payer's fresh proof; imported and tracked.
+                    if(c==null&&proof!=null&&proof.length>0){
+                        try{rpc("coinimport data:0x"+R2Codec.hex(proof)+" track:true");}catch(Exception ignored){}
+                        c=coin(cid);
+                    }
                     if(c==null)return R2Receiver.AnchorView.missing();
                     Map<Integer,String> st=state(c);Boolean proven=null;
-                    if(!R2Anchors.eq(st.get(0),gen))older.add(cid);
+                    String tag=st.get(0)==null?"":st.get(0).trim().toLowerCase(java.util.Locale.ROOT);
+                    if(!gens.contains(tag))older.add(cid);
                     if(R2Anchors.eq(st.get(0),gen)){
                         proven=false;
                         for(R2Anchors.Tx t:deposits(anchorAddr))if(t.creates(cid))proven=R2Anchors.depositProven(cid,t,anchorAddr,vault,st.get(2),st.get(3));
@@ -116,12 +150,13 @@ public final class R2Checker {
             };
             Set<String> revoked=R2Status.parse(new String(Files.readAllBytes(Paths.get(a.get("status"))),StandardCharsets.UTF_8));
             R2Attestation att=R2Attestation.production(revoked);
-            R2Receiver council=new R2Receiver(att::verifyKey,chain,r2t1,java.util.Collections.singletonMap(gen,anchorAddr),3);
+            Map<String,String> anchorsByGen=new HashMap<>();for(String g:gens)anchorsByGen.put(g,anchorAddr);
+            R2Receiver council=new R2Receiver(att::verifyKey,chain,r2t1,anchorsByGen,3).deposits(R2Deposits.mainnet());
             R2Receiver.Ledger ledger=new R2Receiver.Ledger(){
                 public R2Request outstanding(byte[] kh){return null;}
                 public boolean credited(byte[] kh){return false;}
-                public byte[] seenSpender(byte[] p){return null;}
-                public byte[] seenWire(byte[] h){return null;}
+                public byte[] seenSpender(byte[] p){String b=seenBody.get(R2Codec.hex(p));return b==null?null:R2Codec.unhex(b);}
+                public byte[] seenWire(byte[] h){String w=seenWire.get(R2Codec.hex(h));return w==null?null:R2Codec.unhex(w);}
                 public boolean exited(byte[] id){return exited.contains(R2Codec.hex(id));}
             };
             // A refund (failed payments, 2026-10-16): the receiver's signed refusal and the payer's bundle. Same request
@@ -139,6 +174,7 @@ public final class R2Checker {
                 if(!R2Anchors.eq(s.get(13),R2Codec.hex(f.token)))throw R2Codec.fail("request","port 13 is not the refunded token");
                 if(!R2Anchors.eq(s.get(14),R2Codec.hex(f.refusal.payout)))throw R2Codec.fail("request","port 14 is not the payout the refusal names");
                 out.put("verdict","approve");out.put("code","accepted");out.put("depth",f.depth);
+                recordSeen(seenFile,R2Refusal.unpack(bytes).bundle);
                 System.out.println(out.toJSONString());
                 return;
             }
@@ -158,6 +194,7 @@ public final class R2Checker {
             // No limit per payout address (founder 2026-10-13): a new address costs nothing, so it stopped no one, and a
             // rejection loses an honest withdrawal for good. The drain cap belongs on the fallback path, in the contract.
             out.put("verdict","approve");out.put("code","accepted");out.put("depth",r.depth);
+            recordSeen(seenFile,R2Exit.unpack(bytes).bundle);
         }catch(R2Codec.R2Exception e){out.put("verdict","reject");out.put("code",e.code);out.put("detail",e.getMessage());}
         System.out.println(out.toJSONString());
     }

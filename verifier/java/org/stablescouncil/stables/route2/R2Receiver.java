@@ -13,7 +13,7 @@ import org.stablescouncil.stables.route2.R2Codec.R2Exception;
  * Pure: the caller supplies its own node's view of anchors and its own ledger, and commits the result itself.
  */
 public final class R2Receiver {
-    public static final String GENERATION="0x52325431",GENERATION_R2T2="0x52325432",GENERATION_R2T3="0x52325433";
+    public static final String GENERATION="0x52325431",GENERATION_R2T2="0x52325432",GENERATION_R2T3="0x52325433",GENERATION_R2T4=R2Deposits.GENERATION_R2T4;
 
     public interface Attester { R2Attestation.Key verifyKey(byte[] leaf,List<byte[]> chain)throws R2Exception; }
 
@@ -92,6 +92,9 @@ public final class R2Receiver {
     }
     /** The anchor address of the stage 2 generation this tag names, or null. */
     String anchorAddressOf(String tag){return tag==null?null:anchorAddresses.get(tag.trim().toLowerCase(Locale.ROOT));}
+    /** R2T4 (DEPOSIT_PROOF_DESIGN.md): the deposit gate's lanes. Without them no R2T4 deposit is accepted. */
+    private volatile R2Deposits deposits;
+    public R2Receiver deposits(R2Deposits d){this.deposits=d;return this;}
 
     public Result check(byte[] bundleBytes,Ledger ledger){
         try{return run(bundleBytes,ledger);}
@@ -278,6 +281,13 @@ public final class R2Receiver {
         if(s.get(2)==null||R2Codec.atoms(s.get(2).trim())!=a.amount)throw R2Codec.fail("anchor","amount port differs");
         if(!hexEq(s.get(3),"0x"+R2Codec.hex(a.token)))throw R2Codec.fail("anchor","token port differs");
         if(v.depth<minDepth)throw R2Codec.fail("anchor","anchor has "+v.depth+" confirmations, needs "+minDepth);
+        // R2T4: the marker proves the deposit by its own coin id (the gate enforced the vault payment), at any age.
+        if(hexEq(s.get(0),R2Deposits.GENERATION_R2T4)){
+            R2Deposits d=deposits;
+            if(d==null||!d.hasLanes())throw R2Codec.fail("anchor-deposit","R2T4 deposits are not known to this receiver");
+            d.check(a.coinId,s);
+            return;
+        }
         if(!Boolean.TRUE.equals(v.deposit))throw R2Codec.fail("anchor-deposit","the anchor's deposit transaction does not put its amount in the vault");
     }
     static boolean hexEq(String a,String b){return a!=null&&b!=null&&a.trim().toLowerCase(Locale.ROOT).equals(b.trim().toLowerCase(Locale.ROOT));}
