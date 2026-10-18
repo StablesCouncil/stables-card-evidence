@@ -1,0 +1,18 @@
+/* SEAL COPY. One seal-token unit carrying the seal: 20 approved root, 23 heartbeat, 24 payable from, 26 rejected
+   root, 27 frozen, 28 frozen since, the guardians (80 on, last seen 100 on). Used by one payout, rejection or guardian
+   act per block, and given back unchanged at the output named in port 19. Spent with the head (2 units at input 0),
+   the head script decides. */
+LET sealtok = $SEALTOK
+IF (GETINTOK(0) EQ sealtok) AND (GETINAMT(0) EQ 2) THEN RETURN TRUE ENDIF
+ASSERT $GUARDSAME
+ASSERT SAMESTATE(20 24) AND SAMESTATE(26 26)
+IF (@INPUT EQ 0) AND MULTISIG($GFREEZE $GUARDPREV) THEN
+  /* Freeze this one copy (when a busy chain keeps the head's freeze from taking every copy at once). Only a copy spent
+     first: in a guardian release (5 signatures) the copy follows the contested request and must not read it as a freeze
+     (found on mainnet, R2T5-DEPLOY-02 release-R3). */
+  ASSERT STATE(27) EQ 1
+  RETURN VERIFYOUT(STATE(19) @ADDRESS 1 sealtok TRUE)
+ENDIF
+ASSERT @INPUT EQ (STATE(16) + 1)
+ASSERT SAMESTATE(27 28)
+RETURN VERIFYOUT(STATE(19) @ADDRESS 1 sealtok TRUE)

@@ -1,0 +1,437 @@
+{
+  "generation": "R2T5",
+  "run": "R2T5-DEPLOY-03",
+  "network": "Minima mainnet",
+  "config": {
+    "_about": "R2T5, the next card vault generation (DRAFT 2026-10-17, not deployed). Every number of the generation lives here; the contracts are generated from this file by r2t5-generate.mjs. A deployed contract never changes (its address is its script), so a new value here means a new generation, and card money moves to it by itself through the card refresh.",
+    "generation": {
+      "name": "R2T5",
+      "tag": "0x52325435"
+    },
+    "chain": {
+      "_note": "Minima aims at one block about every 50 seconds: 72 an hour, 1,728 a day. All waits below are in blocks.",
+      "blocksPerHour": 72
+    },
+    "council": {
+      "_note": "Founder 2026-10-17: 11 members expected, each on its own server provider. Keys live in the seal head's state (ports 60 on), so a Council member is replaced without a new generation. Quorum 7 and 6 seal copies keep a seal under Minima's 64 KB TxPoW limit: each signature is about 4.1 KB and each seal coin carries the whole seal state (measured 2026-10-17: 8 signatures and 9 coins made 66,174 bytes, never mined).",
+      "size": 11,
+      "quorum": 7,
+      "sealCopies": 6,
+      "heartbeatSlackBlocks": 72,
+      "heartbeatEveryBlocks": 432,
+      "payoutDelayBlocks": 144
+    },
+    "guardians": {
+      "_note": "Community guardians, each running the open-source checker on its own machine. Their keys sit in the seal state (ports 80 on, last check-in 100 on), so the set renews itself: a guardian checks in now and then; a seat whose guardian has not checked in for inactiveAfterBlocks goes to a candidate who proposes itself (signs), elected by more than half of the guardians active within activeWindowBlocks, and at least electMin of them.",
+      "size": 9,
+      "stop": 1,
+      "freeze": 3,
+      "release": 5,
+      "succession": 6,
+      "electMin": 3,
+      "activeWindowBlocks": 51840,
+      "inactiveAfterBlocks": 103680
+    },
+    "fallback": {
+      "_note": "The fallback pays an exit nobody acted on, but only while the Council is alive (heartbeat) and not frozen.",
+      "waitBlocks": 5184,
+      "heartbeatMaxAgeBlocks": 1728
+    },
+    "succession": {
+      "afterSilenceBlocks": 5184,
+      "afterFrozenBlocks": 12096
+    },
+    "exitRecord": {
+      "_note": "The chain remembers every paid card coin (sorted list in a Merkle tree, keyed by the first 16 bytes of the card coin id). Shards split the key space by its first byte: one payout per shard per block. Depth 24 = 16.7 million exits per shard, proofs of 966 bytes.",
+      "depth": 24,
+      "shardsPerToken": 8,
+      "keyBytes": 16
+    },
+    "meter": {
+      "_note": "Caps per token per period, split evenly over the shards (the record coin of each shard carries its meter).",
+      "periodBlocks": 1728,
+      "tokens": {
+        "Winiwa": {
+          "councilCapPerPeriod": 20000,
+          "fallbackCapPerPeriod": 1000
+        },
+        "xWiniwa": {
+          "councilCapPerPeriod": 20000,
+          "fallbackCapPerPeriod": 1000
+        }
+      }
+    },
+    "vault": {
+      "maxVaultCoinsPerPayout": 8
+    },
+    "deposits": {
+      "_note": "R2T4 gate shape pointed at the new vault; one deposit per lane per block.",
+      "lanes": 16
+    }
+  },
+  "contracts": {
+    "copy": "0xE37B73AA83186B7CCEBF306699A5D87CF6721071059B621F599B8A6856E47896",
+    "head": "0xD6462FFC684A99C146D0FFE4D1681FF61BD7DB99122ECBDD64E7F702AF425561",
+    "record": "0xD06AD1ACCCC6AB8F61ADEA5F17EA2058A4B8998DC81517F2D1EC89B3C6D0B704",
+    "contested": "0x092183C5904C71124646E339E33C003DD2FF0F3AE250BE752C8CC34C2200164A",
+    "request": "0x5BFE17B989A7053037A3E565C42696481952295E20F2EE7128F61713176F907B",
+    "vault": "0x5E2497EC163480AEC7C15B43A62FDBED9595FA38ED1DE2ACC4A0A4F0E1287791",
+    "anchor": "0x8E5DA67BE5D0E8E6E58238702B725F2BDBE982D3B264A55D8FC4A8D648E7071D",
+    "gate": "0x9454F9DEC8C03CBA54179F2808934A3D65B281C42124B5BA567322F2497CE9A6"
+  },
+  "lanes": [
+    "0x93B9649F86ECCBBBEC4AC60F3EC28F855C98FCCA10CDB5F1F42092C34314EE77",
+    "0x21174CA016A4034B9E158243024F62F625FA37AA273E0A609B0C2F2DE62711CD",
+    "0x9EFDE9B7C4CD0119217B4707AEDE0510C4DB5224A12D5430F4B5898B23B31915",
+    "0x4B7331C0F55AB735EDC4C83C6A4133E6196DDA865010075CB843A740DBA7CA5E",
+    "0x0CE6B0A9A33DE70F62EFF5843D595001C657126D6532267A364C624AC5DA9709",
+    "0x52F1F91D97571C220E9855B3D2503E87EB0F4EA6F011DA4BEE6D6CD302983570",
+    "0xCC1759D818E12AFDD380856EC72617009157BBB6B521EC1AB7F2C8ED17A8EFDC",
+    "0x45D799F8B0D3BA72CB79FAEAC04014812961984A570CA0A03B035C5F6506564B",
+    "0x64A481278C8425F81E780C2B31744777A216D0E080C7001ED06DEE8A41F40380",
+    "0x6110D934D08BCD26E7129DF1DF74802B9D6FD20D36603B7EEB3D26CA1B335477",
+    "0x2BAED7D7B7F0BDCF6F816816B0E8D7082E9A86CB47CD87E4A0E5E028F9756564",
+    "0xABAA42410371FE42AB6CEC79AD57C117D63F93CF4E6FA84B9ECB1430C0B949C4",
+    "0x81EDDE0D371F1C1A160A21BCC343ED804EBC175B74CF00E2B458C4BE5BB064C6",
+    "0x41A4F948EB6B3F8FE5E3827BD0972AB174B953E41C2168CC125B71FC64FBB9C6",
+    "0xD5339D2AA03D2BFD3EED71983BDDDAD404EB5183BE662511511F22FCE89B651A",
+    "0x2FE641E1869704A50F62F960E55C0AFE2B48B29FC067BE35147E07691FB15DF5"
+  ],
+  "steps": {
+    "genesis": {
+      "block": 2371855,
+      "txpowid": "0x000088FAFB1E98367154B4615691714A50B13C678B499D7CA72578A9B628270A",
+      "bytes": 8331
+    },
+    "record-split": {
+      "block": 2371858,
+      "txpowid": "0x0000701B9BC85EEADF7C08C6C6B71E1CD354E8FF07DA2F8C1E4ED279D41BA899",
+      "bytes": 8217
+    },
+    "record-split-2": {
+      "block": 2371863,
+      "txpowid": "0x00001CE9821653FB4ECA76298F78800D0024DF3B979E1D2D152ECE2EF0268E27",
+      "bytes": 7663
+    },
+    "record-Winiwa-0": {
+      "block": 2371869,
+      "txpowid": "0x00001536CDD15670B5B9AE5A5827E7A70F786385DCFA7510189EF4588D98234D",
+      "bytes": 5735
+    },
+    "record-Winiwa-1": {
+      "block": 2371869,
+      "txpowid": "0x00003DB2B04B9992D665C5F7F153E4A7F970C5690D1925FACDE633298CD13C88",
+      "bytes": 5735
+    },
+    "record-Winiwa-2": {
+      "block": 2371869,
+      "txpowid": "0x00001EBBC3B5FBB2DD7D9B593670F45261290B2A03E26B591E733817B2EBB51B",
+      "bytes": 5560
+    },
+    "record-Winiwa-3": {
+      "block": 2371869,
+      "txpowid": "0x00002AFCEFB9CC54DFFD3FB37EA826DDF89B636039FAFF012A5DB4B9639A15B0",
+      "bytes": 5560
+    },
+    "record-Winiwa-4": {
+      "block": 2371871,
+      "txpowid": "0x00004A97BAF60721BEB51666B053970D3E58918CBE8CA6C2F5E5F9AD6CB17C5A",
+      "bytes": 5560
+    },
+    "record-Winiwa-5": {
+      "block": 2371871,
+      "txpowid": "0x00005E3B3FE90A80EBE42F1A27F30D013A97641F7EDC531BE27D75CA5F1C37D6",
+      "bytes": 5560
+    },
+    "record-Winiwa-6": {
+      "block": 2371871,
+      "txpowid": "0x000078DB2B426F74EEFB8F68162EB2789A7935775A5BBAF0A727B8844D41FC1F",
+      "bytes": 5520
+    },
+    "record-Winiwa-7": {
+      "block": 2371871,
+      "txpowid": "0x00007CA6C1E7666CF3990E270342C0F1553AF460C55F4DF8860233E40622F8F4",
+      "bytes": 5520
+    },
+    "record-xWiniwa-0": {
+      "block": 2371871,
+      "txpowid": "0x0000179FB60BF0C9DB5D1D2AE4C29BE29CEED25116EC4A6B191CC2FC83858422",
+      "bytes": 5659
+    },
+    "record-xWiniwa-1": {
+      "block": 2371871,
+      "txpowid": "0x00003559B0B45B1798C6B05539F1A08C6AD5745B22AE786F08F78D16DB9A2823",
+      "bytes": 5659
+    },
+    "record-xWiniwa-2": {
+      "block": 2371872,
+      "txpowid": "0x00002932F77A3B30333ABA5463FE8FAFC5DEB8D259EF13BC81F87F2052B2B1A0",
+      "bytes": 5659
+    },
+    "record-xWiniwa-3": {
+      "block": 2371872,
+      "txpowid": "0x00001741D0ADD3359FF6CD44A1DEF2B388A89E855EFE49247C49F3AB6C4E210B",
+      "bytes": 5659
+    },
+    "record-xWiniwa-4": {
+      "block": 2371872,
+      "txpowid": "0x00006B2FEFF67B612DBD322E593378F2C569B2AE75958C18B0ECA4A56DC517AB",
+      "bytes": 5561
+    },
+    "record-xWiniwa-5": {
+      "block": 2371872,
+      "txpowid": "0x00006AD99C2850FBEADE94290A5A65F2B52F34BC3BB2B084978152576BF9D647",
+      "bytes": 5561
+    },
+    "record-xWiniwa-6": {
+      "block": 2371872,
+      "txpowid": "0x000020C8CCAEB7F9C74B0163F367F93DFDD815DD13F783288264A07ED9C2CA9C",
+      "bytes": 5561
+    },
+    "record-xWiniwa-7": {
+      "block": 2371872,
+      "txpowid": "0x000076DF45A3E5796C521377C6AAD30E0CB9CFE2253762F578602992070E5D48",
+      "bytes": 5561
+    },
+    "lane-1": {
+      "block": 2371875,
+      "txpowid": "0x00005F4CCDEC8BDEE3B84F49C28B4EBB8D69B7871DF089F55A41C12551A1E3E4",
+      "bytes": 5167
+    },
+    "lane-2": {
+      "block": 2371875,
+      "txpowid": "0x000058ED31DB07134F993E6341FEC121BC432EAED344D3EF38DC56FEE0315A26",
+      "bytes": 5294
+    },
+    "lane-3": {
+      "block": 2371875,
+      "txpowid": "0x0000623A966B18D7B9CB2531ABC20AAE9A4A327DAE3198CC121C9E76B82A8AE7",
+      "bytes": 5210
+    },
+    "lane-4": {
+      "block": 2371875,
+      "txpowid": "0x0000716BB191395540D8640463A4177A261F8FFDECC188F420895C56399CCB2F",
+      "bytes": 5336
+    },
+    "lane-5": {
+      "block": 2371875,
+      "txpowid": "0x0000308522FF204174E674A83AD32C0844D0C17567F0D7D1CD01F845E6CD5CE9",
+      "bytes": 5545
+    },
+    "lane-6": {
+      "block": 2371875,
+      "txpowid": "0x000048982D00AA25AABB2A2A60E2DB8C93E553BA51420F2C981E0F94EAAC2E9D",
+      "bytes": 5252
+    },
+    "lane-7": {
+      "block": 2371876,
+      "txpowid": "0x00002438292C0D3F80C24F9283BA0890FFA023B35603DE7E43675327C91D3823",
+      "bytes": 5252
+    },
+    "lane-8": {
+      "block": 2371876,
+      "txpowid": "0x0000009AE851AF3D006ED039226DDEFEA26791C80012123EA1B423A8424C30F1",
+      "bytes": 5251
+    },
+    "lane-9": {
+      "block": 2371876,
+      "txpowid": "0x00002964C4B0B31D42B43DA00C269297E1F909B45E46FEAFBC69E60047D4C1A4",
+      "bytes": 5336
+    },
+    "lane-10": {
+      "block": 2371876,
+      "txpowid": "0x00008988F2CF10364B52E443B133A7B872F25E3170C5F443BF0FD42C39B7D84E",
+      "bytes": 5430
+    },
+    "lane-11": {
+      "block": 2371876,
+      "txpowid": "0x0000880EF50CBB6D0A314FD55F37E1271CEB5ED3CA5E1832F65000E417335963",
+      "bytes": 5208
+    },
+    "lane-12": {
+      "block": 2371876,
+      "txpowid": "0x00002EBBC2E8E058DA12FAF39C0CBD67C41AA96E9D4C4B38D15F0FAC6BE19890",
+      "bytes": 5253
+    },
+    "lane-13": {
+      "block": 2371876,
+      "txpowid": "0x000081EA6D892F881FDF53B18562CC33ADD29405350A854095972B2EDBDE8F0B",
+      "bytes": 5253
+    },
+    "lane-14": {
+      "block": 2371876,
+      "txpowid": "0x00003797379181D26AF17386655D135B8BB0C23D164200660974255A207ACEF8",
+      "bytes": 5311
+    },
+    "lane-15": {
+      "block": 2371876,
+      "txpowid": "0x00007BA406192C86610EA613CE3C5C4F5305175ACFE6CD71E63F83944DE5A4DC",
+      "bytes": 5311
+    },
+    "lane-16": {
+      "block": 2371876,
+      "txpowid": "0x00000319757FE52AA9C8351C5D057DC1746877B7551E6F6653E9B8F232C2928E",
+      "bytes": 5171
+    },
+    "deposit-D1": {
+      "block": 2371880,
+      "txpowid": "0x00000D2DBFB99C74DD3A362BB84F1FEE96547F5793C1AD63899E2264DA60BE84",
+      "bytes": 7492
+    },
+    "deposit-D2": {
+      "block": 2371884,
+      "txpowid": "0x000076F203EC14E3CAE70C089C51FD54144B752BF81CDE8EBB6B662001313233",
+      "bytes": 7544
+    },
+    "request-R1": {
+      "block": 2371887,
+      "txpowid": "0x00005B1568291E2890931C8F60B40A063ECDDDD21A53390CCC9B6E5B75B37572",
+      "bytes": 5485
+    },
+    "request-R2": {
+      "block": 2371891,
+      "txpowid": "0x00002E1EF55A33C2C5540D5A2015B76F2DF408D778196F00F0620A28ED978FDE",
+      "bytes": 5587
+    },
+    "request-R3": {
+      "block": 2371898,
+      "txpowid": "0x000010ABD2C98F352803F8498A3E3CCC69B4FF0FE746B2F047A256F8B0EEEEDA",
+      "bytes": 5357
+    },
+    "request-R4": {
+      "block": 2371903,
+      "txpowid": "0x0000168527F6A8B228AAD33A6B02D6D7264C45D9E6C9CE5D86C3D3618B995A14",
+      "bytes": 5458
+    },
+    "request-R5": {
+      "block": 2371907,
+      "txpowid": "0x00002CE0CEBDF7F39248750BB53CFD92BC0CFC6973D56EAB70B8E566A89556B7",
+      "bytes": 5518
+    },
+    "seal-1": {
+      "block": 2371913,
+      "txpowid": "0x0000363165DDF657C4760327D1088AB046E650B1B6D34C8D8BADA2F693C54336",
+      "bytes": 53635
+    },
+    "reject-R2": {
+      "block": 2371918,
+      "txpowid": "0x00003E9A76CD511351B8B6D19ACABDA389B2B2658809357100A52A19338893C4",
+      "bytes": 6911
+    },
+    "stop-R3": {
+      "block": 2371923,
+      "txpowid": "0x00007AE3473F52CEA992207C514CEF1DC7AC7DAC48658CE0D89EE158AEC77DE2",
+      "bytes": 10658
+    },
+    "release-R3": {
+      "block": 2371929,
+      "txpowid": "0x00006194CE78B6A6A34F47919B643AFC6BE204D7D4D7FB3EF3C27FD5DD430674",
+      "bytes": 28047
+    },
+    "freeze-head": {
+      "block": 2371934,
+      "txpowid": "0x000085E8DACFB06A99E947ED996CA2B3AF405DCBB4E2F43F32051DEB7DAF1DE6",
+      "bytes": 38477
+    },
+    "release-head": {
+      "block": 2372055,
+      "txpowid": "0x000052B87EB7D6A134491CE12423FF0C4F7CDCD4467D4410C97D98FAD908A5F1",
+      "bytes": 46623
+    },
+    "checkin-1": {
+      "block": 2372059,
+      "txpowid": "0x0000077815D0701F9EDC55C3BE0EE8C2514C0195B079880CF231ED93266EC95D",
+      "bytes": 46719
+    },
+    "checkin-2": {
+      "block": 2372064,
+      "txpowid": "0x0000175B5042C9A3750D0A92414E9EDAF69297E8E2048C19A2A7494E261F8E8E",
+      "bytes": 42546
+    },
+    "payout-R1": {
+      "block": 2372068,
+      "txpowid": "0x00004117B2C27FE47BE66D24746033A7D559D5F1C3E0B898307CDFAB3513190E",
+      "bytes": 14795
+    }
+  },
+  "refusals": {
+    "council-lifts-freeze": {
+      "valid": {
+        "basic": true,
+        "signatures": true,
+        "mmrproofs": true,
+        "scripts": false
+      },
+      "refused": true,
+      "at": "2026-10-17T23:40:15.265Z"
+    },
+    "release-one-guardian-short": {
+      "valid": {
+        "basic": true,
+        "signatures": true,
+        "mmrproofs": true,
+        "scripts": false
+      },
+      "refused": true,
+      "at": "2026-10-17T23:40:55.770Z"
+    },
+    "payout-while-frozen": {
+      "valid": {
+        "basic": true,
+        "signatures": true,
+        "mmrproofs": true,
+        "scripts": false
+      },
+      "refused": true,
+      "at": "2026-10-18T01:08:28.753Z"
+    },
+    "replay-honest-proof": {
+      "refusedBeforeTheChain": "RecordTree: Exception in thread \"main\" java.lang.IllegalArgumentException: already in the record: 0xB9873079160BF0F007600551057AD39D\r\n\tat RecordTree.main(RecordTree.java:87)\r\n",
+      "at": "2026-10-18T01:19:11.643Z"
+    },
+    "replay-stale-proof": {
+      "valid": {
+        "basic": true,
+        "signatures": true,
+        "mmrproofs": true,
+        "scripts": false
+      },
+      "refused": true,
+      "at": "2026-10-18T01:19:14.636Z"
+    }
+  },
+  "requests": {
+    "R1": {
+      "coinid": "0xD2E343710A77162EB433399A23E51105D4F17B855E58887A00A231FD35E9FEA5",
+      "card": "0xB9873079160BF0F007600551057AD39D02484ABA1A67B84AC0907C916BD0804F",
+      "amount": "2",
+      "block": 2371887
+    },
+    "R2": {
+      "coinid": "0xBEF9D735531D7D10C9120E6A12C9D8C8C3A1B0FA96163D16C9C811522F3CFC33",
+      "card": "0x034000B2783991C99F9A3EA3A0CCF4AD51F34817B0B48435FA131E07CF4A0674",
+      "amount": "0.5",
+      "block": 2371891
+    },
+    "R3": {
+      "coinid": "0x8A69E3DB5D15AA7C2BC6263770D7810212D79522E341AA7D172073F86C028017",
+      "card": "0x5FA1F450FBFCA8520572F393AD612944B7EB2D4BB40C6EB53B0511D5B80E77DB",
+      "amount": "0.3",
+      "block": 2371898,
+      "contested": "0xFB677D0AF19E016D7F965480206AC3766FFA1ABB80AE728B33B3375D4B304E7D"
+    },
+    "R4": {
+      "coinid": "0x9D1D305EA5D1BBF52529BECD41218C440CF2DB7EB2963A0A12F356AD27DFCD0C",
+      "card": "0xB9873079160BF0F007600551057AD39D02484ABA1A67B84AC0907C916BD0804F",
+      "amount": "2",
+      "block": 2371903
+    },
+    "R5": {
+      "coinid": "0x5DF39C0530B0349A1D6E657F6C7C570C69E0A589B50A857B29B44CD12999394D",
+      "card": "0xBC2E54F1E3F62343F8508F67835A64CF67F072B7D5814E2265935B1B4CC382D5",
+      "amount": "0.1",
+      "block": 2371907
+    }
+  },
+  "offlineCases": "176 of 176"
+}

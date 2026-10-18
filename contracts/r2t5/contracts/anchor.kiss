@@ -1,0 +1,4 @@
+/* MARKER ANCHOR. Every deposit leaves a 1-atom marker here. Nothing can ever spend it: no lab key, no rescue. A marker
+   proves its deposit for as long as the chain keeps it (the phones keep its proof). */
+LET gen = $GEN
+RETURN FALSE

@@ -1,0 +1,37 @@
+/* EXIT REQUEST. 1 atom; 10 package hash, 11 card coin, 12 amount, 13 token, 14 payout address, 17 the atom.
+   Inputs: 0 this, 1..n vault coins (n = port 16), n+1 a seal copy, n+2 the exit record of the coin's shard.
+   Port 50 names the path: 0 rejection, 1 Council approval, 2 fallback. The guardians come from the seal copy. */
+LET copyaddr = $COPYADDR
+LET sealtok = $SEALTOK
+LET recaddr = $RECADDR
+LET rectok = $RECTOK
+LET contaddr = $CONTADDR
+ASSERT @INPUT EQ 0
+ASSERT SAMESTATE(10 14)
+ASSERT STATE(17) EQ @AMOUNT
+LET c = STATE(16) + 1
+ASSERT (GETINADDR(c) EQ copyaddr) AND (GETINTOK(c) EQ sealtok)
+IF MULTISIG($GSTOP $GUARDSTATE) THEN
+  /* Any one guardian stops the request: it becomes contested, nothing is paid. */
+  ASSERT (STATE(16) EQ 0) AND (@TOTIN EQ 2)
+  RETURN VERIFYOUT(0 contaddr STATE(17) @TOKENID TRUE)
+ENDIF
+/* Each PROOF only runs on its own path (PROOF throws on a proof it cannot read). */
+LET path = STATE(50)
+IF path EQ 0 THEN
+  /* Rejected by the Council: anyone posts it, and it may touch no vault coin. */
+  ASSERT (STATE(16) EQ 0) AND (@TOTIN EQ 2)
+  RETURN PROOF(@COINID 0 STATE(26) 0 STATE(25))
+ENDIF
+ASSERT (GETINADDR(c + 1) EQ recaddr) AND (GETINTOK(c + 1) EQ rectok)
+ASSERT STATE(27) EQ 0
+ASSERT VERIFYOUT(0 STATE(14) STATE(12) STATE(13) FALSE)
+ASSERT VERIFYOUT(1 STATE(14) STATE(17) @TOKENID FALSE)
+IF path EQ 1 THEN
+  ASSERT @BLOCK GTE STATE(24)
+  RETURN PROOF(@COINID 0 STATE(20) 0 STATE(25))
+ENDIF
+ASSERT path EQ 2
+ASSERT @COINAGE GTE $FALLBACKWAIT
+ASSERT (@BLOCK - STATE(23)) LTE $HBMAXAGE
+RETURN TRUE

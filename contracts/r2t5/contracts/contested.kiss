@@ -1,0 +1,41 @@
+/* CONTESTED REQUEST. A request a guardian stopped. The Council approves or rejects it as before. The fallback only
+   opens again after a guardian majority releases it (port 51 = 1), and then waits its full time again; any one
+   guardian can stop it again. The guardians come from the seal copy at input n+1. */
+LET copyaddr = $COPYADDR
+LET sealtok = $SEALTOK
+LET recaddr = $RECADDR
+LET rectok = $RECTOK
+ASSERT @INPUT EQ 0
+ASSERT SAMESTATE(10 14)
+ASSERT STATE(17) EQ @AMOUNT
+LET c = STATE(16) + 1
+ASSERT (GETINADDR(c) EQ copyaddr) AND (GETINTOK(c) EQ sealtok)
+IF MULTISIG($GRELEASE $GUARDSTATE) THEN
+  ASSERT (STATE(16) EQ 0) AND (@TOTIN EQ 2)
+  ASSERT STATE(51) EQ 1
+  RETURN VERIFYOUT(0 @ADDRESS STATE(17) @TOKENID TRUE)
+ENDIF
+IF MULTISIG($GSTOP $GUARDSTATE) THEN
+  /* Any one guardian stops it again (also a coin someone created here directly, already marked released). */
+  ASSERT (STATE(16) EQ 0) AND (@TOTIN EQ 2)
+  ASSERT STATE(51) EQ 0
+  RETURN VERIFYOUT(0 @ADDRESS STATE(17) @TOKENID TRUE)
+ENDIF
+LET path = STATE(50)
+IF path EQ 0 THEN
+  ASSERT (STATE(16) EQ 0) AND (@TOTIN EQ 2)
+  RETURN PROOF(@COINID 0 STATE(26) 0 STATE(25))
+ENDIF
+ASSERT (GETINADDR(c + 1) EQ recaddr) AND (GETINTOK(c + 1) EQ rectok)
+ASSERT STATE(27) EQ 0
+ASSERT VERIFYOUT(0 STATE(14) STATE(12) STATE(13) FALSE)
+ASSERT VERIFYOUT(1 STATE(14) STATE(17) @TOKENID FALSE)
+IF path EQ 1 THEN
+  ASSERT @BLOCK GTE STATE(24)
+  RETURN PROOF(@COINID 0 STATE(20) 0 STATE(25))
+ENDIF
+ASSERT path EQ 2
+ASSERT PREVSTATE(51) EQ 1
+ASSERT @COINAGE GTE $FALLBACKWAIT
+ASSERT (@BLOCK - STATE(23)) LTE $HBMAXAGE
+RETURN TRUE

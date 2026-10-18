@@ -1,0 +1,67 @@
+{
+  "_about": "R2T5, the next card vault generation (DRAFT 2026-10-17, not deployed). Every number of the generation lives here; the contracts are generated from this file by r2t5-generate.mjs. A deployed contract never changes (its address is its script), so a new value here means a new generation, and card money moves to it by itself through the card refresh.",
+  "generation": {
+    "name": "R2T5",
+    "tag": "0x52325435"
+  },
+  "chain": {
+    "_note": "Minima aims at one block about every 50 seconds: 72 an hour, 1,728 a day. All waits below are in blocks.",
+    "blocksPerHour": 72
+  },
+  "council": {
+    "_note": "Founder 2026-10-17: 11 members expected, each on its own server provider. Keys live in the seal head's state (ports 60 on), so a Council member is replaced without a new generation. Quorum 7 and 6 seal copies keep a seal under Minima's 64 KB TxPoW limit: each signature is about 4.1 KB and each seal coin carries the whole seal state (measured 2026-10-17: 8 signatures and 9 coins made 66,174 bytes, never mined).",
+    "size": 11,
+    "quorum": 7,
+    "sealCopies": 6,
+    "heartbeatSlackBlocks": 72,
+    "heartbeatEveryBlocks": 432,
+    "payoutDelayBlocks": 144
+  },
+  "guardians": {
+    "_note": "Community guardians, each running the open-source checker on its own machine. Their keys sit in the seal state (ports 80 on, last check-in 100 on), so the set renews itself: a guardian checks in now and then; a seat whose guardian has not checked in for inactiveAfterBlocks goes to a candidate who proposes itself (signs), elected by more than half of the guardians active within activeWindowBlocks, and at least electMin of them.",
+    "size": 9,
+    "stop": 1,
+    "freeze": 3,
+    "release": 5,
+    "succession": 6,
+    "electMin": 3,
+    "activeWindowBlocks": 51840,
+    "inactiveAfterBlocks": 103680
+  },
+  "fallback": {
+    "_note": "The fallback pays an exit nobody acted on, but only while the Council is alive (heartbeat) and not frozen.",
+    "waitBlocks": 5184,
+    "heartbeatMaxAgeBlocks": 1728
+  },
+  "succession": {
+    "afterSilenceBlocks": 5184,
+    "afterFrozenBlocks": 12096
+  },
+  "exitRecord": {
+    "_note": "The chain remembers every paid card coin (sorted list in a Merkle tree, keyed by the first 16 bytes of the card coin id). Shards split the key space by its first byte: one payout per shard per block. Depth 24 = 16.7 million exits per shard, proofs of 966 bytes.",
+    "depth": 24,
+    "shardsPerToken": 8,
+    "keyBytes": 16
+  },
+  "meter": {
+    "_note": "Caps per token per period, split evenly over the shards (the record coin of each shard carries its meter).",
+    "periodBlocks": 1728,
+    "tokens": {
+      "Winiwa": {
+        "councilCapPerPeriod": 20000,
+        "fallbackCapPerPeriod": 1000
+      },
+      "xWiniwa": {
+        "councilCapPerPeriod": 20000,
+        "fallbackCapPerPeriod": 1000
+      }
+    }
+  },
+  "vault": {
+    "maxVaultCoinsPerPayout": 8
+  },
+  "deposits": {
+    "_note": "R2T4 gate shape pointed at the new vault; one deposit per lane per block.",
+    "lanes": 16
+  }
+}

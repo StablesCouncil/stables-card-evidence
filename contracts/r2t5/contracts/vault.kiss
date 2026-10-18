@@ -1,0 +1,19 @@
+/* VAULT. No lab key and no other way out: only a paying exit spends vault coins (a request or contested coin at
+   input 0, with the exit record of its shard, which only moves on a metered payout), and the change comes back. */
+LET reqaddr = $REQADDR
+LET contaddr = $CONTADDR
+LET rectok = $RECTOK
+ASSERT (GETINADDR(0) EQ reqaddr) OR (GETINADDR(0) EQ contaddr)
+LET n = STATE(16)
+ASSERT (@INPUT GTE 1) AND (@INPUT LTE n) AND (n LTE $MAXVAULTIN)
+ASSERT GETINTOK(n + 2) EQ rectok
+ASSERT STATE(13) EQ @TOKENID
+ASSERT STATE(12) GT 0
+LET sum = 0
+LET i = 1
+WHILE i LTE n DO ASSERT GETINADDR(i) EQ @ADDRESS ASSERT GETINTOK(i) EQ @TOKENID LET sum = sum + GETINAMT(i) LET i = i + 1 ENDWHILE
+ASSERT VERIFYOUT(0 STATE(14) STATE(12) @TOKENID FALSE)
+LET rem = sum - STATE(12)
+ASSERT STATE(15) EQ rem
+IF rem GT 0 THEN RETURN VERIFYOUT(2 @ADDRESS STATE(15) @TOKENID FALSE) ENDIF
+RETURN rem EQ 0

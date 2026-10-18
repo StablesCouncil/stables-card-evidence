@@ -1,0 +1,87 @@
+/* SEAL HEAD. One coin of 2 seal-token units. Its state holds the seal (20 to 28), the Council keys (60 on), the
+   guardian keys (80 on) and each guardian's last check-in block (100 on). Port 29 names the action. */
+LET copyaddr = $COPYADDR
+LET sealtok = $SEALTOK
+ASSERT @INPUT EQ 0
+ASSERT @TOKENID EQ sealtok
+ASSERT VERIFYOUT(0 @ADDRESS 2 sealtok TRUE)
+$COPYOUTS
+ASSERT STATE(21) EQ (PREVSTATE(21) + 1)
+ASSERT STATE(22) EQ PREVSTATE(22)
+LET act = STATE(29)
+IF act EQ 1 THEN
+  /* Seal and heartbeat: the Council quorum. It may change its own keys, never lift a freeze or touch the guardians. */
+  ASSERT MULTISIG($CQUORUM $COUNCILPREV)
+  ASSERT $GUARDSAME
+  ASSERT (STATE(27) EQ PREVSTATE(27)) AND (STATE(28) EQ PREVSTATE(28))
+  ASSERT (STATE(23) LTE @BLOCK) AND (STATE(23) GTE (@BLOCK - $HBSLACK))
+  RETURN STATE(24) EQ (STATE(23) + $PAYDELAY)
+ENDIF
+IF act EQ 4 THEN
+  /* Succession: a guardian supermajority installs new Council keys after a long silence or a long freeze.
+     The lists start empty and the heartbeat stays old: nothing pays until the new Council seals. */
+  ASSERT MULTISIG($GSUCCESSION $GUARDPREV)
+  ASSERT $GUARDSAME
+  ASSERT ((@BLOCK - PREVSTATE(23)) GTE $SUCCSILENCE) OR ((PREVSTATE(27) EQ 1) AND ((@BLOCK - PREVSTATE(28)) GTE $SUCCFROZEN))
+  ASSERT (STATE(20) EQ 0x00) AND (STATE(26) EQ 0x00)
+  ASSERT SAMESTATE(23 23)
+  ASSERT STATE(24) EQ (STATE(23) + $PAYDELAY)
+  RETURN (STATE(27) EQ 0) AND (STATE(28) EQ PREVSTATE(28))
+ENDIF
+/* Every other action keeps the Council keys and the lists. */
+ASSERT SAMESTATE($COUNCILFIRST $COUNCILLAST)
+ASSERT SAMESTATE(20 20) AND SAMESTATE(22 24) AND SAMESTATE(26 26)
+IF act EQ 2 THEN
+  /* Freeze: a few guardians. Nothing approved can be paid while frozen; the fallback pauses too. */
+  ASSERT MULTISIG($GFREEZE $GUARDPREV)
+  ASSERT $GUARDSAME
+  ASSERT (STATE(28) LTE @BLOCK) AND (STATE(28) GTE (@BLOCK - $HBSLACK))
+  RETURN STATE(27) EQ 1
+ENDIF
+IF act EQ 3 THEN
+  /* Release: a guardian majority lifts the freeze. */
+  ASSERT MULTISIG($GRELEASE $GUARDPREV)
+  ASSERT $GUARDSAME
+  ASSERT SAMESTATE(28 28)
+  RETURN STATE(27) EQ 0
+ENDIF
+ASSERT SAMESTATE(27 28)
+IF act EQ 5 THEN
+  /* Check-in: every guardian who signs moves its own last-seen block to now; the others stay as they were. */
+  ASSERT SAMESTATE($GUARDFIRST $GUARDLAST)
+  LET n = 0
+  LET i = 0
+  WHILE i LT $GSIZE DO
+    IF SIGNEDBY(PREVSTATE(80 + i)) THEN
+      ASSERT (STATE(100 + i) LTE @BLOCK) AND (STATE(100 + i) GTE (@BLOCK - $HBSLACK))
+      LET n = n + 1
+    ELSE
+      ASSERT SAMESTATE(100 + i 100 + i)
+    ENDIF
+    LET i = i + 1
+  ENDWHILE
+  RETURN n GTE 1
+ENDIF
+IF act EQ 6 THEN
+  /* Election: a seat whose guardian has not checked in for a long time goes to a candidate who signs (it holds the
+     key), chosen by more than half of the active guardians (checked in recently), and at least $ELECTMIN of them. */
+  LET j = STATE(52)
+  ASSERT (j GTE 0) AND (j LT $GSIZE)
+  ASSERT (@BLOCK - PREVSTATE(100 + j)) GTE $INACTIVE
+  LET cand = STATE(80 + j)
+  ASSERT SIGNEDBY(cand)
+  ASSERT (STATE(100 + j) LTE @BLOCK) AND (STATE(100 + j) GTE (@BLOCK - $HBSLACK))
+  LET a = 0
+  LET s = 0
+  LET i = 0
+  WHILE i LT $GSIZE DO
+    IF (@BLOCK - PREVSTATE(100 + i)) LTE $ACTIVE THEN
+      LET a = a + 1
+      IF SIGNEDBY(PREVSTATE(80 + i)) THEN LET s = s + 1 ENDIF
+    ENDIF
+    ASSERT (j EQ i) OR (SAMESTATE(80 + i 80 + i) AND SAMESTATE(100 + i 100 + i) AND (cand NEQ PREVSTATE(80 + i)))
+    LET i = i + 1
+  ENDWHILE
+  RETURN (s GTE $ELECTMIN) AND ((s * 2) GT a)
+ENDIF
+RETURN FALSE
