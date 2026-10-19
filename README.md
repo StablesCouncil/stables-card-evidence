@@ -6,6 +6,8 @@ The Stables card is the part of the Stables payment infrastructure that works li
 
 Status: on Minima mainnet with **valueless test tokens** (Winiwa). Since 17 October 2026 the card's next vault generation, **R2T5**, is deployed: no lab key anywhere, a Council heartbeat without which the fallback pauses, community guardians who can stop, freeze and replace the Council and renew themselves, and an exit record that makes the chain refuse a second payout of the same coin (see [if the Council disappears](#if-the-council-disappears)). The evidence set below (11 to 12 October) is from the earlier test generation R2T3. Every Council and guardian key is held by the Stables lab for now. Nothing here is production. See [What this does not prove yet](#what-this-does-not-prove-yet).
 
+**The Stables card is an experiment.** It needs a thorough security review by independent experts before it can be considered for production. Reviewers are welcome: start with [For reviewers](#for-reviewers), and send questions and findings as issues on this repository.
+
 ## Contents
 
 1. [The idea in one paragraph](#the-idea-in-one-paragraph)
@@ -339,7 +341,7 @@ The risks that decide whether the card can hold real money: a Council quorum tha
 | App bugs (wrong figure, stuck row, a step refused) | Confusion; a step to retry | High today / low | Seen and fixed on the phones on 2026-10-12 (stuck rows, a Minima Core Remove, a double count); chain truth is never changed by the display | A longer run without new findings before real money |
 | The app's signing key is stolen | A malicious update pays the attacker | Low / very high | Key kept offline and backed up | Reproducible builds and a second signer are not in place |
 | Revocation list goes stale | One check weakens | Medium / medium | Any mirror of Google's list in the next app version | Open: refresh without a server |
-| Only Android phones with a hardware one-use key | Most people cannot hold card money | Certain / business | Web and MiniDapp verify and receive nothing to hold | Other platforms later |
+| Only Android phones with a hardware one-use key | Most people cannot hold card money | Certain / business | Any other device shows "Not on this device" and holds nothing | Other platforms later |
 | Rules for money services | Holding real value may need a licence or limits | Unknown / high | Test tokens have no value | Legal review before real funds |
 
 ## Contracts and addresses
