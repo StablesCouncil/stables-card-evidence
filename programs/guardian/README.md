@@ -1,5 +1,7 @@
 # The guardian program
 
+**Version 0.1.0-test, testing phase** (3 November 2026, vault R2T5, valueless test tokens). This code will change before any real money; see [CHANGELOG](../CHANGELOG.md).
+
 A guardian is two things: a **key** in one of the vault's nine seats, and this **program**, installed on the guardian's
 own machine next to its own Minima node, which watches the vault and signs with that key. What guardians are and the
 rules they follow: [GUARDIANS.md](../../docs/GUARDIANS.md).

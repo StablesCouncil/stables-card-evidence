@@ -1,5 +1,7 @@
 # The programs that look after the card's vault
 
+**Testing phase.** Everything in this folder is version **0.1.0-test**: the code that runs the card today with valueless test tokens. It will be replaced, version by version, before any real money. Each version is listed in [CHANGELOG.md](CHANGELOG.md) and tagged in git (programs-v0.1.0-test).
+
 The vault itself is a script on Minima with no owner key ([contracts](../contracts/r2t5/)). Around it, two kinds of
 program hold keys the vault recognises:
 

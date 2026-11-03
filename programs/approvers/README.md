@@ -1,5 +1,7 @@
 # The approvers' program
 
+**Version 0.1.0-test, testing phase** (3 November 2026, vault R2T5, valueless test tokens). This code will change before any real money, starting with signing across several machines; see [CHANGELOG](../CHANGELOG.md).
+
 `r2t5-council.mjs` is the program behind the card's approvers for vault generation R2T5. Older documents and the code
 call the approvers "the Council"; that word is now kept for decisions taken by the Stables community.
 
