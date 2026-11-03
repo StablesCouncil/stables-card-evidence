@@ -63,6 +63,7 @@ threshold**: 7 approver keys, or 6 guardian keys, or both groups together.
 | Approvers and guardians | Same organisation | Never the same machine or the same person |
 | Handover to new approvers | 6 guardians choose them | Only to backup approvers fixed at the start, after a 7-day public wait |
 | Wrongful refusal | Money locked; the lab pays it back by hand | 5 guardians overrule it |
+| Fallback payout (3 days, no approver) | Allowed by the vault; no program posts it, so it is posted by hand | Every guardian program builds and posts it from the paid-coin lists it keeps itself |
 | Tokens | Valueless test tokens | Real value, only after the gates below |
 
 ## The requirements

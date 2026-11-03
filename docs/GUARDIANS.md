@@ -34,8 +34,10 @@ Two separate groups look after the card's vault:
 The approvers are not needed for the money to come back:
 
 - **Paying needs no one.** Card money moves from phone to phone by touch, offline, with no server.
-- **If the approvers do not answer, your money still comes back.** An exit request they neither approve nor refuse
-  pays itself after 3 days with no approver key (the fallback), as long as the approvers' heartbeat is fresh.
+- **If the approvers do not answer, the vault still lets your money come back.** An exit request they neither approve
+  nor refuse can be paid after 3 days with no approver key (the fallback), as long as the approvers' heartbeat is
+  fresh. No program posts that payout by itself yet: the guardian program will (it needs the paid-coin lists, which it
+  will keep itself); until then it is posted by hand.
 - **If the approvers disappear, nobody can steal through their absence.** If their heartbeat stops, the fallback pauses
   instead of opening, so nobody can slip a false request through. After 3 days of silence, 6 guardians install new
   approvers, and payouts resume.
