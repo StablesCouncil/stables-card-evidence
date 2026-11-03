@@ -1,0 +1,14 @@
+{
+ "_about": "First posting test, founder 2026-11-03 (\"please do that\"): one real check-in on mainnet (test tokens) for LAB seat 1, signed on lab node 9205, guarded by the lab guardian WOTS journal.",
+ "node": "http://127.0.0.1:9205",
+ "generation": "../../../stream_1_app/work/simcard/evidence/R2T5-DEPLOY-03/generation.json",
+ "dataDir": "./out/post-test-live",
+ "publicKey": "0x1B9EEC48AAAEDE022A655575EF0547D3A81FB015B69FC965B5CE0C7FA556D50B",
+ "seat": 1,
+ "allowPost": true,
+ "wotsJournal": "<lab>/Minima/WotsGuards/R2T5-Guardians/journal.jsonl",
+ "checker": {
+  "classes": "../../../stream_1_app/work/simcard/route2/checker/build",
+  "status": "../../../stream_1_app/work/standalone-android/stables-android/app/src/main/assets/route2/attestation-status.json"
+ }
+}

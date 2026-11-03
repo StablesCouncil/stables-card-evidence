@@ -1,0 +1,57 @@
+# The guardian box: one Compose project, three containers (founder 2026-11-03: "a single Docker Compose setup").
+#
+#   node      the guardian's own Minima node (official 1.0.49). Its RPC has a password made on first start and kept in
+#             the "secrets" volume, which only the node and the guardian mount.
+#   guardian  shares the node's network space (the checker reads only 127.0.0.1). A door on 127.0.0.1:9005 passes the
+#             guardian's read commands to the node and nothing else.
+#   parlons   the guardian's own Parlons account (Parlons Cloud, built from Eurobuddha's source at a pinned commit). Its
+#             own network space: it cannot see the node's door, and the node's RPC needs the password it does not have.
+#
+# Data lives in Docker volumes, not in this folder, so the repo's backups never copy a key. Never restore the node's
+# volume from an old copy (one-time signatures): its backup is its 24 words. See README.md.
+#
+#   docker compose -p stables-guardian up -d --build
+name: stables-guardian
+
+services:
+  node:
+    build: ./node
+    restart: unless-stopped
+    environment:
+      # First peers only (public Minima nodes, from the lab node's own peer list 2026-11-03); none is the Council's.
+      MINIMA_PEERS: ${MINIMA_PEERS:-65.109.31.226:9001,45.77.57.24:9001,193.181.210.24:9001,38.242.212.121:9001,140.238.202.150:9001,93.93.105.231:9001}
+    volumes:
+      - node-data:/data
+      - secrets:/secrets
+    stop_grace_period: 60s
+
+  guardian:
+    build:
+      context: ./guardian
+      additional_contexts:
+        program: ..
+        stream1: ../../../stream_1_app
+        governance: ../..
+    restart: unless-stopped
+    network_mode: service:node
+    depends_on: [node, parlons]
+    volumes:
+      - guardian-data:/guardian-data
+      - secrets:/secrets:ro
+      - parlons-ticket:/ticket:ro
+
+  parlons:
+    build: ./parlons
+    restart: unless-stopped
+    environment:
+      PARLONS_NAME: ${PARLONS_NAME:-Stables guardian (PC)}
+    volumes:
+      - parlons-data:/data
+      - parlons-ticket:/ticket
+
+volumes:
+  node-data:
+  secrets:
+  guardian-data:
+  parlons-data:
+  parlons-ticket:

@@ -1,0 +1,25 @@
+# The Stables guardian on a Linux server (systemd). NOT INSTALLED. To install, as the guardian's own user:
+#   cp stables-guardian.service ~/.config/systemd/user/ && systemctl --user daemon-reload
+#   systemctl --user enable --now stables-guardian && loginctl enable-linger $USER
+# It needs: Node.js 20+, a JDK 17, Minima's minima.jar, the checker classes, and its own Minima node on 127.0.0.1.
+[Unit]
+Description=Stables guardian (card vault watch, dry run unless --post and allowPost)
+After=network-online.target minima.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/stables-guardian
+Environment=GUARDIAN_JDK=/usr/lib/jvm/java-17-openjdk-amd64/bin
+Environment=GUARDIAN_MINIMA_JAR=%h/minima/minima.jar
+EnvironmentFile=-%h/stables-guardian/guardian.env
+ExecStart=/usr/bin/node guardian.mjs watch --config guardian.config.json
+Restart=always
+RestartSec=60
+# A guardian that stops running is a guardian that cannot stop anything: the owner's alert hook also fires from here.
+ExecStopPost=/bin/sh -c 'test "$SERVICE_RESULT" = success || echo "{\"level\":\"urgent\",\"text\":\"guardian service stopped: $SERVICE_RESULT\"}" | ${GUARDIAN_ALERT:-cat} >/dev/null'
+NoNewPrivileges=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=default.target

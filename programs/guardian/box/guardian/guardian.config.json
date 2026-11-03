@@ -1,0 +1,14 @@
+{
+  "node": "http://127.0.0.1:9005",
+  "dataDir": "/guardian-data",
+  "publicKey": null,
+  "seat": null,
+  "allowPost": false,
+  "alert": {
+    "parlons": {
+      "url": "http://parlons:19587",
+      "ticketFile": "/ticket/panel-ticket.txt",
+      "toFile": "/guardian-data/parlons-owner.txt"
+    }
+  }
+}

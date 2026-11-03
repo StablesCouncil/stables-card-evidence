@@ -1,0 +1,18 @@
+{
+  "_about": "Copy to guardian.config.json and fill in. Dry run unless allowPost is true AND the program is started with --post. Paths are relative to this file.",
+  "node": "http://127.0.0.1:9005",
+  "node2": null,
+  "generation": "../../stream_1_app/work/simcard/evidence/R2T5-DEPLOY-03/generation.json",
+  "dataDir": "./data",
+  "publicKey": null,
+  "seat": null,
+  "passSeconds": 300,
+  "confirmBlocks": 20,
+  "failClosedBlocks": 720,
+  "checkInEveryBlocks": 12096,
+  "allowPost": false,
+  "alert": {
+    "command": null,
+    "telegram": { "tokenEnv": "GUARDIAN_TELEGRAM_TOKEN", "chatId": null }
+  }
+}

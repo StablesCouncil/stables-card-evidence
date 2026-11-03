@@ -1,0 +1,13 @@
+{
+  "_about": "Read-only dry run against lab node 9305 (Minima mainnet, DevNodesSet observer). No key: seat 0's public key from the head is only NAMED in the offline script check, nothing is signed or sent. Reads only.",
+  "node": "http://127.0.0.1:9305",
+  "generation": "../../../stream_1_app/work/simcard/evidence/R2T5-DEPLOY-03/generation.json",
+  "dataDir": "./out/live-dry-run",
+  "seat": 0,
+  "publicKey": null,
+  "allowPost": false,
+  "checker": {
+    "classes": "../../../stream_1_app/work/simcard/route2/checker/build",
+    "status": "../../../stream_1_app/work/standalone-android/stables-android/app/src/main/assets/route2/attestation-status.json"
+  }
+}

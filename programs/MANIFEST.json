@@ -1,0 +1,175 @@
+{
+ "copied": "2026-11-03T14:44:36.151Z",
+ "files": [
+  {
+   "file": "guardian/guardian.mjs",
+   "sha256": "a93261232d37cdc5aab516cef159d970f67a709b35f0d4f94bbab4ead5a401df",
+   "scrubbed": false
+  },
+  {
+   "file": "guardian/guardian-core.mjs",
+   "sha256": "c4b24486e5d56070d193a7d1696c38ba5e8780066bf8f6f1f6ddec0a219d400a",
+   "scrubbed": false
+  },
+  {
+   "file": "guardian/publish-log.mjs",
+   "sha256": "cc0d33745fd4d8085aa83be65703020d840e14f8bf4b31e68a80f5a934ec98fb",
+   "scrubbed": false
+  },
+  {
+   "file": "guardian/offline.mjs",
+   "sha256": "c72a957e4a706c153653e031d5694bd2754eb05f3c165047b23a3c6c0af999ec",
+   "scrubbed": true
+  },
+  {
+   "file": "guardian/alert-parlons.mjs",
+   "sha256": "f89b0210631ad59d0a62a31184d8581b160fe8cca979a6328bfcbf804c13387f",
+   "scrubbed": false
+  },
+  {
+   "file": "guardian/wots-guard.mjs",
+   "sha256": "80032cdb2a490b92b680911532e00eab28af6f59f3bff6d098dad774afbc8299",
+   "scrubbed": false
+  },
+  {
+   "file": "guardian/guardian.config.example.json",
+   "sha256": "94a79f24ef2b4f10eb7dd2212a7bad2c5df09716ce84a2b2397e797930b0a175",
+   "scrubbed": false
+  },
+  {
+   "file": "guardian/GUARDIAN_DESIGN.md",
+   "sha256": "126211954a5f765df42802c5713524af51732e39a8bee82ccb90f46c1ada27b8",
+   "scrubbed": false
+  },
+  {
+   "file": "guardian/test/live-dry-run.config.json",
+   "sha256": "c24cbd0fcf90d2469567e301a20d8403d766fa3684b961ca7d02520e9aff1c88",
+   "scrubbed": false
+  },
+  {
+   "file": "guardian/test/logic.mjs",
+   "sha256": "e5b8741d1d2ef9d438afc7349693e1c07d24c2894be86290c7281543fd43881d",
+   "scrubbed": false
+  },
+  {
+   "file": "guardian/test/offline-proof.mjs",
+   "sha256": "7bdd3450691d1db0a128428847cbee1a0d8d0018f5a0825f00ed6439c0219231",
+   "scrubbed": false
+  },
+  {
+   "file": "guardian/test/post-test.config.json",
+   "sha256": "fc6790e4e799570d7f7f88cec54d0f0e77e371dea6551203dc4b9c4e7e81080e",
+   "scrubbed": true
+  },
+  {
+   "file": "guardian/test/publish.mjs",
+   "sha256": "f139c6426cabdb1a83d6a02d5a209eda551ea81a6604c22a0d5a6f08c1ca24f3",
+   "scrubbed": false
+  },
+  {
+   "file": "guardian/test/run-all.mjs",
+   "sha256": "99658100397109a07416abc27ff4d438dd7c9977387c31cf0f8e280e9a420895",
+   "scrubbed": false
+  },
+  {
+   "file": "guardian/test/wots.mjs",
+   "sha256": "016f29f20ad7284e1af76b5ec8ae15826df0e0d38afb38ff9c35e171b8a81289",
+   "scrubbed": true
+  },
+  {
+   "file": "guardian/test/fixtures/r2t5-live-head.json",
+   "sha256": "7bd0f23dc3555583aaf8044d7cbb562feb60319ed032f524aa1c29cb46cd1bbe",
+   "scrubbed": false
+  },
+  {
+   "file": "guardian/service/install-windows-task.ps1",
+   "sha256": "f0e6859a9289830ca949f8757e550f6235837ef65429a3ffa2e2e6181fa869f4",
+   "scrubbed": false
+  },
+  {
+   "file": "guardian/service/stables-guardian.service",
+   "sha256": "4874009ce2b1b8a9acc20aac392805df626f6233c76b52cd5c838e377d0092d4",
+   "scrubbed": false
+  },
+  {
+   "file": "guardian/android/GuardianMode.java",
+   "sha256": "792fa114fae58d40360830a1387f0c9d5e8746a28fccb59ebac0e976f3fbe43f",
+   "scrubbed": false
+  },
+  {
+   "file": "guardian/android/README.md",
+   "sha256": "af7068fbd2c55b8d53d9f0dce5822ea55a2355a93aa06416ce9117c0f76610b8",
+   "scrubbed": false
+  },
+  {
+   "file": "guardian/box/compose.yml",
+   "sha256": "903ee3a5e2a86319ebbeb9d0813e19c0347160aad074edcb8b7afd8cb203e3ef",
+   "scrubbed": false
+  },
+  {
+   "file": "guardian/box/guardian/Dockerfile",
+   "sha256": "abe0985a5e7437aff5a6348d8d9b1717125d1372e8e84b35306e3dfeb63dde21",
+   "scrubbed": false
+  },
+  {
+   "file": "guardian/box/guardian/door.mjs",
+   "sha256": "bf5daa36e60da44bc0000ab3ee1d210b6a2183cea44a8a395bba59584c947de1",
+   "scrubbed": false
+  },
+  {
+   "file": "guardian/box/guardian/guardian.config.json",
+   "sha256": "043231d1e36db174ef08bdb8bbf86fe025c987cfa69704a7971fa2278278f1a6",
+   "scrubbed": false
+  },
+  {
+   "file": "guardian/box/guardian/parlons-setup.mjs",
+   "sha256": "dde67a796a5a92ee49412b838a407e49d3e09104c7e8dd2bf0f5fa0f3ecc9959",
+   "scrubbed": false
+  },
+  {
+   "file": "guardian/box/guardian/run.mjs",
+   "sha256": "848e8f1e0c65629316cbd8487d974c7f1d15ec17acdc4a6146844eaa0a67d0fa",
+   "scrubbed": false
+  },
+  {
+   "file": "guardian/box/guardian/setup-node.mjs",
+   "sha256": "ebe5a36db45b32eb7f9f673343d88786482d27de457f60dbb08d46f6f007b5dc",
+   "scrubbed": false
+  },
+  {
+   "file": "guardian/box/node/Dockerfile",
+   "sha256": "3a5f6af3fc04fa1906fa71338b031416b64be11bbce6d270c85a0e64d11e459b",
+   "scrubbed": false
+  },
+  {
+   "file": "guardian/box/node/start.sh",
+   "sha256": "bf7e81b1073a36b761011921edd5179836efd29ac1625d626411ac52964460c2",
+   "scrubbed": false
+  },
+  {
+   "file": "guardian/box/parlons/Dockerfile",
+   "sha256": "d51b2e83d027423d993ec02abc983253110b17736a11624c05235a85d439b48f",
+   "scrubbed": false
+  },
+  {
+   "file": "guardian/box/parlons/start.sh",
+   "sha256": "92278bf8f3584e8bfc9b2fc5217863dbe8c45f03a99f40b252b003c915a0a2e1",
+   "scrubbed": false
+  },
+  {
+   "file": "guardian/box/README.md",
+   "sha256": "dc49eb077512a203ee4ab18b2ae163383f58fdff7ca447e0dbd4610bbdbaa738",
+   "scrubbed": false
+  },
+  {
+   "file": "approvers/r2t5-council.mjs",
+   "sha256": "f2662e4c3e77b83cd981f517fbe17fb10ec63a660620b14b49cecbf7a76123bf",
+   "scrubbed": true
+  },
+  {
+   "file": "approvers/checker/R2Checker.java",
+   "sha256": "68766331a14d7fb5c0437f9e3456fdc12d9bbb931ac517fc37a130495abf9ff1",
+   "scrubbed": false
+  }
+ ]
+}
