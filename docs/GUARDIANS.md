@@ -85,7 +85,7 @@ Each seat has a name, so people can follow a guardian over time. "Active" means 
 |---|---|---|---|---|---|
 | 0 | Farrier | Checks every shoe | Stables lab | none yet | 24 Oct 2026 |
 | 1 | Bridle | Holds the reins | Stables lab | none yet | 3 Nov 2026 |
-| 2 | Paddock | Fenced ground | Stables lab | none yet | 18 Oct 2026 |
+| 2 | Paddock | Fenced ground | Stables lab | none yet | 3 Nov 2026 |
 | 3 | Halter | Leads, never rides | Stables lab | none yet | 18 Oct 2026 |
 | 4 | Stirrup | Steady footing | Stables lab | none yet | 18 Oct 2026 |
 | 5 | Tackroom | Everything in its place | Stables lab | none yet | 18 Oct 2026 |
@@ -93,7 +93,7 @@ Each seat has a name, so people can follow a guardian over time. "Active" means 
 | 7 | Hayloft | The high view | Stables lab | planned: a personal computer | 18 Oct 2026 |
 | 8 | Gatepost | Stands at the gate | Stables lab | planned: a separate server | 18 Oct 2026 |
 
-Check-in dates as read from mainnet on 3 November 2026. Seats 2 to 8 become open to election from about 17 December
+Check-in dates as read from mainnet on 3 November 2026. Seats 3 to 8 become open to election from about 17 December
 2026 unless they check in again.
 
 **Who runs the first guardians.** Lantern, Hayloft and Gatepost will be run by the project's founder, on a phone, a
@@ -141,8 +141,9 @@ The guardian rules themselves were exercised on mainnet at deployment, with the 
 
 1. The package check has not yet run inside the program on a real open exit request (none was open). The check itself
    is the approvers' own code.
-2. Posting has run once: one real check-in for seat 1 on 3 November 2026 (block 2,400,643), signed through the
-   journal that counts each one-time key use. Stops and freezes have not been posted by the program.
+2. Posting has run twice: real check-ins for seat 1 (block 2,400,643) and seat 2 (block 2,400,803 to 2,400,805) on
+   3 November 2026, each signed through the journal that counts each one-time key use. Stops and freezes have not
+   been posted by the program.
 3. No independent person holds a seat; all nine keys are the lab's.
 4. The program can publish its log to its own repository, but no guardian publishes yet.
 5. Alerts are written, not yet tested live.
