@@ -142,7 +142,7 @@ with a design for a guardian mode inside the Stables Android app.
 - **Alerts** to its owner over Parlons!, an open-source messenger on Minima's Maxima network, with no central chat
   server.
 
-The guardian program's code is published in [`programs/`](../programs/), for R2T6. The approvers' program published there is the R2T5 version; the R2T6 version follows.
+The code of the guardian program and of the approvers' program for R2T6 is published in [`programs/`](../programs/).
 
 ## What has been proven
 

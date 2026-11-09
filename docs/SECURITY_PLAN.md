@@ -117,7 +117,7 @@ survivable: a guardian seat is refilled by election, and the approvers have 4 ke
 
 Each guardian reads its own node, never an approvers' machine; keeps its own paid-coin lists; publishes its log to its
 own repository; and alerts its owner over Parlons! without a company's server. Phones get the gate's lanes and fresh
-deposit proofs from more than one machine. The guardians' code is public, and so is the approvers' R2T5 code, with the R2T6 version to follow ([`programs/`](../programs/)).
+deposit proofs from more than one machine. The approvers' and guardians' code is public ([`programs/`](../programs/)).
 
 ### R8. Everyone can see who is awake
 
