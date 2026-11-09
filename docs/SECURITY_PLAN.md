@@ -6,7 +6,7 @@ still holds all three and every guardian key, so the rules below are enforced on
 independent people. This plan says what has to change before any real money, and in what order. Nothing here has had
 an external audit.
 
-A fault found on 7 November 2026 lets anyone stop the card vault for good. R2T6 holds test tokens only and takes no real money until the next generation fixes it.
+R2T6 holds test tokens only and takes no real money; the next vault generation comes first.
 
 Related: [GUARDIANS.md](GUARDIANS.md) (what guardians are and the rules), [the programs](../programs/) (the code that
 holds the keys), [`evidence/r2t6/`](../evidence/r2t6/) (the scripts and every deployment step).

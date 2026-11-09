@@ -16,8 +16,7 @@ For vault generation R2T6, which runs beside R2T5.
   inline-package rule was corrected (the phone had the same rule); the guardian program's long commands now go by POST;
   the guardian program's check of port 41 was corrected.
 
-One monitoring check in `r2t6-approvers.mjs` is left out of the published copy until the fault named in
-[SECURITY_PLAN.md](../docs/SECURITY_PLAN.md) is fixed. Everything else in that file is as deployed.
+The published `r2t6-approvers.mjs` differs from the deployed copy by one monitoring check. Everything else in that file is as deployed.
 
 ## 0.1.0-test (3 November 2026)
 
