@@ -1,6 +1,6 @@
 # The programs that look after the card's vault
 
-**Testing phase.** Everything in this folder is version **0.1.0-test**: the code that runs the card today with valueless test tokens. It will be replaced, version by version, before any real money. Each version is listed in [CHANGELOG.md](CHANGELOG.md) and tagged in git (programs-v0.1.0-test).
+**Testing phase.** Everything in this folder is version **0.2.0-test**: the code that runs the card today with valueless test tokens. It will be replaced, version by version, before any real money. Each version is listed in [CHANGELOG.md](CHANGELOG.md) and tagged in git (programs-v0.1.0-test).
 
 The vault itself is a script on Minima with no owner key ([contracts](../contracts/r2t5/)). Around it, two kinds of
 program hold keys the vault recognises:
@@ -20,7 +20,7 @@ What each group can and cannot do, and the plan to make them independent: [GUARD
 ## What is and is not here
 
 - The code is copied from the Stables lab repository. Local folder paths in a few default settings are replaced with
-  `<lab>`; nothing else is changed. [`MANIFEST.json`](MANIFEST.json) lists every file with its SHA-256.
+  `<lab>`, and one monitoring check is left out of `approvers/r2t6/r2t6-approvers.mjs` (see the [changelog](CHANGELOG.md)); nothing else is changed. [`MANIFEST.json`](MANIFEST.json) lists every file with its SHA-256.
 - No key, password or server address is published. The keys live in each program's own Minima node. The scripts
   that deploy the approvers to the lab server are not published, because they hold the server's address and login.
 - These are test versions, running with valueless test tokens. Nothing here has had an external audit.

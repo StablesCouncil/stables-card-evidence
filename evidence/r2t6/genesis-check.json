@@ -1,0 +1,25 @@
+{
+  "check": {
+    "coins": [
+      {
+        "tokenid": "0xE12B4B884B3F1C274EC52E97008CCE924C9CD694D9F39C5BF60DBE2EEDB7CE98",
+        "input": "0.00000000000000000000000000000000000000000007",
+        "output": "0.00000000000000000000000000000000000000000007",
+        "difference": "0"
+      }
+    ],
+    "tokens": 1,
+    "inputs": 1,
+    "outputs": 6,
+    "burn": "0",
+    "validamounts": true,
+    "signatures": 1,
+    "valid": {
+      "basic": true,
+      "signatures": true,
+      "mmrproofs": true,
+      "scripts": true
+    }
+  },
+  "bytes": 8254
+}

@@ -57,6 +57,8 @@ export const checkInSpec = ({ head, copies, seats, block, sealCopies }) =>
   headSpec('check-in', head, copies, Object.fromEntries(seats.map(s => [String(100 + Number(s)), String(block)])), 5, sealCopies);
 /** A freeze at `block`, for the owner to sign with two other guardians. Never signed or posted by the program. */
 export const freezeSpec = ({ head, copies, block, sealCopies }) => headSpec('freeze', head, copies, { 27: '1', 28: String(block) }, 2, sealCopies);
+/** The release of a freeze (act 3), for 5 guardians. Port 28 (when it froze) is kept, as the scripts ask. */
+export const unfreezeSpec = ({ head, copies, sealCopies }) => headSpec('release', head, copies, { 27: '0' }, 3, sealCopies);
 
 /* ---------- verdicts ---------- */
 // The package check (R2Checker) answers approve or reject with a code. A reject that only means "too early" (the
@@ -94,7 +96,8 @@ export function decideRequest({ coin, kind, rec, tip, gen }) {
 /* ---------- the sealed lists ---------- */
 // The Council's lists (r2t5-council.mjs mmr()): leaves = the sorted request coin ids, then one filler, the SHA-256 of
 // "R2T5 filler a<n>" (approved) or "r<n>" (rejected), n the seal number before that seal. mmrcreate makes the root.
-export const filler = (list, n) => '0x' + sha(`R2T5 filler ${list}${n}`);
+// R2T6 writes "R2T6 filler " (r2t6-tx.mjs listLeaves): `prefix`.
+export const filler = (list, n, prefix = 'R2T5 filler ') => '0x' + sha(`${prefix}${list}${n}`);
 
 /**
  * Rebuilds a sealed root from the guardian's own view. Only requests that existed when the Council sealed (created at
@@ -105,7 +108,7 @@ export const filler = (list, n) => '0x' + sha(`R2T5 filler ${list}${n}`);
  * then one left out, then one added. Returns { matched, seal, leaves, extra, missing } (extra: requests the Council put
  * in that the guardian did not; missing: ones the guardian holds that the Council left out), or { matched: false }.
  */
-export async function rebuildRoot({ root, ids, others = [], fromSeal, list, mmrRoot, tries = 20 }) {
+export async function rebuildRoot({ root, ids, others = [], fromSeal, list, mmrRoot, tries = 20, prefix }) {
   const mine = [...ids].sort(), all = [...mine, ...others];
   const sets = [];
   if (all.length <= 6) {
@@ -116,11 +119,11 @@ export async function rebuildRoot({ root, ids, others = [], fromSeal, list, mmrR
     sets.push(mine, ...mine.map(x => mine.filter(y => y !== x)), ...others.map(o => [...mine, o]));
   }
   for (let n = fromSeal; n > fromSeal - tries && n >= 0; n--) {
-    const f = filler(list, n);
+    const f = filler(list, n, prefix);
     for (const s of sets) {
       const leaves = [...s].sort();
       if (same(await mmrRoot([...leaves, f]), root))
-        return { matched: true, seal: n, leaves, extra: leaves.filter(x => !mine.includes(x)), missing: mine.filter(x => !leaves.includes(x)) };
+        return { matched: true, seal: n, leaves, filler: f, extra: leaves.filter(x => !mine.includes(x)), missing: mine.filter(x => !leaves.includes(x)) };
     }
   }
   return { matched: false };

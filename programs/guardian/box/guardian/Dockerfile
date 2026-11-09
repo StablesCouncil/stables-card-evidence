@@ -10,6 +10,10 @@ ENV GUARDIAN_JDK=/usr/lib/jvm/java-17-openjdk-amd64/bin GUARDIAN_MINIMA_JAR=/opt
 # The files the program reads, at their repo paths.
 ARG A=/app/stream_1_app/work
 COPY --from=stream1 work/simcard/evidence/R2T5-DEPLOY-03/generation.json $A/simcard/evidence/R2T5-DEPLOY-03/
+# R2T6 (guardian-r2t6.mjs, loaded when the config's generation is R2T6): its generation file and the transaction shapes
+# the approvers' program shares (r2t6-tx.mjs).
+COPY --from=stream1 work/simcard/evidence/R2T6-DEPLOY-01/generation.json $A/simcard/evidence/R2T6-DEPLOY-01/
+COPY --from=stream1 work/simcard/route2/r2t6/r2t6-tx.mjs $A/simcard/route2/r2t6/
 COPY --from=stream1 work/standalone-android/stables-android/app/src/main/assets/route2/attestation-status.json $A/standalone-android/stables-android/app/src/main/assets/route2/
 COPY --from=stream1 work/simcard/measure/java/KissRunScaled.java $A/simcard/measure/java/
 COPY --from=governance task_route2_tee_payments/r2t5/tools/R2T5Offline.java /app/stream_3_governance/task_route2_tee_payments/r2t5/tools/
@@ -25,9 +29,10 @@ RUN mkdir -p $A/simcard/route2/checker/build \
  && rm -rf /src
 
 WORKDIR /app/stream_3_governance/task_guardian_program
-COPY --from=program guardian.mjs guardian-core.mjs offline.mjs alert-parlons.mjs publish-log.mjs wots-guard.mjs ./
-COPY --from=program test/run-all.mjs test/logic.mjs test/offline-proof.mjs test/publish.mjs test/wots.mjs ./test/
+COPY --from=program guardian.mjs guardian-core.mjs guardian-r2t6.mjs offline.mjs alert-parlons.mjs publish-log.mjs wots-guard.mjs ./
+COPY --from=program tools/RecordTree.java ./tools/
+COPY --from=program test/run-all.mjs test/logic.mjs test/offline-proof.mjs test/publish.mjs test/wots.mjs test/r2t6.mjs ./test/
 COPY --from=program test/fixtures/ ./test/fixtures/
-COPY door.mjs run.mjs setup-node.mjs parlons-setup.mjs ./box/
+COPY door.mjs run.mjs setup-node.mjs parlons-setup.mjs import-coins.mjs ./box/
 COPY guardian.config.json ./
 CMD ["node", "box/run.mjs"]

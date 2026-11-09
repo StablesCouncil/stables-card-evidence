@@ -62,7 +62,8 @@ export function scriptCheck(spec, { signers, block, contracts, cfg = {}, workDir
   const jp = javaPaths(cfg);
   const rt = compiled(TOOLS.kissRun, 'KissRunScaled', jp, workDir);
   const byAddr = Object.fromEntries(Object.entries(contracts).map(([k, v]) => [v.address.toUpperCase(), k]));
-  const base = { block, inputs: spec.inputs.map(caseCoin), outputs: caseOutputs(spec), state: spec.state, signatures: signers };
+  const base = { block, inputs: spec.inputs.map(caseCoin), outputs: caseOutputs(spec), state: spec.state, signatures: signers,
+    ...(spec.witnessScripts ? { witnessScripts: spec.witnessScripts } : {}) };   // R2T6's rare head acts carry their MAST branch
   const cases = spec.inputs.map((c, i) => ({ c, i, k: byAddr[String(c.address).toUpperCase()] })).filter(x => x.k)
     .map(({ i, k }) => ({ ...base, name: `${spec.kind} input ${i} (${k})`, script: contracts[k].script, input: i }));
   const f = path.join(workDir, `check-${process.pid}-${Date.now()}.json`);
@@ -101,4 +102,13 @@ export function mmrRoots(lists, { cfg = {}, workDir }) {
   const r = spawnSync(jp.java, ['-cp', jp.jar + path.delimiter + rt, 'R2T5Offline', 'mmr'], { input: JSON.stringify(lists), encoding: 'utf8', maxBuffer: 1 << 26 });
   if (r.status !== 0) throw new Error('R2T5Offline mmr: ' + r.stderr.slice(0, 400));
   return JSON.parse(r.stdout.trim().split(/\r?\n/).pop()).map(x => x.root.data);
+}
+
+/** As mmrRoots, with each leaf's proof: one list of proofs per leaf list (R2T6's ring slots name a proof per request). */
+export function mmrProofs(lists, { cfg = {}, workDir }) {
+  const jp = javaPaths(cfg);
+  const rt = compiled(TOOLS.r2t5Offline, 'R2T5Offline', jp, workDir);
+  const r = spawnSync(jp.java, ['-cp', jp.jar + path.delimiter + rt, 'R2T5Offline', 'mmr'], { input: JSON.stringify(lists), encoding: 'utf8', maxBuffer: 1 << 26 });
+  if (r.status !== 0) throw new Error('R2T5Offline mmr: ' + r.stderr.slice(0, 400));
+  return JSON.parse(r.stdout.trim().split(/\r?\n/).pop()).map(x => x.nodes.map(n => n.proof));
 }

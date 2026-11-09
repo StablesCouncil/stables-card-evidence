@@ -109,7 +109,9 @@ public final class R2Checker {
             Map<Integer,String> s=state(rc);
             if(!R2Anchors.eq(s.get(0),"0x52325445"))throw R2Codec.fail("request","port 0 is not the request tag");
             byte[] bytes;
-            if(s.containsKey(30)){
+            // Inline only when there is no carrier list (port 18): an R2T6 contested coin (a guardian's stop or a refusal)
+            // carries the seal copy's pinned ports, 30 and 31 among them (the request and contested addresses), 2026-11-06.
+            if(s.containsKey(30)&&!s.containsKey(18)){
                 // The package inline in ports 30 on (requests before 0.0.13.037). Above INLINE_MAX its payout would be too large
                 // for any block (2026-10-16): refused with "too-large", so the coin can leave again with its package in carriers.
                 ByteArrayOutputStream pkg=new ByteArrayOutputStream();
@@ -151,7 +153,7 @@ public final class R2Checker {
                     Map<Integer,String> st=state(c);Boolean proven=null;
                     String tag=st.get(0)==null?"":st.get(0).trim().toLowerCase(java.util.Locale.ROOT);
                     if(!gens.contains(tag))older.add(cid);
-                    if(R2Anchors.eq(st.get(0),gen)&&!R2Anchors.eq(gen,R2Deposits.GENERATION_R2T5)){
+                    if(R2Anchors.eq(st.get(0),gen)&&!R2Deposits.gateGeneration(gen)){
                         proven=false;
                         for(R2Anchors.Tx t:deposits(anchorAddr))if(t.creates(cid))proven=R2Anchors.depositProven(cid,t,anchorAddr,vault,st.get(2),st.get(3));
                         // The marker is still seen but its deposit transaction is past this node's window: the legacy list (the full
@@ -169,9 +171,9 @@ public final class R2Checker {
             Set<String> revoked=R2Status.parse(new String(Files.readAllBytes(Paths.get(a.get("status"))),StandardCharsets.UTF_8));
             R2Attestation att=R2Attestation.production(revoked);
             Map<String,String> anchorsByGen=new HashMap<>();for(String g:gens)anchorsByGen.put(g,anchorAddr);
-            // R2T5 (r2t5/R2T5_DESIGN.md): its own gate, anchor and vault; a coin resting on an older deposit is refused below
+            // R2T5 (r2t5/R2T5_DESIGN.md) and R2T6 (R2T6_PLAN): each its own gate, anchor and vault; a coin resting on an older deposit is refused below
             // ("anchor-generation") and moves over by coin refresh.
-            R2Receiver council=new R2Receiver(att::verifyKey,chain,r2t1,anchorsByGen,3).deposits(R2Deposits.mainnet()).deposits(R2Deposits.r2t5());
+            R2Receiver council=new R2Receiver(att::verifyKey,chain,r2t1,anchorsByGen,3).deposits(R2Deposits.mainnet()).deposits(R2Deposits.r2t5()).deposits(R2Deposits.r2t6());
             R2Receiver.Ledger ledger=new R2Receiver.Ledger(){
                 public R2Request outstanding(byte[] kh){return null;}
                 public boolean credited(byte[] kh){return false;}

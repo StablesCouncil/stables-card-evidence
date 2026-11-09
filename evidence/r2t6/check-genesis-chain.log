@@ -1,0 +1,54 @@
+OK    no key is both an approver (Council or backup Council) and a guardian, and none repeats 
+OK    every backup Council key (33) is the one the succession installs 
+OK    the seal token has a supply of exactly 7 
+OK    the seal token has no token script of its own 
+OK    the record token has a supply of exactly 16 
+OK    the record token has no token script of its own 
+OK    one head of 2 seal units at the head address 
+OK    5 copies of 1 seal unit at the copy address 
+OK    every seal unit is in the head or a copy 
+OK    the head holds the genesis seal state 
+OK    copy 1 holds the genesis seal state 
+OK    copy 2 holds the genesis seal state 
+OK    copy 3 holds the genesis seal state 
+OK    copy 4 holds the genesis seal state 
+OK    copy 5 holds the genesis seal state 
+OK    a copy may be lent only to the request and contested addresses (ports 30, 31) 
+OK    every payout must spend from the vault (port 8 is the vault address) 
+OK    every record unit is in a record coin 
+OK    one exit record for Winiwa shard 0 
+OK    the Winiwa shard 0 record holds its genesis state 
+OK    one exit record for Winiwa shard 1 
+OK    the Winiwa shard 1 record holds its genesis state 
+OK    one exit record for Winiwa shard 2 
+OK    the Winiwa shard 2 record holds its genesis state 
+OK    one exit record for Winiwa shard 3 
+OK    the Winiwa shard 3 record holds its genesis state 
+OK    one exit record for Winiwa shard 4 
+OK    the Winiwa shard 4 record holds its genesis state 
+OK    one exit record for Winiwa shard 5 
+OK    the Winiwa shard 5 record holds its genesis state 
+OK    one exit record for Winiwa shard 6 
+OK    the Winiwa shard 6 record holds its genesis state 
+OK    one exit record for Winiwa shard 7 
+OK    the Winiwa shard 7 record holds its genesis state 
+OK    one exit record for xWiniwa shard 0 
+OK    the xWiniwa shard 0 record holds its genesis state 
+OK    one exit record for xWiniwa shard 1 
+OK    the xWiniwa shard 1 record holds its genesis state 
+OK    one exit record for xWiniwa shard 2 
+OK    the xWiniwa shard 2 record holds its genesis state 
+OK    one exit record for xWiniwa shard 3 
+OK    the xWiniwa shard 3 record holds its genesis state 
+OK    one exit record for xWiniwa shard 4 
+OK    the xWiniwa shard 4 record holds its genesis state 
+OK    one exit record for xWiniwa shard 5 
+OK    the xWiniwa shard 5 record holds its genesis state 
+OK    one exit record for xWiniwa shard 6 
+OK    the xWiniwa shard 6 record holds its genesis state 
+OK    one exit record for xWiniwa shard 7 
+OK    the xWiniwa shard 7 record holds its genesis state 
+WARN  not a Bridge generation: the reserve rule (every unit in the vault or a lane) does not apply 
+OK    16 deposit lanes 
+OK    the hard maximum is at most 20% of ETHx per day 
+OK    the starting limit is at most 5% of ETHx per day 

@@ -1,0 +1,5471 @@
+{
+  "draft": false,
+  "generation": "R2T6",
+  "at": "2026-11-04T16:03:41.227Z",
+  "passed": 667,
+  "total": 667,
+  "cases": {
+    "passed": 656,
+    "total": 656
+  },
+  "signed": {
+    "passed": 11,
+    "total": 11
+  },
+  "table": [
+    {
+      "name": "Council payout, approved and past the delay [request]",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 159,
+      "exception": null
+    },
+    {
+      "name": "Council payout, approved and past the delay [vault]",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 109,
+      "exception": null
+    },
+    {
+      "name": "Council payout, approved and past the delay [copy]",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 117,
+      "exception": null
+    },
+    {
+      "name": "Council payout, approved and past the delay [record]",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 240,
+      "exception": null
+    },
+    {
+      "name": "fallback payout, old request, live Council [request]",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 131,
+      "exception": null
+    },
+    {
+      "name": "fallback payout, old request, live Council [vault]",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 109,
+      "exception": null
+    },
+    {
+      "name": "fallback payout, old request, live Council [copy]",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 117,
+      "exception": null
+    },
+    {
+      "name": "fallback payout, old request, live Council [record]",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 246,
+      "exception": null
+    },
+    {
+      "name": "payout before the approval delay ends",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 139,
+      "exception": null
+    },
+    {
+      "name": "payout while the seal copy is frozen",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 85,
+      "exception": null
+    },
+    {
+      "name": "approved payout labelled fallback (request too young)",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 122,
+      "exception": null
+    },
+    {
+      "name": "approval label with no valid approval",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 159,
+      "exception": null
+    },
+    {
+      "name": "payout without the exit record",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 80,
+      "exception": null
+    },
+    {
+      "name": "vault without the exit record",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 38,
+      "exception": null
+    },
+    {
+      "name": "replay: the card coin is already in the record",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 137,
+      "exception": null
+    },
+    {
+      "name": "record: forged new root",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 187,
+      "exception": null
+    },
+    {
+      "name": "record: key in another shard",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 67,
+      "exception": null
+    },
+    {
+      "name": "record: other token",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 39,
+      "exception": null
+    },
+    {
+      "name": "record: Council cap passed",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 231,
+      "exception": null
+    },
+    {
+      "name": "record: meter not counted",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 231,
+      "exception": null
+    },
+    {
+      "name": "record: new period, meter restarts",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 257,
+      "exception": null
+    },
+    {
+      "name": "record: restart claimed inside the period",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 207,
+      "exception": null
+    },
+    {
+      "name": "record: spent with no exit at input 0",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 18,
+      "exception": null
+    },
+    {
+      "name": "fallback before its wait",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 122,
+      "exception": null
+    },
+    {
+      "name": "fallback with the Council silent (old heartbeat)",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 129,
+      "exception": null
+    },
+    {
+      "name": "fallback while frozen",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 85,
+      "exception": null
+    },
+    {
+      "name": "fallback over its cap",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 237,
+      "exception": null
+    },
+    {
+      "name": "fallback counted as a Council payout",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 240,
+      "exception": null
+    },
+    {
+      "name": "  ...but the request refuses that label",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 159,
+      "exception": "org.minima.kissvm.exceptions.ExecutionException: Invalid MMRProof at PROOF 0x00"
+    },
+    {
+      "name": "refusalOverrule: a rejection that destroys the request is refused",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 79,
+      "exception": "org.minima.kissvm.exceptions.ExecutionException: State Variable does not exist 51"
+    },
+    {
+      "name": "rejection that also takes a vault coin",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 75,
+      "exception": null
+    },
+    {
+      "name": "vault coin in a rejection",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 37,
+      "exception": "org.minima.kissvm.exceptions.ExecutionException: Input number out of range 3/3"
+    },
+    {
+      "name": "rejection label on a request not rejected",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 79,
+      "exception": "org.minima.kissvm.exceptions.ExecutionException: State Variable does not exist 51"
+    },
+    {
+      "name": "rejection proof used for another request",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 79,
+      "exception": "org.minima.kissvm.exceptions.ExecutionException: State Variable does not exist 51"
+    },
+    {
+      "name": "one guardian stops a request",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 73,
+      "exception": null
+    },
+    {
+      "name": "stop sending the request elsewhere",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 73,
+      "exception": null
+    },
+    {
+      "name": "stop by a key that is not a guardian",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 62,
+      "exception": "org.minima.kissvm.exceptions.ExecutionException: State Variable does not exist 50"
+    },
+    {
+      "name": "  the copy given back after a stop",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 117,
+      "exception": null
+    },
+    {
+      "name": "stop that also takes a vault coin",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 65,
+      "exception": null
+    },
+    {
+      "name": "contested: fallback before release",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 116,
+      "exception": null
+    },
+    {
+      "name": "contested: fallback after release",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 121,
+      "exception": null
+    },
+    {
+      "name": "review R2: a release on its own is no longer a path (nothing to forge)",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 39,
+      "exception": "org.minima.kissvm.exceptions.ExecutionException: State Variable does not exist 50"
+    },
+    {
+      "name": "contested: released by too few",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 39,
+      "exception": "org.minima.kissvm.exceptions.ExecutionException: State Variable does not exist 50"
+    },
+    {
+      "name": "review R2: no stop again of a contested coin by one guardian",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 39,
+      "exception": "org.minima.kissvm.exceptions.ExecutionException: State Variable does not exist 50"
+    },
+    {
+      "name": "review R2: no stop again of a contested coin by the freeze threshold",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 39,
+      "exception": "org.minima.kissvm.exceptions.ExecutionException: State Variable does not exist 50"
+    },
+    {
+      "name": "review R2: no stop again of an unreleased contested coin",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 39,
+      "exception": "org.minima.kissvm.exceptions.ExecutionException: State Variable does not exist 50"
+    },
+    {
+      "name": "contested: Council approval of a stopped request is refused until released (C3)",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 112,
+      "exception": null
+    },
+    {
+      "name": "contested: Council approval pays with the guardian majority signing the payout",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 149,
+      "exception": null
+    },
+    {
+      "name": "review R2: the same payout [vault]",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 109,
+      "exception": null
+    },
+    {
+      "name": "review R2: the same payout [copy]",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 105,
+      "exception": null
+    },
+    {
+      "name": "review R2: the same payout [record]",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 240,
+      "exception": null
+    },
+    {
+      "name": "review R2: a payout signed by one guardian too few",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 112,
+      "exception": null
+    },
+    {
+      "name": "review R2: a payout signed by a majority of strangers",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 112,
+      "exception": null
+    },
+    {
+      "name": "review R2: the guardian majority signing, with no Council approval",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 149,
+      "exception": null
+    },
+    {
+      "name": "review R2: the fallback of a stopped request without its guardian majority",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 116,
+      "exception": null
+    },
+    {
+      "name": "refusal: a proven rejection turns the request into a contested coin, posted by anyone",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 97,
+      "exception": null
+    },
+    {
+      "name": "  the copy given back after a refusal",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 117,
+      "exception": null
+    },
+    {
+      "name": "refusal: the refused request sent elsewhere",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 97,
+      "exception": null
+    },
+    {
+      "name": "refusal: the refused coin without its state",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 97,
+      "exception": null
+    },
+    {
+      "name": "refusal: the refused coin re-created as a fresh request",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 97,
+      "exception": null
+    },
+    {
+      "name": "refusal: a request not in the rejected list",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 89,
+      "exception": null
+    },
+    {
+      "name": "refusal: a refusal that also takes a vault coin",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 75,
+      "exception": null
+    },
+    {
+      "name": "refusal: the refused coin marked released",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 80,
+      "exception": null
+    },
+    {
+      "name": "refusal overruled by the guardian majority after the wait [contested]",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 121,
+      "exception": null
+    },
+    {
+      "name": "refusal overruled by the guardian majority after the wait [vault]",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 109,
+      "exception": null
+    },
+    {
+      "name": "refusal overruled by the guardian majority after the wait [copy]",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 105,
+      "exception": null
+    },
+    {
+      "name": "refusal overruled by the guardian majority after the wait [record]",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 246,
+      "exception": null
+    },
+    {
+      "name": "refusal overruled by one guardian too few",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 116,
+      "exception": null
+    },
+    {
+      "name": "refusal overruled before the fallback wait",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 112,
+      "exception": null
+    },
+    {
+      "name": "refusal overruled while frozen",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 62,
+      "exception": null
+    },
+    {
+      "name": "refusal overruled with the approvers silent",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 119,
+      "exception": null
+    },
+    {
+      "name": "refusal overruled over the fallback cap",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 237,
+      "exception": null
+    },
+    {
+      "name": "refusal overruled for a coin already paid",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 137,
+      "exception": null
+    },
+    {
+      "name": "refusal final: the rejection of the refused coin once it is old enough, posted by anyone",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 65,
+      "exception": null
+    },
+    {
+      "name": "refusal final one block too early",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 47,
+      "exception": null
+    },
+    {
+      "name": "refusal final without a rejection of that coin",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 65,
+      "exception": null
+    },
+    {
+      "name": "review R2: a contested coin created as released (port 51 = 1), paid on Council approval alone",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 112,
+      "exception": null
+    },
+    {
+      "name": "review R2: the same coin paid by the fallback with no key at all",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 116,
+      "exception": null
+    },
+    {
+      "name": "review R1: a request created one block after the seal that approved it",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 148,
+      "exception": null
+    },
+    {
+      "name": "review R1: a request created one block before its payout, approved a whole delay earlier",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 148,
+      "exception": null
+    },
+    {
+      "name": "review R1: the same on a contested request",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 138,
+      "exception": null
+    },
+    {
+      "name": "review R1: a request created in the block of its seal's heartbeat pays",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 159,
+      "exception": null
+    },
+    {
+      "name": "Council seals with its quorum",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 232,
+      "exception": null
+    },
+    {
+      "name": "  each copy follows the head",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "Council seals one key short",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 124,
+      "exception": null
+    },
+    {
+      "name": "Council seals with one copy missing",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 54,
+      "exception": "org.minima.kissvm.exceptions.ExecutionException: Output out of range 5/5"
+    },
+    {
+      "name": "Council seal backdates its heartbeat",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 148,
+      "exception": null
+    },
+    {
+      "name": "Council seal shortens the payout delay",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 232,
+      "exception": null
+    },
+    {
+      "name": "Council lifts a freeze itself",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 136,
+      "exception": null
+    },
+    {
+      "name": "guardians freeze",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 220,
+      "exception": null
+    },
+    {
+      "name": "freeze one guardian short",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 194,
+      "exception": null
+    },
+    {
+      "name": "freeze that also swaps the approved list",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 123,
+      "exception": null
+    },
+    {
+      "name": "freeze that also swaps a Council key",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 111,
+      "exception": null
+    },
+    {
+      "name": "one copy frozen on its own",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 74,
+      "exception": null
+    },
+    {
+      "name": "one copy frozen by too few",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 98,
+      "exception": null
+    },
+    {
+      "name": "one copy unfrozen on its own",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 98,
+      "exception": null
+    },
+    {
+      "name": "guardian majority releases",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 208,
+      "exception": null
+    },
+    {
+      "name": "release one short",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 194,
+      "exception": null
+    },
+    {
+      "name": "succession after a long silence (D128: scheduled, the public wait over, posted with no signature)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 305,
+      "exception": null
+    },
+    {
+      "name": "succession while the Council is alive",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 118,
+      "exception": null
+    },
+    {
+      "name": "D128: succession carried out one block before its public wait is over",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 118,
+      "exception": null
+    },
+    {
+      "name": "succession that approves a list itself",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 240,
+      "exception": null
+    },
+    {
+      "name": "succession that fakes a fresh heartbeat",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 244,
+      "exception": null
+    },
+    {
+      "name": "succession after a long freeze, Council still beating",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 305,
+      "exception": null
+    },
+    {
+      "name": "D128: the guardian supermajority schedules a succession after a long silence",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 240,
+      "exception": null
+    },
+    {
+      "name": "D128:   each copy follows the schedule",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128: a schedule one guardian short",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 202,
+      "exception": null
+    },
+    {
+      "name": "D128: a schedule while the Council is alive",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 228,
+      "exception": null
+    },
+    {
+      "name": "D128: a schedule over one already scheduled (restarting nothing, shortening nothing)",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 209,
+      "exception": null
+    },
+    {
+      "name": "D128: a schedule dated before its block (a shorter wait)",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 240,
+      "exception": null
+    },
+    {
+      "name": "D128: a schedule dated after its block",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 240,
+      "exception": null
+    },
+    {
+      "name": "D128: a schedule that installs the backup Council at once",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 111,
+      "exception": null
+    },
+    {
+      "name": "D128: a schedule that also empties the approved list",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 123,
+      "exception": null
+    },
+    {
+      "name": "D128: a schedule after a long freeze, Council still beating",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 240,
+      "exception": null
+    },
+    {
+      "name": "D128:   each copy follows a schedule while frozen",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128: a schedule that also lifts the freeze",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 175,
+      "exception": null
+    },
+    {
+      "name": "D128: succession carried out with nothing scheduled",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 118,
+      "exception": null
+    },
+    {
+      "name": "D128: succession installing a Council of the guardians' choice",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 195,
+      "exception": null
+    },
+    {
+      "name": "D128: succession with one seat not its backup key",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 195,
+      "exception": null
+    },
+    {
+      "name": "D128: succession with the first seat not its backup key",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 195,
+      "exception": null
+    },
+    {
+      "name": "D128: succession with the last seat not its backup key",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 195,
+      "exception": null
+    },
+    {
+      "name": "D128: succession that leaves the schedule in place",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 118,
+      "exception": null
+    },
+    {
+      "name": "D128: succession after the Council sealed again (not frozen)",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 230,
+      "exception": null
+    },
+    {
+      "name": "D128:   each copy follows a carry-out that lifts a freeze",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128: a Council seal while not frozen cancels a scheduled succession",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 232,
+      "exception": null
+    },
+    {
+      "name": "D128: a Council seal while not frozen that keeps the schedule",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 224,
+      "exception": null
+    },
+    {
+      "name": "D128: a Council seal while frozen keeps the schedule",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 232,
+      "exception": null
+    },
+    {
+      "name": "D128: a Council seal while frozen that cancels the schedule",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 224,
+      "exception": null
+    },
+    {
+      "name": "D128: a guardian majority release cancels the schedule",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 208,
+      "exception": null
+    },
+    {
+      "name": "D128: a release that keeps the schedule",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 203,
+      "exception": null
+    },
+    {
+      "name": "D128: a freeze that writes a schedule",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 163,
+      "exception": null
+    },
+    {
+      "name": "D128: a freeze keeps a schedule",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 220,
+      "exception": null
+    },
+    {
+      "name": "D128: a freeze that clears a schedule",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 163,
+      "exception": null
+    },
+    {
+      "name": "a copy alone cannot become a head",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 48,
+      "exception": null
+    },
+    {
+      "name": "a guardian checks in",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 416,
+      "exception": null
+    },
+    {
+      "name": "check-in that moves another guardian time",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 295,
+      "exception": null
+    },
+    {
+      "name": "check-in with no guardian signing",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 262,
+      "exception": null
+    },
+    {
+      "name": "check-in that changes a guardian key",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 195,
+      "exception": null
+    },
+    {
+      "name": "sets: the first succession installs backup set 1 and counts it",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 305,
+      "exception": null
+    },
+    {
+      "name": "sets: a second succession installs backup set 2",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 305,
+      "exception": null
+    },
+    {
+      "name": "sets:   each copy follows it",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "sets: a second succession installing backup set 1 again",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 199,
+      "exception": null
+    },
+    {
+      "name": "sets: a succession skipping a set",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 136,
+      "exception": null
+    },
+    {
+      "name": "sets: the last set (3) installed",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 305,
+      "exception": null
+    },
+    {
+      "name": "sets: a succession that does not count",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 136,
+      "exception": null
+    },
+    {
+      "name": "sets: a succession that counts two",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 136,
+      "exception": null
+    },
+    {
+      "name": "sets: no succession once every set was used",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 136,
+      "exception": null
+    },
+    {
+      "name": "sets: a Council seal that moves the count",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 95,
+      "exception": null
+    },
+    {
+      "name": "sets: a freeze that resets the count",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 95,
+      "exception": null
+    },
+    {
+      "name": "sets: a check-in that moves the count",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 95,
+      "exception": null
+    },
+    {
+      "name": "MAST: a freeze without its branch",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 173,
+      "exception": "org.minima.kissvm.exceptions.ExecutionException: No script found for MAST 0x8C4D335DEDFE2BBE73331787BA4CDF8D7595F8EFBA3E1CE5330EC2EE2CC34D62"
+    },
+    {
+      "name": "MAST: a freeze carrying the release's branch",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 173,
+      "exception": "org.minima.kissvm.exceptions.ExecutionException: No script found for MAST 0x8C4D335DEDFE2BBE73331787BA4CDF8D7595F8EFBA3E1CE5330EC2EE2CC34D62"
+    },
+    {
+      "name": "MAST: a release carrying the freeze's branch",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 173,
+      "exception": "org.minima.kissvm.exceptions.ExecutionException: No script found for MAST 0x56607CF242012F88B9E15A0329236330B99B6C43ABF8D3600C008AC3586B376A"
+    },
+    {
+      "name": "MAST: a Council seal needs no branch",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 232,
+      "exception": null
+    },
+    {
+      "name": "MAST: a check-in needs no branch",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 416,
+      "exception": null
+    },
+    {
+      "name": "swap: an election of inactive seat 4 scheduled by 5 of 9 seats",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 479,
+      "exception": null
+    },
+    {
+      "name": "swap:   each copy follows the schedule",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: an election scheduled by 4 of 9 seats",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 475,
+      "exception": null
+    },
+    {
+      "name": "swap: 3 active guardians left, all 3 sign (the 60-day takeover)",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 471,
+      "exception": null
+    },
+    {
+      "name": "swap: inactive guardians who sign count (5 of 9 seats)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 479,
+      "exception": null
+    },
+    {
+      "name": "swap: an election of a seat whose holder is active",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 473,
+      "exception": null
+    },
+    {
+      "name": "swap: a removal of active seat 4 by the supermajority",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 463,
+      "exception": null
+    },
+    {
+      "name": "swap: a removal one guardian short",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 459,
+      "exception": null
+    },
+    {
+      "name": "swap: a schedule of an unknown kind",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 464,
+      "exception": null
+    },
+    {
+      "name": "swap: a schedule with no kind",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 460,
+      "exception": null
+    },
+    {
+      "name": "swap: the new key already holds a seat",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 281,
+      "exception": null
+    },
+    {
+      "name": "swap: the new key is not 32 bytes",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 242,
+      "exception": null
+    },
+    {
+      "name": "swap: a seat past the last",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 234,
+      "exception": null
+    },
+    {
+      "name": "swap: a seat below the first",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 234,
+      "exception": null
+    },
+    {
+      "name": "swap: a seat that is not a whole number",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 234,
+      "exception": null
+    },
+    {
+      "name": "swap: a removal of a seat past the last",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 234,
+      "exception": null
+    },
+    {
+      "name": "swap: a removal of a seat below the first",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 234,
+      "exception": null
+    },
+    {
+      "name": "swap: a removal of a seat that is not a whole number",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 234,
+      "exception": null
+    },
+    {
+      "name": "swap: a schedule that puts the new key in at once",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 206,
+      "exception": null
+    },
+    {
+      "name": "swap: a schedule that also swaps a Council key",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 103,
+      "exception": null
+    },
+    {
+      "name": "swap: a schedule over one already scheduled",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 206,
+      "exception": null
+    },
+    {
+      "name": "swap: a schedule dated before its block (a shorter wait)",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 218,
+      "exception": null
+    },
+    {
+      "name": "swap: a schedule dated after its block",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 218,
+      "exception": null
+    },
+    {
+      "name": "swap: an election carried out after the public wait",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 502,
+      "exception": null
+    },
+    {
+      "name": "swap:   each copy follows the carry-out",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: a carry-out one block before the wait is over",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 206,
+      "exception": null
+    },
+    {
+      "name": "swap: a carry-out the new key did not sign",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 235,
+      "exception": null
+    },
+    {
+      "name": "swap: a carry-out that puts in another key",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 235,
+      "exception": null
+    },
+    {
+      "name": "swap: a carry-out signed by the new key that puts in another key",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 235,
+      "exception": null
+    },
+    {
+      "name": "swap: a carry-out that leaves the schedule in place",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 206,
+      "exception": null
+    },
+    {
+      "name": "swap: a carry-out that changes another seat too",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 412,
+      "exception": null
+    },
+    {
+      "name": "swap: a carry-out that leaves the new guardian inactive",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 251,
+      "exception": null
+    },
+    {
+      "name": "swap: a carry-out with nothing scheduled",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 206,
+      "exception": null
+    },
+    {
+      "name": "swap: a removal carried out after the public wait",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 502,
+      "exception": null
+    },
+    {
+      "name": "swap: an election carried out though the seat holder checked in",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 231,
+      "exception": null
+    },
+    {
+      "name": "swap: a void election cleared, nothing else changed",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 231,
+      "exception": null
+    },
+    {
+      "name": "swap: a void election cleared that changes a guardian",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 231,
+      "exception": null
+    },
+    {
+      "name": "swap: a removal carried out though the guardian keeps checking in",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 502,
+      "exception": null
+    },
+    {
+      "name": "swap: a Council seal keeps a scheduled swap",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 232,
+      "exception": null
+    },
+    {
+      "name": "swap: a Council seal that clears a scheduled swap",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 87,
+      "exception": null
+    },
+    {
+      "name": "swap: a Council seal that changes the new key",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 87,
+      "exception": null
+    },
+    {
+      "name": "swap: a Council seal that changes the kind",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 87,
+      "exception": null
+    },
+    {
+      "name": "swap: a Council seal that writes a schedule",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 87,
+      "exception": null
+    },
+    {
+      "name": "swap: a check-in that clears a scheduled swap",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 87,
+      "exception": null
+    },
+    {
+      "name": "swap: a check-in keeps a scheduled swap",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 416,
+      "exception": null
+    },
+    {
+      "name": "swap: a freeze that changes the seat",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 87,
+      "exception": null
+    },
+    {
+      "name": "swap: a succession that clears a scheduled swap",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 87,
+      "exception": null
+    },
+    {
+      "name": "window: a seal mined with the oldest heartbeat allowed (72 blocks old)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 232,
+      "exception": null
+    },
+    {
+      "name": "window: a seal with a heartbeat one block older than allowed",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 148,
+      "exception": null
+    },
+    {
+      "name": "window: an approval pays 143 blocks after that seal is mined",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 139,
+      "exception": null
+    },
+    {
+      "name": "window: an approval pays 144 blocks after that seal is mined",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 139,
+      "exception": null
+    },
+    {
+      "name": "lone frozen copy: a Council seal cannot spend it [frozen copy]",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "lone frozen copy: the head script alone accepts that Council seal (it cannot see the copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 232,
+      "exception": null
+    },
+    {
+      "name": "lone frozen copy: a guardian check-in cannot spend it [frozen copy]",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "lone frozen copy: a guardian head freeze carries it frozen",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "lone frozen copy: a guardian majority release clears it",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "lone frozen copy: a release one guardian short",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 194,
+      "exception": null
+    },
+    {
+      "name": "lone frozen copy: succession after a long silence clears it",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "lone frozen copy: a payout cannot use it",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 85,
+      "exception": null
+    },
+    {
+      "name": "lone frozen copy: a payout claiming it unfrozen",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 109,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: a payout after the delay but inside the slack is refused (the full delay after mining)",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 139,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: a later seal does not push an approval back (it pays from slot 1)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 159,
+      "exception": null
+    },
+    {
+      "name": "  the copy carries the ring unchanged",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 117,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: an approval claimed in a slot whose list does not hold it",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 159,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: an approval in a slot sealed too recently",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 139,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: a slot outside the ring",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 130,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: a slot outside the ring, forged with an approving list and an old date",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 130,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: the same forged slot on a contested request",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 120,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: a negative slot (-1), forged in the unpinned ports 119 and 129",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 130,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: the same negative slot on a contested request",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 120,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: a fractional slot (0.5)",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 130,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: a fractional slot (1.5) next to a forged slot 1",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 130,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: the same fractional slot on a contested request",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 120,
+      "exception": null
+    },
+    {
+      "name": "C2 ring: a released contested request paid before its delay",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 129,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: a payout whose state makes a slot older than its seal",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 48,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: a seal whose slot 0 is not its new list",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 160,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: a payout whose state changes a ring slot",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 48,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: a seal that rewrites an older slot",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 184,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: a seal that does not move the old list down",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 172,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: a seal that dates its slot later than its heartbeat",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 160,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: a guardian check-in that changes the ring",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 139,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: a freeze that changes the ring",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 139,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: succession that keeps an old approval",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 254,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: a contested request, released, approved in an older slot",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 149,
+      "exception": null
+    },
+    {
+      "name": "review R1: approved in an older slot, created after that slot's seal",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 148,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: an approval carried through 4 seals pays from the oldest slot still in the ring",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 159,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: the same approval named in its newest slot (past its delay)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 159,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: the same approval, one block before its oldest slot pays",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 139,
+      "exception": null
+    },
+    {
+      "name": "C4: a Council seal proposes a public change (seat 2, a new limit)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 342,
+      "exception": null
+    },
+    {
+      "name": "  each copy follows the head",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "C4: a proposal by one key short of the quorum",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 124,
+      "exception": null
+    },
+    {
+      "name": "C4: a proposal whose ports do not match its hash",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 316,
+      "exception": null
+    },
+    {
+      "name": "C4: a proposal taking effect before the delay",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 223,
+      "exception": null
+    },
+    {
+      "name": "C4: a proposal above the hard maximum",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 223,
+      "exception": null
+    },
+    {
+      "name": "C4: a proposal dated far ahead (it would block the next change until cancelled)",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 223,
+      "exception": null
+    },
+    {
+      "name": "proposalWithin: a proposal dated at the bound",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 342,
+      "exception": null
+    },
+    {
+      "name": "proposalWithin: a proposal dated one block past the bound",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 223,
+      "exception": null
+    },
+    {
+      "name": "C4: a seal that changes a Council key at once (R2T5 allowed it)",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 192,
+      "exception": null
+    },
+    {
+      "name": "C4: a seal that changes the limit at once",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 192,
+      "exception": null
+    },
+    {
+      "name": "C4: a guardian check-in that changes the pending change",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 151,
+      "exception": null
+    },
+    {
+      "name": "C4: a freeze that drops a pending change",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 151,
+      "exception": null
+    },
+    {
+      "name": "C4: a later seal keeps the pending change",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 232,
+      "exception": null
+    },
+    {
+      "name": "C4: a later seal that brings the pending change forward (same hash)",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 206,
+      "exception": null
+    },
+    {
+      "name": "C4: anyone activates the change after the delay",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 575,
+      "exception": null
+    },
+    {
+      "name": "  each copy follows the head",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "C4: an activation one block early",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 214,
+      "exception": null
+    },
+    {
+      "name": "C4: an activation while frozen",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 214,
+      "exception": null
+    },
+    {
+      "name": "C4: an activation revealing other values than the proposal",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 214,
+      "exception": null
+    },
+    {
+      "name": "C4: an activation writing another key than it reveals",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 484,
+      "exception": null
+    },
+    {
+      "name": "C4: an activation that also changes a seat not named",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 579,
+      "exception": null
+    },
+    {
+      "name": "C4: an activation setting another limit than proposed",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 241,
+      "exception": null
+    },
+    {
+      "name": "C4: an activation that keeps the change pending",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 241,
+      "exception": null
+    },
+    {
+      "name": "C4: an activation with nothing pending",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 214,
+      "exception": null
+    },
+    {
+      "name": "C4: an activation that also swaps the approved list",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 119,
+      "exception": null
+    },
+    {
+      "name": "C4: the freeze threshold of guardians cancels a pending change",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 209,
+      "exception": null
+    },
+    {
+      "name": "C4: a cancel one guardian short",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 190,
+      "exception": null
+    },
+    {
+      "name": "C4: a cancel that also raises the limit",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 198,
+      "exception": null
+    },
+    {
+      "name": "C4: a cancel that leaves a pending limit behind",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 209,
+      "exception": null
+    },
+    {
+      "name": "C4: a cancel that also swaps a Council key",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 111,
+      "exception": null
+    },
+    {
+      "name": "C4: succession drops a pending change",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 305,
+      "exception": null
+    },
+    {
+      "name": "C4: succession that keeps a pending change",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 278,
+      "exception": null
+    },
+    {
+      "name": "C5: a payout over the sealed limit",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 231,
+      "exception": null
+    },
+    {
+      "name": "C5: a payout claiming a higher limit than its seal: the copy refuses it",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 48,
+      "exception": null
+    },
+    {
+      "name": "C5: under a limit raised by an activation, that payout passes the record",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 240,
+      "exception": null
+    },
+    {
+      "name": "review X5: an activation re-splitting the proposal bytes into other seats and keys",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 468,
+      "exception": null
+    },
+    {
+      "name": "review X5: a proposal with a 31-byte key is refused (fixed widths)",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 245,
+      "exception": null
+    },
+    {
+      "name": "review X5: an activation of a proposal naming a seat twice fails closed",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 599,
+      "exception": null
+    },
+    {
+      "name": "review X1: a seal copy re-spent with an unrelated input 0, no signature",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 98,
+      "exception": null
+    },
+    {
+      "name": "review X1b: a seal copy alone at input 0 (port 16 = -1), no signature",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 98,
+      "exception": null
+    },
+    {
+      "name": "card review F1: copy A's own script alone accepts it (the freeze branch cannot see copy B)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 74,
+      "exception": null
+    },
+    {
+      "name": "card review F1: a second, frozen copy carried at input 1, one seal unit to a stranger [copy B]",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 86,
+      "exception": null
+    },
+    {
+      "name": "review X2: a freeze while frozen moves frozen-since (blocks succession after a freeze)",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 203,
+      "exception": null
+    },
+    {
+      "name": "review X2: a freeze while frozen that keeps frozen-since is refused too",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 215,
+      "exception": null
+    },
+    {
+      "name": "review X3: a full meter restarted with a period start far in the past",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 220,
+      "exception": null
+    },
+    {
+      "name": "review X3b: and again at the next payout (still a whole period behind)",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 220,
+      "exception": null
+    },
+    {
+      "name": "review X3: an idle record restarts its period now",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 257,
+      "exception": null
+    },
+    {
+      "name": "review X4: a one-guardian stop writing port 51 = 1 (contested born released)",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 56,
+      "exception": null
+    },
+    {
+      "name": "review X1: a payout whose state rewrites the lent-to address (the copy would come back pointing at a stranger)",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 48,
+      "exception": null
+    },
+    {
+      "name": "review X1: a Council seal that rewrites the lent-to addresses",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 210,
+      "exception": null
+    },
+    {
+      "name": "review X1: a guardian check-in that rewrites the lent-to addresses",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 127,
+      "exception": null
+    },
+    {
+      "name": "copyLoneClean: a copy a payout gave back, cleaned alone with no signature",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 106,
+      "exception": null
+    },
+    {
+      "name": "copyLoneClean: a copy given back by a refusal or rejection (its port 19) cleaned too",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 106,
+      "exception": null
+    },
+    {
+      "name": "copyLoneClean: a copy just cleaned cannot be cleaned again",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 91,
+      "exception": null
+    },
+    {
+      "name": "copyLoneClean: a head-made copy (no port 19) cannot be cleaned",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 90,
+      "exception": "org.minima.kissvm.exceptions.ExecutionException: PREVSTATE Missing : 19"
+    },
+    {
+      "name": "copyLoneClean: without the clean mark it is a lone spend, refused",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 98,
+      "exception": null
+    },
+    {
+      "name": "copyLoneClean: a clean rewriting the approved root",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 48,
+      "exception": null
+    },
+    {
+      "name": "copyLoneClean: a clean rewriting the payable-from",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 48,
+      "exception": null
+    },
+    {
+      "name": "copyLoneClean: a clean rewriting a guardian key",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 20,
+      "exception": null
+    },
+    {
+      "name": "copyLoneClean: a clean rewriting the lent-to address",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 48,
+      "exception": null
+    },
+    {
+      "name": "copyLoneClean: a clean rewriting the vault address",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 48,
+      "exception": null
+    },
+    {
+      "name": "copyLoneClean: a clean rewriting the sealed approver limit (port 56)",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 48,
+      "exception": null
+    },
+    {
+      "name": "copyLoneClean: a clean rewriting a ring slot",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 48,
+      "exception": null
+    },
+    {
+      "name": "copyLoneClean: a clean that freezes the copy",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 95,
+      "exception": null
+    },
+    {
+      "name": "copyLoneClean: a lone-frozen copy cleaned stays frozen",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 106,
+      "exception": null
+    },
+    {
+      "name": "copyLoneClean: a clean that unfreezes a lone-frozen copy",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 95,
+      "exception": null
+    },
+    {
+      "name": "copyLoneClean: a clean carrying a second input",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 98,
+      "exception": null
+    },
+    {
+      "name": "copyLoneClean: a clean with a second output",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 106,
+      "exception": null
+    },
+    {
+      "name": "copyLoneClean: a clean carrying a second input, one output",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 98,
+      "exception": null
+    },
+    {
+      "name": "copyLoneClean: the cleaned unit sent to a stranger",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 106,
+      "exception": null
+    },
+    {
+      "name": "copyLoneClean: the cleaned copy given back without its state",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 106,
+      "exception": null
+    },
+    {
+      "name": "copyLoneClean: a payout uses a cleaned copy as before",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 117,
+      "exception": null
+    },
+    {
+      "name": "card review F8: a Council payout with no vault coin, funded by the poster",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 91,
+      "exception": null
+    },
+    {
+      "name": "card review F8: a Council payout with the poster's own coin at input 1 posing as the vault coin",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 91,
+      "exception": null
+    },
+    {
+      "name": "card review F8: a fallback payout with no vault coin (also a keyless spend of a seal copy: the F2 residue)",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 91,
+      "exception": null
+    },
+    {
+      "name": "card review F8: a fallback payout with the poster's own coin at input 1",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 91,
+      "exception": null
+    },
+    {
+      "name": "card review F8: a contested payout (guardian majority) with the poster's own coin at input 1",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 68,
+      "exception": null
+    },
+    {
+      "name": "payNeedsVault: a payout naming the poster's coin as the vault (port 8 rewritten) is refused by the copy",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 48,
+      "exception": null
+    },
+    {
+      "name": "payNeedsVault: a Council seal that rewrites the vault address",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 214,
+      "exception": null
+    },
+    {
+      "name": "payNeedsVault: a guardian check-in that rewrites the vault address",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 131,
+      "exception": null
+    },
+    {
+      "name": "payNeedsVault: a guardian freeze that rewrites the vault address",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 131,
+      "exception": null
+    },
+    {
+      "name": "payNeedsVault: a succession that rewrites the vault address",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 286,
+      "exception": null
+    },
+    {
+      "name": "gate: a deposit (marker 1 atom at the anchor, amount into the vault, number +1)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 56,
+      "exception": null
+    },
+    {
+      "name": "gate: the second deposit of the lane (number 1 to 2)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 56,
+      "exception": null
+    },
+    {
+      "name": "gate: marker of 2 atoms",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 48,
+      "exception": null
+    },
+    {
+      "name": "gate: marker sent elsewhere than the anchor",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 48,
+      "exception": null
+    },
+    {
+      "name": "gate: marker without the state kept",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 48,
+      "exception": null
+    },
+    {
+      "name": "gate: marker in another token than port 3",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 48,
+      "exception": null
+    },
+    {
+      "name": "gate: vault paid less than port 2",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 56,
+      "exception": null
+    },
+    {
+      "name": "gate: amount sent elsewhere than the vault",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 56,
+      "exception": null
+    },
+    {
+      "name": "gate: amount in another token than port 3",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 56,
+      "exception": null
+    },
+    {
+      "name": "gate: zero amount",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 20,
+      "exception": null
+    },
+    {
+      "name": "gate: deposit number not raised",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 28,
+      "exception": null
+    },
+    {
+      "name": "gate: deposit number raised by 2",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 28,
+      "exception": null
+    },
+    {
+      "name": "gate: lane number changed (wrong lane)",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 34,
+      "exception": null
+    },
+    {
+      "name": "gate: the lane coin not at input 0",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 10,
+      "exception": null
+    },
+    {
+      "name": "gate: wrong generation tag",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 15,
+      "exception": null
+    },
+    {
+      "name": "gate: the lane coin not given back",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 41,
+      "exception": null
+    },
+    {
+      "name": "gate: the lane coin given back without its state",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 41,
+      "exception": null
+    },
+    {
+      "name": "C8: a lane carrying a deposit of another token is refused (the lane coin's own token)",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 48,
+      "exception": null
+    },
+    {
+      "name": "C8: a deposit in the lane's own token, whatever port 3 names",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 56,
+      "exception": null
+    },
+    {
+      "name": "anchor: a marker spent to anyone",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 4,
+      "exception": null
+    },
+    {
+      "name": "anchor: a marker spent back to the anchor, every Council and guardian key signing",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 4,
+      "exception": null
+    },
+    {
+      "name": "anchor: a marker spent alongside a deposit",
+      "expect": false,
+      "success": false,
+      "pass": true,
+      "instructions": 4,
+      "exception": null
+    },
+    {
+      "name": "Council payout, approved and past the delay [request] / input 1 (vault)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 109,
+      "exception": null
+    },
+    {
+      "name": "Council payout, approved and past the delay [request] / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 117,
+      "exception": null
+    },
+    {
+      "name": "Council payout, approved and past the delay [request] / input 3 (record)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 240,
+      "exception": null
+    },
+    {
+      "name": "Council payout, approved and past the delay [vault] / input 0 (request)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 159,
+      "exception": null
+    },
+    {
+      "name": "Council payout, approved and past the delay [vault] / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 117,
+      "exception": null
+    },
+    {
+      "name": "Council payout, approved and past the delay [vault] / input 3 (record)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 240,
+      "exception": null
+    },
+    {
+      "name": "Council payout, approved and past the delay [copy] / input 0 (request)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 159,
+      "exception": null
+    },
+    {
+      "name": "Council payout, approved and past the delay [copy] / input 1 (vault)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 109,
+      "exception": null
+    },
+    {
+      "name": "Council payout, approved and past the delay [copy] / input 3 (record)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 240,
+      "exception": null
+    },
+    {
+      "name": "Council payout, approved and past the delay [record] / input 0 (request)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 159,
+      "exception": null
+    },
+    {
+      "name": "Council payout, approved and past the delay [record] / input 1 (vault)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 109,
+      "exception": null
+    },
+    {
+      "name": "Council payout, approved and past the delay [record] / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 117,
+      "exception": null
+    },
+    {
+      "name": "fallback payout, old request, live Council [request] / input 1 (vault)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 109,
+      "exception": null
+    },
+    {
+      "name": "fallback payout, old request, live Council [request] / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 117,
+      "exception": null
+    },
+    {
+      "name": "fallback payout, old request, live Council [request] / input 3 (record)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 246,
+      "exception": null
+    },
+    {
+      "name": "fallback payout, old request, live Council [vault] / input 0 (request)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 131,
+      "exception": null
+    },
+    {
+      "name": "fallback payout, old request, live Council [vault] / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 117,
+      "exception": null
+    },
+    {
+      "name": "fallback payout, old request, live Council [vault] / input 3 (record)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 246,
+      "exception": null
+    },
+    {
+      "name": "fallback payout, old request, live Council [copy] / input 0 (request)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 131,
+      "exception": null
+    },
+    {
+      "name": "fallback payout, old request, live Council [copy] / input 1 (vault)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 109,
+      "exception": null
+    },
+    {
+      "name": "fallback payout, old request, live Council [copy] / input 3 (record)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 246,
+      "exception": null
+    },
+    {
+      "name": "fallback payout, old request, live Council [record] / input 0 (request)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 131,
+      "exception": null
+    },
+    {
+      "name": "fallback payout, old request, live Council [record] / input 1 (vault)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 109,
+      "exception": null
+    },
+    {
+      "name": "fallback payout, old request, live Council [record] / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 117,
+      "exception": null
+    },
+    {
+      "name": "record: new period, meter restarts / input 0 (request)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 159,
+      "exception": null
+    },
+    {
+      "name": "record: new period, meter restarts / input 1 (vault)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 109,
+      "exception": null
+    },
+    {
+      "name": "record: new period, meter restarts / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 117,
+      "exception": null
+    },
+    {
+      "name": "one guardian stops a request / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 117,
+      "exception": null
+    },
+    {
+      "name": "  the copy given back after a stop / input 0 (request)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 73,
+      "exception": null
+    },
+    {
+      "name": "contested: fallback after release / input 1 (vault)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 109,
+      "exception": null
+    },
+    {
+      "name": "contested: fallback after release / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 105,
+      "exception": null
+    },
+    {
+      "name": "contested: fallback after release / input 3 (record)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 246,
+      "exception": null
+    },
+    {
+      "name": "contested: Council approval pays with the guardian majority signing the payout / input 1 (vault)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 109,
+      "exception": null
+    },
+    {
+      "name": "contested: Council approval pays with the guardian majority signing the payout / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 105,
+      "exception": null
+    },
+    {
+      "name": "contested: Council approval pays with the guardian majority signing the payout / input 3 (record)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 240,
+      "exception": null
+    },
+    {
+      "name": "review R2: the same payout [vault] / input 0 (contested)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 149,
+      "exception": null
+    },
+    {
+      "name": "review R2: the same payout [vault] / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 105,
+      "exception": null
+    },
+    {
+      "name": "review R2: the same payout [vault] / input 3 (record)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 240,
+      "exception": null
+    },
+    {
+      "name": "review R2: the same payout [copy] / input 0 (contested)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 149,
+      "exception": null
+    },
+    {
+      "name": "review R2: the same payout [copy] / input 1 (vault)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 109,
+      "exception": null
+    },
+    {
+      "name": "review R2: the same payout [copy] / input 3 (record)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 240,
+      "exception": null
+    },
+    {
+      "name": "review R2: the same payout [record] / input 0 (contested)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 149,
+      "exception": null
+    },
+    {
+      "name": "review R2: the same payout [record] / input 1 (vault)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 109,
+      "exception": null
+    },
+    {
+      "name": "review R2: the same payout [record] / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 105,
+      "exception": null
+    },
+    {
+      "name": "refusal: a proven rejection turns the request into a contested coin, posted by anyone / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 117,
+      "exception": null
+    },
+    {
+      "name": "  the copy given back after a refusal / input 0 (request)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 97,
+      "exception": null
+    },
+    {
+      "name": "refusal overruled by the guardian majority after the wait [contested] / input 1 (vault)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 109,
+      "exception": null
+    },
+    {
+      "name": "refusal overruled by the guardian majority after the wait [contested] / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 105,
+      "exception": null
+    },
+    {
+      "name": "refusal overruled by the guardian majority after the wait [contested] / input 3 (record)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 246,
+      "exception": null
+    },
+    {
+      "name": "refusal overruled by the guardian majority after the wait [vault] / input 0 (contested)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 121,
+      "exception": null
+    },
+    {
+      "name": "refusal overruled by the guardian majority after the wait [vault] / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 105,
+      "exception": null
+    },
+    {
+      "name": "refusal overruled by the guardian majority after the wait [vault] / input 3 (record)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 246,
+      "exception": null
+    },
+    {
+      "name": "refusal overruled by the guardian majority after the wait [copy] / input 0 (contested)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 121,
+      "exception": null
+    },
+    {
+      "name": "refusal overruled by the guardian majority after the wait [copy] / input 1 (vault)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 109,
+      "exception": null
+    },
+    {
+      "name": "refusal overruled by the guardian majority after the wait [copy] / input 3 (record)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 246,
+      "exception": null
+    },
+    {
+      "name": "refusal overruled by the guardian majority after the wait [record] / input 0 (contested)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 121,
+      "exception": null
+    },
+    {
+      "name": "refusal overruled by the guardian majority after the wait [record] / input 1 (vault)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 109,
+      "exception": null
+    },
+    {
+      "name": "refusal overruled by the guardian majority after the wait [record] / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 105,
+      "exception": null
+    },
+    {
+      "name": "refusal final: the rejection of the refused coin once it is old enough, posted by anyone / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 117,
+      "exception": null
+    },
+    {
+      "name": "review R1: a request created in the block of its seal's heartbeat pays / input 1 (vault)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 109,
+      "exception": null
+    },
+    {
+      "name": "review R1: a request created in the block of its seal's heartbeat pays / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 117,
+      "exception": null
+    },
+    {
+      "name": "review R1: a request created in the block of its seal's heartbeat pays / input 3 (record)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 240,
+      "exception": null
+    },
+    {
+      "name": "Council seals with its quorum / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "Council seals with its quorum / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "Council seals with its quorum / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "Council seals with its quorum / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "Council seals with its quorum / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "  each copy follows the head / input 0 (head)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 232,
+      "exception": null
+    },
+    {
+      "name": "  each copy follows the head / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "  each copy follows the head / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "  each copy follows the head / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "  each copy follows the head / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "guardians freeze / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "guardians freeze / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "guardians freeze / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "guardians freeze / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "guardians freeze / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "guardian majority releases / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "guardian majority releases / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "guardian majority releases / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "guardian majority releases / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "guardian majority releases / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "succession after a long silence (D128: scheduled, the public wait over, posted with no signature) / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "succession after a long silence (D128: scheduled, the public wait over, posted with no signature) / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "succession after a long silence (D128: scheduled, the public wait over, posted with no signature) / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "succession after a long silence (D128: scheduled, the public wait over, posted with no signature) / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "succession after a long silence (D128: scheduled, the public wait over, posted with no signature) / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "succession after a long freeze, Council still beating / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "succession after a long freeze, Council still beating / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "succession after a long freeze, Council still beating / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "succession after a long freeze, Council still beating / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "succession after a long freeze, Council still beating / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128: the guardian supermajority schedules a succession after a long silence / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128: the guardian supermajority schedules a succession after a long silence / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128: the guardian supermajority schedules a succession after a long silence / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128: the guardian supermajority schedules a succession after a long silence / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128: the guardian supermajority schedules a succession after a long silence / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128:   each copy follows the schedule / input 0 (head)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 240,
+      "exception": null
+    },
+    {
+      "name": "D128:   each copy follows the schedule / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128:   each copy follows the schedule / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128:   each copy follows the schedule / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128:   each copy follows the schedule / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128: a schedule after a long freeze, Council still beating / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128: a schedule after a long freeze, Council still beating / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128: a schedule after a long freeze, Council still beating / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128: a schedule after a long freeze, Council still beating / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128: a schedule after a long freeze, Council still beating / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128:   each copy follows a schedule while frozen / input 0 (head)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 240,
+      "exception": null
+    },
+    {
+      "name": "D128:   each copy follows a schedule while frozen / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128:   each copy follows a schedule while frozen / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128:   each copy follows a schedule while frozen / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128:   each copy follows a schedule while frozen / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128:   each copy follows a carry-out that lifts a freeze / input 0 (head)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 305,
+      "exception": null
+    },
+    {
+      "name": "D128:   each copy follows a carry-out that lifts a freeze / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128:   each copy follows a carry-out that lifts a freeze / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128:   each copy follows a carry-out that lifts a freeze / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128:   each copy follows a carry-out that lifts a freeze / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128: a Council seal while not frozen cancels a scheduled succession / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128: a Council seal while not frozen cancels a scheduled succession / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128: a Council seal while not frozen cancels a scheduled succession / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128: a Council seal while not frozen cancels a scheduled succession / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128: a Council seal while not frozen cancels a scheduled succession / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128: a Council seal while frozen keeps the schedule / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128: a Council seal while frozen keeps the schedule / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128: a Council seal while frozen keeps the schedule / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128: a Council seal while frozen keeps the schedule / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128: a Council seal while frozen keeps the schedule / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128: a guardian majority release cancels the schedule / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128: a guardian majority release cancels the schedule / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128: a guardian majority release cancels the schedule / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128: a guardian majority release cancels the schedule / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128: a guardian majority release cancels the schedule / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128: a freeze keeps a schedule / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128: a freeze keeps a schedule / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128: a freeze keeps a schedule / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128: a freeze keeps a schedule / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "D128: a freeze keeps a schedule / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "a guardian checks in / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "a guardian checks in / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "a guardian checks in / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "a guardian checks in / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "a guardian checks in / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "sets: the first succession installs backup set 1 and counts it / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "sets: the first succession installs backup set 1 and counts it / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "sets: the first succession installs backup set 1 and counts it / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "sets: the first succession installs backup set 1 and counts it / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "sets: the first succession installs backup set 1 and counts it / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "sets: a second succession installs backup set 2 / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "sets: a second succession installs backup set 2 / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "sets: a second succession installs backup set 2 / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "sets: a second succession installs backup set 2 / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "sets: a second succession installs backup set 2 / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "sets:   each copy follows it / input 0 (head)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 305,
+      "exception": null
+    },
+    {
+      "name": "sets:   each copy follows it / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "sets:   each copy follows it / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "sets:   each copy follows it / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "sets:   each copy follows it / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "sets: the last set (3) installed / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "sets: the last set (3) installed / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "sets: the last set (3) installed / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "sets: the last set (3) installed / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "sets: the last set (3) installed / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "MAST: a Council seal needs no branch / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "MAST: a Council seal needs no branch / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "MAST: a Council seal needs no branch / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "MAST: a Council seal needs no branch / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "MAST: a Council seal needs no branch / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "MAST: a check-in needs no branch / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "MAST: a check-in needs no branch / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "MAST: a check-in needs no branch / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "MAST: a check-in needs no branch / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "MAST: a check-in needs no branch / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: an election of inactive seat 4 scheduled by 5 of 9 seats / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: an election of inactive seat 4 scheduled by 5 of 9 seats / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: an election of inactive seat 4 scheduled by 5 of 9 seats / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: an election of inactive seat 4 scheduled by 5 of 9 seats / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: an election of inactive seat 4 scheduled by 5 of 9 seats / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap:   each copy follows the schedule / input 0 (head)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 479,
+      "exception": null
+    },
+    {
+      "name": "swap:   each copy follows the schedule / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap:   each copy follows the schedule / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap:   each copy follows the schedule / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap:   each copy follows the schedule / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: inactive guardians who sign count (5 of 9 seats) / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: inactive guardians who sign count (5 of 9 seats) / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: inactive guardians who sign count (5 of 9 seats) / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: inactive guardians who sign count (5 of 9 seats) / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: inactive guardians who sign count (5 of 9 seats) / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: a removal of active seat 4 by the supermajority / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: a removal of active seat 4 by the supermajority / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: a removal of active seat 4 by the supermajority / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: a removal of active seat 4 by the supermajority / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: a removal of active seat 4 by the supermajority / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: an election carried out after the public wait / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: an election carried out after the public wait / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: an election carried out after the public wait / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: an election carried out after the public wait / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: an election carried out after the public wait / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap:   each copy follows the carry-out / input 0 (head)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 502,
+      "exception": null
+    },
+    {
+      "name": "swap:   each copy follows the carry-out / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap:   each copy follows the carry-out / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap:   each copy follows the carry-out / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap:   each copy follows the carry-out / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: a removal carried out after the public wait / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: a removal carried out after the public wait / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: a removal carried out after the public wait / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: a removal carried out after the public wait / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: a removal carried out after the public wait / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: a void election cleared, nothing else changed / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: a void election cleared, nothing else changed / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: a void election cleared, nothing else changed / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: a void election cleared, nothing else changed / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: a void election cleared, nothing else changed / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: a removal carried out though the guardian keeps checking in / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: a removal carried out though the guardian keeps checking in / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: a removal carried out though the guardian keeps checking in / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: a removal carried out though the guardian keeps checking in / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: a removal carried out though the guardian keeps checking in / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: a Council seal keeps a scheduled swap / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: a Council seal keeps a scheduled swap / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: a Council seal keeps a scheduled swap / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: a Council seal keeps a scheduled swap / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: a Council seal keeps a scheduled swap / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: a check-in keeps a scheduled swap / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: a check-in keeps a scheduled swap / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: a check-in keeps a scheduled swap / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: a check-in keeps a scheduled swap / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "swap: a check-in keeps a scheduled swap / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "window: a seal mined with the oldest heartbeat allowed (72 blocks old) / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "window: a seal mined with the oldest heartbeat allowed (72 blocks old) / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "window: a seal mined with the oldest heartbeat allowed (72 blocks old) / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "window: a seal mined with the oldest heartbeat allowed (72 blocks old) / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "window: a seal mined with the oldest heartbeat allowed (72 blocks old) / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "lone frozen copy: a guardian head freeze carries it frozen / input 0 (head)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 220,
+      "exception": null
+    },
+    {
+      "name": "lone frozen copy: a guardian head freeze carries it frozen / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "lone frozen copy: a guardian head freeze carries it frozen / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "lone frozen copy: a guardian head freeze carries it frozen / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "lone frozen copy: a guardian head freeze carries it frozen / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "lone frozen copy: a guardian majority release clears it / input 0 (head)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 208,
+      "exception": null
+    },
+    {
+      "name": "lone frozen copy: a guardian majority release clears it / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "lone frozen copy: a guardian majority release clears it / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "lone frozen copy: a guardian majority release clears it / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "lone frozen copy: a guardian majority release clears it / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "lone frozen copy: succession after a long silence clears it / input 0 (head)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 305,
+      "exception": null
+    },
+    {
+      "name": "lone frozen copy: succession after a long silence clears it / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "lone frozen copy: succession after a long silence clears it / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "lone frozen copy: succession after a long silence clears it / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "lone frozen copy: succession after a long silence clears it / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: a later seal does not push an approval back (it pays from slot 1) / input 1 (vault)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 109,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: a later seal does not push an approval back (it pays from slot 1) / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 117,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: a later seal does not push an approval back (it pays from slot 1) / input 3 (record)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 240,
+      "exception": null
+    },
+    {
+      "name": "  the copy carries the ring unchanged / input 0 (request)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 159,
+      "exception": null
+    },
+    {
+      "name": "  the copy carries the ring unchanged / input 1 (vault)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 109,
+      "exception": null
+    },
+    {
+      "name": "  the copy carries the ring unchanged / input 3 (record)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 240,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: a contested request, released, approved in an older slot / input 1 (vault)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 109,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: a contested request, released, approved in an older slot / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 105,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: a contested request, released, approved in an older slot / input 3 (record)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 240,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: an approval carried through 4 seals pays from the oldest slot still in the ring / input 1 (vault)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 109,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: an approval carried through 4 seals pays from the oldest slot still in the ring / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 117,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: an approval carried through 4 seals pays from the oldest slot still in the ring / input 3 (record)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 240,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: the same approval named in its newest slot (past its delay) / input 1 (vault)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 109,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: the same approval named in its newest slot (past its delay) / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 117,
+      "exception": null
+    },
+    {
+      "name": "C1 ring: the same approval named in its newest slot (past its delay) / input 3 (record)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 240,
+      "exception": null
+    },
+    {
+      "name": "C4: a Council seal proposes a public change (seat 2, a new limit) / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "C4: a Council seal proposes a public change (seat 2, a new limit) / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "C4: a Council seal proposes a public change (seat 2, a new limit) / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "C4: a Council seal proposes a public change (seat 2, a new limit) / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "C4: a Council seal proposes a public change (seat 2, a new limit) / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "  each copy follows the head / input 0 (head)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 342,
+      "exception": null
+    },
+    {
+      "name": "  each copy follows the head / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "  each copy follows the head / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "  each copy follows the head / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "  each copy follows the head / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "proposalWithin: a proposal dated at the bound / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "proposalWithin: a proposal dated at the bound / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "proposalWithin: a proposal dated at the bound / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "proposalWithin: a proposal dated at the bound / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "proposalWithin: a proposal dated at the bound / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "C4: a later seal keeps the pending change / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "C4: a later seal keeps the pending change / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "C4: a later seal keeps the pending change / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "C4: a later seal keeps the pending change / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "C4: a later seal keeps the pending change / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "C4: anyone activates the change after the delay / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "C4: anyone activates the change after the delay / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "C4: anyone activates the change after the delay / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "C4: anyone activates the change after the delay / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "C4: anyone activates the change after the delay / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "  each copy follows the head / input 0 (head)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 575,
+      "exception": null
+    },
+    {
+      "name": "  each copy follows the head / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "  each copy follows the head / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "  each copy follows the head / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "  each copy follows the head / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "C4: the freeze threshold of guardians cancels a pending change / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "C4: the freeze threshold of guardians cancels a pending change / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "C4: the freeze threshold of guardians cancels a pending change / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "C4: the freeze threshold of guardians cancels a pending change / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "C4: the freeze threshold of guardians cancels a pending change / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "C4: succession drops a pending change / input 1 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "C4: succession drops a pending change / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "C4: succession drops a pending change / input 3 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "C4: succession drops a pending change / input 4 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "C4: succession drops a pending change / input 5 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 32,
+      "exception": null
+    },
+    {
+      "name": "review X3: an idle record restarts its period now / input 0 (request)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 159,
+      "exception": null
+    },
+    {
+      "name": "review X3: an idle record restarts its period now / input 1 (vault)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 109,
+      "exception": null
+    },
+    {
+      "name": "review X3: an idle record restarts its period now / input 2 (copy)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 117,
+      "exception": null
+    },
+    {
+      "name": "copyLoneClean: a payout uses a cleaned copy as before / input 0 (request)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 159,
+      "exception": null
+    },
+    {
+      "name": "copyLoneClean: a payout uses a cleaned copy as before / input 1 (vault)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 109,
+      "exception": null
+    },
+    {
+      "name": "copyLoneClean: a payout uses a cleaned copy as before / input 3 (record)",
+      "expect": true,
+      "success": true,
+      "pass": true,
+      "instructions": 240,
+      "exception": null
+    }
+  ],
+  "signedTable": [
+    {
+      "name": "real signatures: Council seals with its quorum (MULTISIG 7 of 11)",
+      "expect": {
+        "signatures": true,
+        "scripts": true
+      },
+      "signatures": true,
+      "scripts": true,
+      "success": true,
+      "pass": true,
+      "txpowBytes": 47456,
+      "keys": [
+        "0x8B0CD835ED577CEC6B68E3051EE2DD26FB1AAC7E855980B9A7821C63781CE30C",
+        "0x4E8E3700F621DF47DEC1C67BE1BC8F7ED4640910DEE17C3A0C6CCB0A5C04D294",
+        "0x0843F61A659127433C5BBA056128DD789AAC797B7B53361DE493DD1853EE4897",
+        "0x556996CA6B5E5310252BB16CD0B837A2DD3FF6C4AFAF641C703BAE4A923D6BF1",
+        "0x1564AC50CA8060F35D737C03119B0B2E995FAC8F7FBF40B1A34F8A3B6185D9D6",
+        "0xFFCE4945750F39DFC256729DCB3E40EBDBEBFA387F046C9235E7B6DB2B4EDA79",
+        "0x23F74C2F570DA01294D19A078EF635637D8BF80FDA575C1061C7422E33BAD9B5"
+      ]
+    },
+    {
+      "name": "real signatures: one quorum key replaced by a stranger key",
+      "expect": {
+        "signatures": true,
+        "scripts": false
+      },
+      "signatures": true,
+      "scripts": false,
+      "success": false,
+      "pass": true,
+      "txpowBytes": 47456,
+      "keys": [
+        "0x8B0CD835ED577CEC6B68E3051EE2DD26FB1AAC7E855980B9A7821C63781CE30C",
+        "0x4E8E3700F621DF47DEC1C67BE1BC8F7ED4640910DEE17C3A0C6CCB0A5C04D294",
+        "0x0843F61A659127433C5BBA056128DD789AAC797B7B53361DE493DD1853EE4897",
+        "0x556996CA6B5E5310252BB16CD0B837A2DD3FF6C4AFAF641C703BAE4A923D6BF1",
+        "0x1564AC50CA8060F35D737C03119B0B2E995FAC8F7FBF40B1A34F8A3B6185D9D6",
+        "0xFFCE4945750F39DFC256729DCB3E40EBDBEBFA387F046C9235E7B6DB2B4EDA79",
+        "0xAACCA6EE63FE9F5619A9DA67CD6D7F922D65C44E67C1D2706440789B86519A64"
+      ]
+    },
+    {
+      "name": "real signatures: the seal changed after the quorum signed (another approved root), also refused by the ring",
+      "expect": {
+        "signatures": false,
+        "scripts": false
+      },
+      "signatures": false,
+      "scripts": false,
+      "success": false,
+      "pass": true,
+      "txpowBytes": 47456,
+      "keys": [
+        "0x8B0CD835ED577CEC6B68E3051EE2DD26FB1AAC7E855980B9A7821C63781CE30C",
+        "0x4E8E3700F621DF47DEC1C67BE1BC8F7ED4640910DEE17C3A0C6CCB0A5C04D294",
+        "0x0843F61A659127433C5BBA056128DD789AAC797B7B53361DE493DD1853EE4897",
+        "0x556996CA6B5E5310252BB16CD0B837A2DD3FF6C4AFAF641C703BAE4A923D6BF1",
+        "0x1564AC50CA8060F35D737C03119B0B2E995FAC8F7FBF40B1A34F8A3B6185D9D6",
+        "0xFFCE4945750F39DFC256729DCB3E40EBDBEBFA387F046C9235E7B6DB2B4EDA79",
+        "0x23F74C2F570DA01294D19A078EF635637D8BF80FDA575C1061C7422E33BAD9B5"
+      ]
+    },
+    {
+      "name": "real signatures: quorum signatures made over another transaction",
+      "expect": {
+        "signatures": false,
+        "scripts": true
+      },
+      "signatures": false,
+      "scripts": true,
+      "success": false,
+      "pass": true,
+      "txpowBytes": 47456,
+      "keys": [
+        "0x8B0CD835ED577CEC6B68E3051EE2DD26FB1AAC7E855980B9A7821C63781CE30C",
+        "0x4E8E3700F621DF47DEC1C67BE1BC8F7ED4640910DEE17C3A0C6CCB0A5C04D294",
+        "0x0843F61A659127433C5BBA056128DD789AAC797B7B53361DE493DD1853EE4897",
+        "0x556996CA6B5E5310252BB16CD0B837A2DD3FF6C4AFAF641C703BAE4A923D6BF1",
+        "0x1564AC50CA8060F35D737C03119B0B2E995FAC8F7FBF40B1A34F8A3B6185D9D6",
+        "0xFFCE4945750F39DFC256729DCB3E40EBDBEBFA387F046C9235E7B6DB2B4EDA79",
+        "0x23F74C2F570DA01294D19A078EF635637D8BF80FDA575C1061C7422E33BAD9B5"
+      ]
+    },
+    {
+      "name": "real signatures: guardians freeze (MULTISIG 3 of 9)",
+      "expect": {
+        "signatures": true,
+        "scripts": true
+      },
+      "signatures": true,
+      "scripts": true,
+      "success": true,
+      "pass": true,
+      "txpowBytes": 31386,
+      "keys": [
+        "0xD589B6929D9199467403A4F2D9D804832EFB0BF73CC43D6343A62CA62D34170F",
+        "0x5B4CDDA5C820742D8E833CBC277EA0A800CCE8C3BD6228A75CCBD93679E61E5D",
+        "0x014EBC2131C75C7FE16BFA97BA0506FE5D75CC7D6696172EF05AD0B60ABED3BC"
+      ]
+    },
+    {
+      "name": "real signatures: freeze by one guardian too few and a stranger",
+      "expect": {
+        "signatures": true,
+        "scripts": false
+      },
+      "signatures": true,
+      "scripts": false,
+      "success": false,
+      "pass": true,
+      "txpowBytes": 31386,
+      "keys": [
+        "0xD589B6929D9199467403A4F2D9D804832EFB0BF73CC43D6343A62CA62D34170F",
+        "0x5B4CDDA5C820742D8E833CBC277EA0A800CCE8C3BD6228A75CCBD93679E61E5D",
+        "0xAACCA6EE63FE9F5619A9DA67CD6D7F922D65C44E67C1D2706440789B86519A64"
+      ]
+    },
+    {
+      "name": "real signatures: a guardian checks in (SIGNEDBY)",
+      "expect": {
+        "signatures": true,
+        "scripts": true
+      },
+      "signatures": true,
+      "scripts": true,
+      "success": true,
+      "pass": true,
+      "txpowBytes": 22673,
+      "keys": [
+        "0x014EBC2131C75C7FE16BFA97BA0506FE5D75CC7D6696172EF05AD0B60ABED3BC"
+      ]
+    },
+    {
+      "name": "real signatures: a check-in signed by a stranger key",
+      "expect": {
+        "signatures": true,
+        "scripts": false
+      },
+      "signatures": true,
+      "scripts": false,
+      "success": false,
+      "pass": true,
+      "txpowBytes": 22673,
+      "keys": [
+        "0xAACCA6EE63FE9F5619A9DA67CD6D7F922D65C44E67C1D2706440789B86519A64"
+      ]
+    },
+    {
+      "name": "real signatures: a check-in changed after signing",
+      "expect": {
+        "signatures": false,
+        "scripts": true
+      },
+      "signatures": false,
+      "scripts": true,
+      "success": false,
+      "pass": true,
+      "txpowBytes": 22673,
+      "keys": [
+        "0x014EBC2131C75C7FE16BFA97BA0506FE5D75CC7D6696172EF05AD0B60ABED3BC"
+      ]
+    },
+    {
+      "name": "real signatures: a Council seal spending a lone frozen copy",
+      "expect": {
+        "signatures": true,
+        "scripts": false
+      },
+      "signatures": true,
+      "scripts": false,
+      "success": false,
+      "pass": true,
+      "txpowBytes": 47466,
+      "keys": [
+        "0x8B0CD835ED577CEC6B68E3051EE2DD26FB1AAC7E855980B9A7821C63781CE30C",
+        "0x4E8E3700F621DF47DEC1C67BE1BC8F7ED4640910DEE17C3A0C6CCB0A5C04D294",
+        "0x0843F61A659127433C5BBA056128DD789AAC797B7B53361DE493DD1853EE4897",
+        "0x556996CA6B5E5310252BB16CD0B837A2DD3FF6C4AFAF641C703BAE4A923D6BF1",
+        "0x1564AC50CA8060F35D737C03119B0B2E995FAC8F7FBF40B1A34F8A3B6185D9D6",
+        "0xFFCE4945750F39DFC256729DCB3E40EBDBEBFA387F046C9235E7B6DB2B4EDA79",
+        "0x23F74C2F570DA01294D19A078EF635637D8BF80FDA575C1061C7422E33BAD9B5"
+      ]
+    },
+    {
+      "name": "real signatures: the guardian supermajority schedules a succession (MULTISIG 6 of 9, the largest head transaction)",
+      "expect": {
+        "signatures": true,
+        "scripts": true
+      },
+      "signatures": true,
+      "scripts": true,
+      "success": true,
+      "pass": true,
+      "txpowBytes": 43695,
+      "keys": [
+        "0xD979DCC945C76A467F9D1FCFFD541964196419B41CE778FDBA61E548DAA53D3B",
+        "0x7BBD26F4FA3E1655283C55FB8A3C3B87E5E8A85E6AC704B160E621BD8C41000E",
+        "0x329C0137CAC1BA4CFF98CBC16487F580E3CB93CB7BCF1C769E16BF504BD3F23B",
+        "0xA3C01F76170F8EF30B9417212BC02C9245A13DE132DB466D32AD761E68607C8F",
+        "0xC185881D0027D0725BFE94E248EC223D71E3B4C75F690DBFF34A07AD3FBDD972",
+        "0xA184C5B7AB50789477FFAFA074960DEDAF1169C4F03F7E241E964309CF120860"
+      ]
+    }
+  ]
+}

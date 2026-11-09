@@ -2,6 +2,8 @@
 
 **Version 0.1.0-test, testing phase** (3 November 2026, vault R2T5, valueless test tokens). This code will change before any real money, starting with signing across several machines; see [CHANGELOG](../CHANGELOG.md).
 
+**Now also vault R2T6 (version 0.2.0-test, 9 November 2026):** [`r2t6/r2t6-approvers.mjs`](r2t6/r2t6-approvers.mjs), signing across three machines with [`cosign/`](cosign/). The description below is of R2T5; what R2T6 changes is in [GUARDIANS.md](../../docs/GUARDIANS.md) and the [changelog](../CHANGELOG.md).
+
 `r2t5-council.mjs` is the program behind the card's approvers for vault generation R2T5. Older documents and the code
 call the approvers "the Council"; that word is now kept for decisions taken by the Stables community.
 

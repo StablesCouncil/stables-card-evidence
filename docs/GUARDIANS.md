@@ -1,9 +1,10 @@
 # The Stables card's guardians
 
-**Status, stated plainly (3 November 2026).** The card runs on Minima mainnet with **valueless test tokens** (Winiwa,
-xWiniwa). The guardian rules are part of the deployed vault generation **R2T5** and have been exercised on mainnet. All
-nine guardian keys are still held by the Stables lab. A first guardian program exists and passes its tests offline; no
-guardian program runs continuously yet. Nothing here has had an external audit.
+**Status, stated plainly (9 November 2026).** The card runs on Minima mainnet with **valueless test tokens** (Winiwa,
+xWiniwa). Its vault is now generation **R2T6**, created on 4 November 2026; card money moves over from the previous
+vault (R2T5) one coin at a time. The guardian rules are part of R2T6's own scripts and have been exercised on mainnet
+with real phones: a refusal, a stop by one guardian, and its release by five. All nine guardian keys are still held by
+the Stables lab. The guardian program runs, read only, on the founder's computer. Nothing here has had an external audit.
 
 Live page: [stablescouncil.org/guardians.html](https://stablescouncil.org/guardians.html). Card figures:
 [stablescouncil.org/test-dashboard.html#card](https://stablescouncil.org/test-dashboard.html#card). The code:
@@ -16,7 +17,7 @@ Live page: [stablescouncil.org/guardians.html](https://stablescouncil.org/guardi
 3. [The nine seats](#the-nine-seats)
 4. [The guardian program](#the-guardian-program)
 5. [What has been proven](#what-has-been-proven)
-6. [What does not work yet](#what-does-not-work-yet)
+6. [What comes next](#what-comes-next)
 7. [Decisions taken](#decisions-taken)
 8. [Before any real money](#before-any-real-money)
 9. [Check it yourself](#check-it-yourself)
@@ -26,189 +27,207 @@ Live page: [stablescouncil.org/guardians.html](https://stablescouncil.org/guardi
 
 Two separate groups look after the card's vault:
 
-- **The approvers:** 11 keys, of which 7 must sign (a "seal") before money goes back from a card to Savings. Today they
-  run on one server held by the Stables lab. Older documents, the contracts and the code call them "the Council"; the
-  word Council is now kept for decisions taken by the Stables community.
-- **The guardians:** 9 seats, each a program run by a different person with their own key, that watch the approvers.
+- **The approvers:** 11 keys, of which 7 must sign (a "seal") before money goes back from a card to Savings. In R2T6 the
+  keys are spread over three machines in different places (4, 4 and 3), and each machine checks every request itself
+  before it signs. Older documents, the contracts and the code call them "the Council"; the word Council is now kept
+  for decisions taken by the Stables community.
+- **The guardians:** 9 seats, each a program run by a different operator (a person or an organisation) with its own key, that watch the approvers.
 
 The approvers are not needed for the money to come back:
 
 - **Paying needs no one.** Card money moves from phone to phone by touch, offline, with no server.
 - **If the approvers do not answer, the vault still lets your money come back.** An exit request they neither approve
-  nor refuse can be paid after 3 days with no approver key (the fallback), as long as the approvers' heartbeat is
-  fresh. No program posts that payout by itself yet: the guardian program will (it needs the paid-coin lists, which it
-  will keep itself); until then it is posted by hand.
-- **If the approvers disappear, nobody can steal through their absence.** If their heartbeat stops, the fallback pauses
-  instead of opening, so nobody can slip a false request through. After 3 days of silence, 6 guardians install new
-  approvers, and payouts resume.
-- **Known limit, fix designed:** if the approvers explicitly refuse a valid request, the request is destroyed and the
-  card coin, already signed over to the exit, cannot be spent or requested again: that money stays locked in the vault.
-  On 13 October 2026 the approvers wrongly refused a 166.1 Winiwa exit and the lab paid it back by hand, as it will for
-  any wrongful refusal until the fix. The fix, for the next vault: a refusal leaves a "refused request" that 5 of the 9
-  guardians can overrule, sending it to the 3-day fallback with its usual wait and caps.
+  nor refuse can be paid after 3 days with no key at all (the fallback), as long as the approvers' heartbeat is under a
+  day old and the vault is not frozen. The guardian program builds that payout from its own copy of the paid-coin
+  lists and posts it.
+- **If the approvers go quiet, the money stays safe.** If their heartbeat stops, the fallback pauses
+  instead of opening, so nobody can slip a false request through. After 3 days of silence, 6 guardians can announce a
+  handover, and after 7 more days in public anyone carries it out: only to one of three backup approver sets fixed when
+  the vault was created.
+- **A wrongful refusal can be undone.** In R2T5 an explicit refusal destroyed the request and locked the money (on
+  13 October 2026 the lab paid such a refusal back by hand). In R2T6 a refusal only turns the request into a contested
+  coin. Five of the nine guardians can overrule it from 3 days after the refusal; the approvers' rejection becomes
+  final only once the contested coin is 7 days old.
 
 Approvers can also be wrong, hacked or captured. Guardians are the check on them.
 
-A guardian is a small program, run by one person with their own key, next to its own Minima node. It:
+A guardian is a small program, run by one operator with its own key, next to its own Minima node. It:
 
 - re-checks every exit request with the same package check the approvers use (every signature on the coin's path, and
   the hardware certificates behind every key);
 - rebuilds every seal's lists of approved and rejected requests from the chain, and compares them with what it
   found itself;
-- stops a request it finds wrong, and tells its owner when a person needs to act;
+- **stops at once any request the approvers approved that it did not pass**, and tells its owner when a person needs
+  to act;
+- keeps its own copy of the paid-coin lists, rebuilt from the chain, and publishes it;
 - checks in on chain regularly, to show it is alive;
 - writes every decision to a log it publishes.
 
-**A guardian can never pay anyone.** It can only stop, freeze, release and, together with others, replace the approvers.
-The worst a dishonest guardian can do is delay.
+**A guardian can never send money anywhere it chooses.** A payout always goes to the address the card's own key
+signed. A guardian can stop, freeze, release, and together with others overrule a refusal or announce a handover. The
+worst a dishonest guardian can do is delay.
 
 ## The rules
 
-These are enforced by the vault's own script on chain, not by any server. Details:
-[R2T5 design](R2T5_DESIGN.md) and the repository's [README](../README.md#if-the-council-disappears).
+These are enforced by the vault's own scripts on chain, not by any server. The scripts and every deployment step are in
+[`evidence/r2t6/`](../evidence/r2t6/).
 
 | Action | Who | Effect |
 |---|---|---|
-| Stop | **Any 1** guardian | The request becomes contested. The approvers can still approve or reject it; the fallback reopens only after 5 guardians release it. |
-| Freeze | **3** guardians | All payouts stop. The approvers cannot lift a freeze. |
-| Release | **5** guardians | A freeze is lifted, or a contested request released. |
-| New approvers | **6** guardians | Only after 3 days of silence from the approvers or 7 days frozen. The new approvers start with empty lists and still faces the delay, the caps and a freeze by any 3 others. |
+| Stop | **Any 1** guardian | The request becomes a contested coin. It is paid only with 5 guardian signatures: after the approvers approve it again, or after 3 days. **An approval does not get past a stop.** |
+| Freeze | **3** guardians | All payouts stop, the fallback included. The approvers cannot lift a freeze. |
+| Release | **5** guardians | A freeze is lifted, or a contested coin paid (a released stop, or an overruled refusal). |
+| Handover | **6** guardians announce, anyone carries out | Only after 3 days of approver silence or 7 days frozen, and only to one of the 3 backup approver sets fixed at creation, after a 7-day public wait. Working approvers or a guardian release cancel it. |
 | Check-in | Each guardian | Shows the seat is alive. A seat counts as active for 30 days after a check-in. |
-| Election | A candidate, plus more than half of the active guardians (at least 3) | Only for a seat whose guardian has not checked in for 60 days. A candidate cannot hold two seats. |
+| Guardian swap | Announced, then 7 days in public | An election needs a majority of all nine seats (at least 3), against a seat 60 days without a check-in; the seat holder voids it just by checking in. Removing a guardian needs 6 of 9. One swap at a time. |
 
-An approved payout waits **144 blocks (about 2 hours)** after its seal before it can be paid. That is the window in
-which guardians act.
+**The wait before a payout.** An approved request is paid from its seal's heartbeat plus 288 blocks: at least
+216 blocks (about 3 hours) after the seal is mined, usually close to 4 hours. That is the window in which a guardian
+acts; one stop in that window holds the payout until five guardians release it.
+
+**Caps.** The approvers can pay at most 2,500 of a token per record shard per day (8 shards per token). The 3-day
+fallback can pay at most 125 per shard per day. A payout goes through one shard, so one request is at most 2,500.
 
 ## The nine seats
 
-Each seat has a name, so people can follow a guardian over time. "Active" means checked in within 30 days.
+Each seat has a name, so people can follow a guardian over time. "Active" means checked in within 30 days. R2T6 kept
+R2T5's nine guardian keys.
 
-| Seat | Name | Tagline | Key held by | Guardian program | Last check-in |
+| Seat | Name | Tagline | Key held by | Guardian program | Last check-in (R2T6) |
 |---|---|---|---|---|---|
-| 0 | Farrier | Checks every shoe | Stables lab | none yet | 24 Oct 2026 |
-| 1 | Bridle | Holds the reins | Stables lab | none yet | 3 Nov 2026 |
-| 2 | Paddock | Fenced ground | Stables lab | none yet | 3 Nov 2026 |
-| 3 | Halter | Leads, never rides | Stables lab | none yet | 18 Oct 2026 |
-| 4 | Stirrup | Steady footing | Stables lab | none yet | 18 Oct 2026 |
-| 5 | Tackroom | Everything in its place | Stables lab | none yet | 18 Oct 2026 |
-| 6 | Lantern | Night watch | Stables lab | planned: a phone | 18 Oct 2026 |
-| 7 | Hayloft | The high view | Stables lab | planned: a personal computer | 18 Oct 2026 |
-| 8 | Gatepost | Stands at the gate | Stables lab | planned: a separate server | 18 Oct 2026 |
+| 0 | Farrier | Checks every shoe | Stables lab | lab rehearsal | 7 Nov 2026 |
+| 1 | Bridle | Holds the reins | Stables lab | lab rehearsal | 7 Nov 2026 |
+| 2 | Paddock | Fenced ground | Stables lab | lab rehearsal | 7 Nov 2026 |
+| 3 | Halter | Leads, never rides | Stables lab | lab rehearsal | 7 Nov 2026 |
+| 4 | Stirrup | Steady footing | Stables lab | lab rehearsal | 7 Nov 2026 |
+| 5 | Tackroom | Everything in its place | Stables lab | none yet | 4 Nov 2026 (creation) |
+| 6 | Lantern | Night watch | Stables lab | planned: a phone | 4 Nov 2026 (creation) |
+| 7 | Hayloft | The high view | Stables lab | planned: a personal computer | 4 Nov 2026 (creation) |
+| 8 | Gatepost | Stands at the gate | Stables lab | planned: a separate server | 4 Nov 2026 (creation) |
 
-Check-in dates as read from mainnet on 3 November 2026. Seats 3 to 8 become open to election from about 17 December
-2026 unless they check in again.
+Read from mainnet on 7 November 2026. Seats 0 to 4 checked in together that day (block 2,407,067), the first check-in on
+R2T6: active until about 7 December 2026. Seats 5 to 8 have not checked in since the vault was created: active until
+about 4 December 2026, open to election from about 3 January 2027 unless they check in.
+
+"Lab rehearsal": the seat's key signed the stop, the releases or the freeze of the November rehearsal. A guardian with no seat
+already watches R2T6 read only, in its own box on the founder's computer.
 
 **Who runs the first guardians.** Lantern, Hayloft and Gatepost will be run by the project's founder, on a phone, a
-personal computer and a personal server, none of them the approvers' server. That separates the guardians from the
-approvers' machine, not yet from the people behind Stables. Independence comes when other people take seats.
+personal computer and a personal server, none of them an approvers' machine. That separates the guardians from the
+approvers' machines, not yet from the team behind Stables. Independence comes when other operators take seats.
+
+**Who will operate each seat.** The development team operates every approver and guardian role today. The Stables
+Council, the community, will decide who operates each one, by bidding and for a fixed term, with pay that rises with the
+quality of the service. The Council holds the mandate; each operator keeps its own key and runs its own program. Each
+role passes to its operators step by step.
 
 ## The guardian program
 
-A first version was written on 3 November 2026, for personal computers and servers (Node.js), with a design for a
-guardian mode inside the Stables Android app.
+Written on 3 November 2026 and extended for R2T6 on 5 and 6 November, for personal computers and servers (Node.js),
+with a design for a guardian mode inside the Stables Android app.
 
 - **Read only by default.** It builds and checks every transaction, and never posts unless two separate switches are
   set on purpose.
-- **Its own node.** It reads a Minima node on the same machine, never the approvers' server.
-- **A pass every 5 minutes.** A request found bad is checked again 20 blocks later before it is stopped. A request it
-  cannot check goes to its owner, and is stopped once it could pay within 10 hours.
-- **Check-in every 7 days.** It never checks in during the 30 blocks before an approvers' heartbeat seal, so it does not
-  get in their way.
-- **Freeze, release and succession are prepared for the owner, not signed alone,** because people decide those.
+- **Its own node.** It reads a Minima node on the same machine, never an approvers' server. In the guardian box (Docker)
+  the node, the program and its alert account are separate containers.
+- **A pass every 5 minutes.** A request found bad is checked again 20 blocks later before it is stopped; one the
+  approvers approved without its pass is stopped at once.
+- **Releases signed in turn.** A release or overrule is prepared by one guardian and handed to the next; each signs only
+  if it is exactly the payout it would build itself, and the fifth posts it.
+- **Its own paid-coin lists**, followed from the chain; a list from anyone else is taken only if it rebuilds the root
+  the chain shows.
+- **Check-in every 7 days**, never in the 30 blocks before an approvers' heartbeat seal.
+- **Freezes and handovers are prepared for the owner, not signed alone,** because people decide those.
 - **A tamper-evident log.** Each line carries the hash of the line before, so an edited line is found.
 - **Alerts** to its owner over Parlons!, an open-source messenger on Minima's Maxima network, with no central chat
   server.
 
-The code of the guardian program and of the approvers' program is published in [`programs/`](../programs/).
+The guardian program's code is published in [`programs/`](../programs/), for R2T6. The approvers' program published there is the R2T5 version; the R2T6 version follows.
 
 ## What has been proven
 
-All with test keys in the program's own offline copy of Minima's transaction checker, against the deployed R2T5
-scripts, plus one read-only pass on mainnet. Result: **65 of 65 tests pass** (3 November 2026), among them:
+**On mainnet, with test tokens, with real phones (5 and 6 November 2026):**
 
-- **Its transactions, with real signatures (13 of 13).** A stop signed by a seated guardian is accepted. It is refused
-  when signed by a key with no seat, when it sends the request elsewhere, when it is changed after signing, or when it
-  reuses a signature from another transaction. A check-in is accepted, and refused when signed by a stranger, when one
-  seat writes another's check-in, or when it is too old. A freeze is accepted with 3 guardians and refused with 2.
-- **Its decisions (29 of 29).** A good request is left alone; a bad one is stopped only after a second bad verdict; a
-  seal that approves a bad request raises an urgent alert with a freeze prepared; a blind node, a lost seat or two nodes
-  that disagree raise alerts; in read-only mode the node receives only read commands.
-- **One real pass on mainnet, read only** (2 November 2026, block 2,399,448). It read the live seal 104 and rebuilt its
-  approved and rejected lists exactly from the chain. Anyone can check a seal without the approvers' server.
+- **A full round trip through R2T6.** 10 Winiwa in through the gate from a phone, the exit checked on all three approver
+  machines, sealed by two of them (seal 6), paid about 4 hours later (transaction
+  `0x41787156…2767`), and seen by the phone.
+- **A seal with one approver machine down** (seal 11): signed by the two others.
+- **A refusal** (seal 9): a request with no valid package, refused into a contested coin within two minutes; the
+  read-only guardian found it bad on its own.
+- **A stop and its release.** A real 5 Winiwa exit from a phone was stopped by one guardian
+  (`0x3EEC77D9…25D2`), approved again by the approvers, then released by five guardians signing in turn
+  (`0x45C53FBF…C65A`); the money reached the phone's Savings.
+- **A check-in** (7 November 2026, seal 23): seats 0 to 4 checked in together in one transaction (`0xDF46242A…DAF2`).
+- **A freeze and its release** (7 November 2026): three guardians froze the vault right after an approvers' seal
+  (`0x9FDB9555…ED28`, seal 25). A new exit from a phone arrived during the freeze: the approvers checked and sealed it
+  (seal 26) but paid nothing while frozen. Five guardians then lifted the freeze (`0x8CEBAA29…FA9E`, seal 27), and the
+  approvers paid that exit after it (`0x4B7DDF6C…D45F`).
+- **A payout with no approver** (9 November 2026, block 2,410,567): the approvers left a 3 Winiwa exit undecided on
+  purpose, and 3 days after it was made it was paid by the 3-day fallback, with no signature
+  (`0x00003BA5DAF29EA6B63E067BF566C794B92685DA12815FBA9E3720D5C1747B35`). It was posted by hand with the guardian program.
 
-The guardian rules themselves were exercised on mainnet at deployment, with the transactions linked in
-[Check it yourself](#check-it-yourself).
+**Offline**, with test keys in Minima's own transaction checker against the deployed R2T6 scripts: the R2T6
+transactions of both programs (99 of 99, each with broken versions that must be refused), and the guardian program's
+decisions (83 of 83).
 
-## What does not work yet
+The rehearsal also found and fixed three faults before any real money: the package check misread a contested coin (the
+phone had the same rule), and two in the guardian program's signing path. Each is described in the programs' changelog.
 
-1. The package check has not yet run inside the program on a real open exit request (none was open). The check itself
-   is the approvers' own code.
-2. Posting has run twice: real check-ins for seat 1 (block 2,400,643) and seat 2 (block 2,400,803 to 2,400,805) on
-   3 November 2026, each signed through the journal that counts each one-time key use. Stops and freezes have not
-   been posted by the program.
-3. No independent person holds a seat; all nine keys are the lab's.
-4. The program can publish its log to its own repository, but no guardian publishes yet.
-5. Alerts are written, not yet tested live.
-6. Guardians do not yet keep their own copy of the exit list (the paid coins behind each exit record). The approvers' server
-   publishes it today.
-7. The Android guardian mode is a design only.
+## What comes next
+
+1. Independent operators take the seats; today all nine keys are the lab's. Seats 5 to 8 have not checked in on R2T6 yet.
+2. The approver keys are on three machines, but all three are held by the lab.
+3. The guardian program runs read only; posting has been done by hand for the rehearsal.
+4. No guardian publishes its log yet, and alerts are not yet tested live.
+5. Phones get the gate's lanes and deposit proofs from two approver machines; a phone cannot yet confirm an approval by
+   itself, so the app does not claim one until the payout lands.
+6. The Android guardian mode is a design only.
 
 ## Decisions taken
 
-- **No central point.** The approvers' server must never be needed for safety. Guardians use their own nodes, publish
-  their own logs, and send alerts without a company's server.
-- **The first three guardians** run away from the approvers' server: on a phone, a personal computer and a personal
+- **No central point.** No approvers' machine must ever be needed for safety. Guardians use their own nodes, publish
+  their own logs and lists, and send alerts without a company's server.
+- **The approver keys are spread from creation:** 4 on the first server, 4 on a personal computer, 3 on a newly rented
+  server in another city; each checks every request before it signs.
+- **Every protection is on in R2T6**, so each can be relied on when the time comes: handover only to backup approvers,
+  the public guardian swap, and the overrule of a refusal.
+- **The first three guardians** run away from the approvers' machines: on a phone, a personal computer and a personal
   server.
-- **Seats.** The three keys will be elected into seats 6, 7 and 8 once those seats open (a rehearsal of an election on
-  mainnet, at no cost), and set in place from the start in the next vault.
 - **Check-in every 7 days**, far inside the 60-day limit.
 - **Logs.** Each guardian publishes its own log every hour to its own public repository, so no single host holds them
   all.
-- **Freezes stay a human decision** in R2T5. For the next vault, one narrow automatic case is under study: a seal that
-  provably approves a request the guardian found bad.
 - **The phone guardian** runs always, not only while charging.
 
 ## Before any real money
 
-The full list, with the order and the gates, is in [SECURITY_PLAN.md](SECURITY_PLAN.md). In short: in production the
-approvers and every guardian run on independent machines held by different people, so that no one reaches 7 approver
-keys or 6 guardian seats. Two rules from the next vault design go on for the card before any real money, and as early
-as possible:
-
-- **Handover to backup approvers.** Guardians can only announce a handover to backup approvers fixed at the start;
-  anyone carries it out after a 7-day public wait, and working approvers or a guardian release cancel it. Six captured
-  guardians could no longer install approvers of their own.
-- **Public guardian swap.** Replacing a silent guardian is announced, waits 7 days in public and needs a majority of
-  all nine seats; the current holder voids it just by checking in.
-
-The next vault also gives guardians more time: payouts wait 216 blocks (about 3 hours), with at least 144 blocks
-guaranteed to guardians.
+The full list, with the order and the gates, is in [SECURITY_PLAN.md](SECURITY_PLAN.md). In short: the approvers' three
+machines and the nine guardian seats must be held by different operators, so that no one reaches 7 approver keys or
+6 guardian seats; the guardian programs must run continuously and publish; and the scripts and both programs need an
+external review.
 
 ## Check it yourself
 
-- Seal head (approver keys, guardian seats, heartbeat):
-  `0xD6462FFC684A99C146D0FFE4D1681FF61BD7DB99122ECBDD64E7F702AF425561`. The nine guardian public keys and every
-  deployment step are in [`evidence/r2t5/`](../evidence/r2t5/).
-- One guardian stops a request: block 2,371,923
-  [`0x00007AE3…AEC77DE2`](https://explorer.minima.global/transactions/0x00007AE3473F52CEA992207C514CEF1DC7AC7DAC48658CE0D89EE158AEC77DE2).
-  Five release it: block 2,371,929
-  [`0x00006194…DD430674`](https://explorer.minima.global/transactions/0x00006194CE78B6A6A34F47919B643AFC6BE204D7D4D7FB3EF3C27FD5DD430674).
-- Three guardians freeze everything: block 2,371,934
-  [`0x000085E8…7DAF1DE6`](https://explorer.minima.global/transactions/0x000085E8DACFB06A99E947ED996CA2B3AF405DCBB4E2F43F32051DEB7DAF1DE6).
-  Five release: block 2,372,055
-  [`0x000052B8…D908A5F1`](https://explorer.minima.global/transactions/0x000052B87EB7D6A134491CE12423FF0C4F7CDCD4467D4410C97D98FAD908A5F1).
-- Guardians check in: block 2,372,059
-  [`0x00000778…266EC95D`](https://explorer.minima.global/transactions/0x0000077815D0701F9EDC55C3BE0EE8C2514C0195B079880CF231ED93266EC95D)
-  and block 2,372,064
-  [`0x0000175B…261F8E8E`](https://explorer.minima.global/transactions/0x0000175B5042C9A3750D0A92414E9EDAF69297E8E2048C19A2A7494E261F8E8E).
+- R2T6 seal head address: `0x2EF19A1992254D658332085AAAEA09AEC0245D711F4A9756C3F12E107723E88D`. Its state holds the
+  approver keys (ports 60 on), the nine guardian keys (80 on), their last check-ins (100 on) and the ring of the last
+  three approved lists (120 on). Created at block 2,402,474. Every deployment step and the scripts are in
+  [`evidence/r2t6/`](../evidence/r2t6/).
+- First seal across machines (seal 1): `0xC8F6CFCAF08287FB647EC692D76C9D0ADF753D32BE31B134A8BB3C4728DD5CFD`.
+- A refusal (seal 9 and the refusal itself): `0x50DFE827B716FE4A1DB10546BDBDFE4ADD0ECC5CD1B44AF392F55B967153AF2E`,
+  `0x8CDC1CA8CDD522C477C25FA6ADEA087A59F7EFD5CA32D968DB5D8C06F1566252`.
+- A seal with one machine down (seal 11): `0x832B46BC684765737E0D117D29100096A0A870EE9CAF61914F236E8AD4936B7F`.
+- One guardian stops a request: `0x3EEC77D9D892ED363C688CCECC39EA7F39B342F8F00B064CFE836E38E56525D2`. The approvers
+  approve it again (seal 15): `0xBA09D7837CC341BCBFC4CEC21C2790F92DDD8F6136A334201F5FBC0382F2D211`. Five guardians
+  release it: `0x45C53FBF55122A199E8C10F1D92F9CC7C1B3AED74AB518A684862A28759EC65A`.
+- Five guardians check in (seal 23): `0xDF46242AB91F99E4C593493778BB8B8C79B9A08A8847CBC727FE96878F2ADAF2`.
+- The R2T5 rules were exercised on mainnet at its deployment (October 2026); those transactions are kept in
+  [`evidence/r2t5/`](../evidence/r2t5/).
 
 ## Questions we want feedback on
 
-- Is about 2 hours (today) or 3 hours (next vault) the right wait before a payout? Shorter pays people faster but asks
-  more of guardians.
+- Is a wait of 3 to 4 hours before a payout right? Shorter pays people faster but asks more of guardians.
 - How do you keep guardians independent and awake over years, without paying them in a way that makes them a target?
 - Is a phone a reasonable home for a guardian, given that Android can stop background apps?
-- Who should hold the backup approvers' keys, and how should they be stored?
+- Who should hold the three backup approver sets' keys, and how should they be stored?
 - What would you want to see on the guardians page to trust a guardian you have never met?
 
 Send questions and findings as issues on this repository.

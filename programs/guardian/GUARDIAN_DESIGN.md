@@ -68,7 +68,8 @@ The key never leaves a Minima node the owner runs. The program names only the pu
 **One-time signatures.** Minima keys can sign a limited number of times and must never reuse a step. A node restored
 from an old copy would reuse steps and leak the key. So the program writes a journal entry before every signature (as
 the Council does), and a restore must start the key's count above the journal's figure. Never restore a guardian node
-from an old file copy.
+from an old file copy. For the same reason, never put one guardian key on two machines unless they are proven to use
+different steps of it (founder 2026-11-09, an operator may run several machines: master reference, "Who operates each role").
 
 ## How it stays alive
 
@@ -123,6 +124,49 @@ The program reads its numbers from the generation file, so most of it carries ov
   (`successionToBackup`, `guardianSwapPublic`): a scheduled succession or guardian swap is always reported to the owner,
   and a guardian named in an election only has to check in to void it.
 - The checker's generation tag and addresses come from the new generation file.
+
+## R2T6, built (2026-11-05, R2T6_PLAN step 6)
+
+`guardian-r2t6.mjs`, loaded when `generation` names an R2T6 file (`simcard/evidence/R2T6-DEPLOY-01/generation.json`).
+Dry run as before; tests `test/r2t6.mjs` (18 of 18) and `simcard/route2/r2t6/test/r2t6-tx.test.mjs` (the shapes
+through the deployed scripts, 99 of 99).
+- **Stop:** the request script's guardian path (one signature, 51 = 0). A contested coin is never stopped again.
+- **A Council approval it did not pass is stopped at once**, bad or unchecked alike (from the approved list it rebuilt
+  for that seal, kept per ring slot): the stop holds it until 5 guardians release it.
+- **Release and overrule:** a contested coin it passes gets its payout prepared, path 1 (a ring slot the Council
+  approved it in, sealed after the stop) or path 2 (3 days after it became contested), checked with five guardian keys
+  named, in `release-prepared-<id>.json`, with the block from which the Council's final rejection is possible. The
+  owner hears; urgent in the last day. `guardian.mjs sign-release <file> --post`: each guardian in turn signs it only
+  when it is exactly the payout it builds itself (`sameRelease`), writes `release-<id>-<n>of5.json` for the next, and the
+  fifth posts it. The files go from owner to owner by hand (no secret in them).
+- **Paid-coin lists (card review F5):** followed from the record coins (port 11 names each new key), taken from a
+  published `exit-lists.json` (`r2t6.listSources` in the config: the approvers', other guardians') only when it
+  rebuilds the chain's root, published with the log.
+- **Fallback (register row 36):** a request it passes that nobody paid or refused for 3 days is paid by request path 2,
+  unsigned, while the Council's heartbeat is under a day old and the vault is not frozen; one per shard per pass.
+- **Not yet:** the R2Checker does not know R2T6 (step 7), so today every R2T6 request would be "unchecked" and,
+  approved by the Council, stopped (the checker with R2T6, 84055e4e, is built into the box image and runs on the
+  approvers' machines); the freeze is MAST branch act 2 in R2T6 (prepared as a spec, not checked offline).
+- **Live dry run (2026-11-05):** `test/live-dry-run-r2t6.config.json` against lab node 9305 read seal 7 and followed the
+  paid-coin list of the first R2T6 payout from the chain (Winiwa shard 1). A seal can approve a request paid before
+  the guardian's next pass, so requests it saw close since a seal's heartbeat stay candidates for that seal. The box
+  image carries R2T6 (built as `stables-guardian-r2t6build`, R2T6 tests 18 of 18 inside); the running box stays R2T5
+  until the owner switches its config.
+
+## R2T6 rehearsal (2026-11-05 and 06, R2T6_PLAN step 8)
+
+Lab seats 0 to 4 on lab node 9205 (`test/lab-r2t6-seat*.config.json`), the lab guardian WOTS journal, test tokens.
+- **Commands by hand:** `stop <request> --post` (any open request, whatever the check said), `sign-release <file>
+  --post` (one seat's turn on a prepared release or overrule), `fallback <request> --post` (R2T6 request path 2,
+  unsigned, refused before its 3 days).
+- **A stop:** a 5 Winiwa Remove from the spare, stopped by seat 0 (2026-11-06 08:5x UTC). The first try was built on a
+  copy a seal replaced at the same moment; the node's check refused it and nothing was posted (the program now says
+  "not posted" in that case). The approvers then rejected the stopped coin: the checker read its seal-copy ports 30
+  and 31 as an inline package (fixed, ff58e8f0; the phone had the same rule, fixed in app 089). After the fix, seal 15
+  approved it; seats 0 to 4 release it once that slot pays.
+- **A refusal** (a lab request with no package): refused into a contested coin within 2 minutes; the second guardian
+  box found it bad on its own.
+- **To come:** a fallback (a Remove the proposer leaves undecided, `R2T6_IGNORE`), from block 2,410,539.
 
 ## What the Bridge's guardians need on top (Ethereum)
 

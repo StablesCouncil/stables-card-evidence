@@ -1,26 +1,26 @@
 {
- "version": "0.1.0-test",
- "phase": "testing: vault R2T5, valueless test tokens",
- "copied": "2026-11-03T14:44:36.151Z",
+ "version": "0.2.0-test",
+ "phase": "testing: vaults R2T5 and R2T6, valueless test tokens",
+ "copied": "2026-11-09T10:16:27.905Z",
  "files": [
   {
    "file": "guardian/guardian.mjs",
-   "sha256": "a93261232d37cdc5aab516cef159d970f67a709b35f0d4f94bbab4ead5a401df",
+   "sha256": "150145d37ca28fe20407e14de6ef1324287503b94d3472366012c56d85d3124d",
    "scrubbed": false
   },
   {
    "file": "guardian/guardian-core.mjs",
-   "sha256": "c4b24486e5d56070d193a7d1696c38ba5e8780066bf8f6f1f6ddec0a219d400a",
+   "sha256": "4b5619d3c65e513988c9307c02aaeb5d877212032389e055eb2a971ca7e98690",
    "scrubbed": false
   },
   {
    "file": "guardian/publish-log.mjs",
-   "sha256": "cc0d33745fd4d8085aa83be65703020d840e14f8bf4b31e68a80f5a934ec98fb",
+   "sha256": "71621bd5e435ac2501df61250ca123c2e5b5baf0bfecd7b86d534971f1225e6d",
    "scrubbed": false
   },
   {
    "file": "guardian/offline.mjs",
-   "sha256": "c72a957e4a706c153653e031d5694bd2754eb05f3c165047b23a3c6c0af999ec",
+   "sha256": "29225f0f9c67688cc0a3c2e38c3791b7f9f20f4c231c0abdb9dd22963251b8c4",
    "scrubbed": true
   },
   {
@@ -40,7 +40,7 @@
   },
   {
    "file": "guardian/GUARDIAN_DESIGN.md",
-   "sha256": "126211954a5f765df42802c5713524af51732e39a8bee82ccb90f46c1ada27b8",
+   "sha256": "5dda1d5a3c0ea6a5ace4687587537ddd7ec9ecb3255ad4cbcd145016a47ec62d",
    "scrubbed": false
   },
   {
@@ -70,7 +70,7 @@
   },
   {
    "file": "guardian/test/run-all.mjs",
-   "sha256": "99658100397109a07416abc27ff4d438dd7c9977387c31cf0f8e280e9a420895",
+   "sha256": "4725429527e7b93218e07b926d899da79a1568a4d4233427ea8c38b7442d8e11",
    "scrubbed": false
   },
   {
@@ -110,7 +110,7 @@
   },
   {
    "file": "guardian/box/guardian/Dockerfile",
-   "sha256": "abe0985a5e7437aff5a6348d8d9b1717125d1372e8e84b35306e3dfeb63dde21",
+   "sha256": "fbc182fe95b9999dc148dffc64c40acd233cd1b1702f1eea67626eb4a551be19",
    "scrubbed": false
   },
   {
@@ -165,12 +165,47 @@
   },
   {
    "file": "approvers/r2t5-council.mjs",
-   "sha256": "f2662e4c3e77b83cd981f517fbe17fb10ec63a660620b14b49cecbf7a76123bf",
+   "sha256": "15d3719e56c29879eb1ae7077073beb70ac348c261be6efb2396c6e9413ff7b6",
    "scrubbed": true
   },
   {
    "file": "approvers/checker/R2Checker.java",
-   "sha256": "68766331a14d7fb5c0437f9e3456fdc12d9bbb931ac517fc37a130495abf9ff1",
+   "sha256": "94c6ad1aee2922a905edf82881ac0b12acf1f426f90052867bad44c4ff73da65",
+   "scrubbed": false
+  },
+  {
+   "file": "approvers/r2t6/r2t6-approvers.mjs",
+   "sha256": "693a8ae64210d047efdd09fbfc2c5a56c46b91b78d0ee2c5016fa55a190e3914",
+   "scrubbed": true
+  },
+  {
+   "file": "approvers/r2t6/r2t6-tx.mjs",
+   "sha256": "8267e73da4dbbd41000babce880a3fa917eee009b6c5f6ec1c830f244cfae5b7",
+   "scrubbed": false
+  },
+  {
+   "file": "approvers/cosign/cosign.mjs",
+   "sha256": "a3a2e12e02524ebe593d93b363fca9f0a8f9193a2d4d77857304a7f02b5a8e92",
+   "scrubbed": false
+  },
+  {
+   "file": "approvers/cosign/README.md",
+   "sha256": "816166fde2c8ed406d7f65db918944afea1ca5b330843f4c305b85592e4b1094",
+   "scrubbed": false
+  },
+  {
+   "file": "approvers/cosign/DESIGN.md",
+   "sha256": "d14ec2c02039be8a260a4949e40870aa7961988cc645663bd060e56b36f38066",
+   "scrubbed": false
+  },
+  {
+   "file": "guardian/guardian-r2t6.mjs",
+   "sha256": "8873d65fe2d108924d958a267ed2405aee401d03850d310dde108ffd63a841ad",
+   "scrubbed": true
+  },
+  {
+   "file": "guardian/test/r2t6.mjs",
+   "sha256": "eee6e166c929c2b15ed4dfd359cf5e1b09d5728eac971e2c4a34ce627c525b7d",
    "scrubbed": false
   }
  ]

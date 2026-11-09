@@ -6,6 +6,7 @@
  *   - guardian-log.jsonl   the whole public log, as it is (hash-chained lines: an edited or removed line shows);
  *   - status.json          a short summary the Card Guardians page reads (schema stables-guardian-status/v1);
  *   - README.md            once, what the repository is;
+ *   - exit-lists.json      R2T6 only: the paid-coin lists it keeps from the chain (guardian-r2t6.mjs);
  * then commits, and pushes when "push" is true. Nothing is committed when nothing changed. A publish is never
  * written into the log itself (it would change the log on every publish); it is kept in state.json.
  *
@@ -104,7 +105,11 @@ export function publishLog({ cfg, st, logFile, now = new Date() }) {
   if (!fs.existsSync(path.join(dir, 'README.md'))) fs.writeFileSync(path.join(dir, 'README.md'), README(p.name));
   // Byte for byte: git on Windows would otherwise turn the log's line ends into CRLF for anyone who clones it.
   if (!fs.existsSync(path.join(dir, '.gitattributes'))) fs.writeFileSync(path.join(dir, '.gitattributes'), '* -text\n');
-  git(dir, ['add', '.gitattributes', 'guardian-log.jsonl', 'status.json', 'README.md']);
+  // R2T6: the paid-coin lists this guardian keeps from the chain (card review F5), so anyone can rebuild every exit
+  // record root without the approvers' server.
+  const lists = path.join(path.dirname(logFile), 'exit-lists.json');
+  if (fs.existsSync(lists)) fs.copyFileSync(lists, path.join(dir, 'exit-lists.json'));
+  git(dir, ['add', '.gitattributes', 'guardian-log.jsonl', 'status.json', 'README.md', ...(fs.existsSync(lists) ? ['exit-lists.json'] : [])]);
   // status.json changes every hour (its time); commit only when the log itself or the counts moved, or once a day.
   const changed = git(dir, ['diff', '--cached', '--name-only']).stdout.split('\n').filter(Boolean);
   const lastCommit = Number(git(dir, ['log', '-1', '--format=%ct']).stdout.trim() || 0) * 1000;
