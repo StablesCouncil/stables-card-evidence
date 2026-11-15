@@ -122,6 +122,11 @@ public final class R2Attestation {
         if(chain.isEmpty()||chain.size()>R2Codec.MAX_CERTS)throw R2Codec.fail("attestation","chain length");
         List<X509Certificate> certs=new ArrayList<>();for(byte[] d:chain)certs.add(cert(d));
         for(X509Certificate c:certs)checkRevoked(c);
+        // Every certificate above the leaf must be an issuing CA, never an attested key.
+        for(int i=0;i<certs.size();i++){
+            if(certs.get(i).getBasicConstraints()<0)throw R2Codec.fail("attestation","chain certificate "+i+" is not a CA");
+            if(certs.get(i).getExtensionValue(KEY_DESCRIPTION_OID)!=null)throw R2Codec.fail("attestation","chain certificate "+i+" is an attested key, not an issuer");
+        }
         for(int i=0;i+1<certs.size();i++)if(!signedBy(certs.get(i),certs.get(i+1).getPublicKey()))throw R2Codec.fail("attestation","chain link "+i+" not signed by its issuer");
         X509Certificate top=certs.get(certs.size()-1);
         if(pinnedSpki.contains(R2Codec.hex(R2Codec.sha256(top.getPublicKey().getEncoded()))))return;
